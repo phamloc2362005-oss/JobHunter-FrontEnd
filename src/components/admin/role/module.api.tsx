@@ -97,14 +97,15 @@ const ModuleApi = (props: IProps) => {
   // Convert the data structure for use with `items` prop
   const panels: CollapseProps['items'] = listPermissions?.map((item, index) => ({
     key: `${index}-parent`,
-    label: <div>{item.module}</div>,
+    label: <div>{item.module}</div>, // Ten cac role
     forceRender: true,
     extra: (
+      // nút bật tắt cua tưng model
       <div className="customize-form-item">
         <ProFormSwitch
           name={["permissions", item.module]}
           fieldProps={{
-            defaultChecked: false,
+            defaultChecked: false,// mac dinh swith = off
             onClick: (u, e) => { e.stopPropagation() },
             onChange: (value) => handleSwitchAll(value, item.module),
           }}
