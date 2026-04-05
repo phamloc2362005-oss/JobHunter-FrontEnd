@@ -1,4 +1,4 @@
-import { Button, Col, Form, Modal, Row, Select, Table, Tabs, message, notification } from "antd";
+import { Button, Col, Form, Modal, Row, Select, Table, Tabs, message, notification, Input } from "antd";
 import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
 import { IResume, ISubscribers } from "@/types/backend";
@@ -96,7 +96,7 @@ const UserResume = (props: any) => {
 const UserUpdateInfo = (props: any) => {
     return (
         <div>
-            //todo
+            todo
         </div>
     )
 }
@@ -231,6 +231,61 @@ const JobByEmail = (props: any) => {
     )
 }
 
+// Cập nhật mật khẩu 
+const ChangePasswordTab = () => {
+    const [form] = Form.useForm();
+
+    const onFinish = () => {
+        message.success("Thông tin nhập hợp lệ");
+        form.resetFields();
+    };
+
+    return (
+        <Form form={form} layout="vertical" onFinish={onFinish} style={{ maxWidth: 480 }}>
+            <Form.Item
+                label="Mật khẩu hiện tại"
+                name="currentPassword"
+                rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại" }]}
+            >
+                <Input.Password placeholder="Nhập mật khẩu cũ" autoComplete="current-password" />
+            </Form.Item>
+            <Form.Item
+                label="Mật khẩu mới"
+                name="newPassword"
+                rules={[
+                    { required: true, message: "Vui lòng nhập mật khẩu mới" },
+                    { min: 6, message: "Mật khẩu tối thiểu 6 ký tự" },
+                ]}
+            >
+                <Input.Password placeholder="Mật khẩu mới" autoComplete="new-password" />
+            </Form.Item>
+            <Form.Item
+                label="Nhập lại mật khẩu mới"
+                name="confirmPassword"
+                dependencies={["newPassword"]}
+                rules={[
+                    { required: true, message: "Vui lòng nhập lại mật khẩu mới" },
+                    ({ getFieldValue }) => ({
+                        validator(_, value) {
+                            if (!value || getFieldValue("newPassword") === value) {
+                                return Promise.resolve();
+                            }
+                            return Promise.reject(new Error("Mật khẩu xác nhận không khớp"));
+                        },
+                    }),
+                ]}
+            >
+                <Input.Password placeholder="Nhập lại mật khẩu mới" autoComplete="new-password" />
+            </Form.Item>
+            <Form.Item>
+                <Button type="primary" htmlType="submit">
+                    Cập nhật mật khẩu
+                </Button>
+            </Form.Item>
+        </Form>
+    );
+};
+
 const ManageAccount = (props: IProps) => {
     const { open, onClose } = props;
 
@@ -257,7 +312,7 @@ const ManageAccount = (props: IProps) => {
         {
             key: 'user-password',
             label: `Thay đổi mật khẩu`,
-            children: `//todo`,
+            children: <ChangePasswordTab/>,
         },
     ];
 
