@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { IJob } from "@/types/backend";
-import { callFetchJobById } from "@/config/api";
+import { callFetchAdminJobById } from "@/config/api";
 import styles from 'styles/client.module.scss';
 import parse from 'html-react-parser';
 import { Col, Divider, Row, Skeleton, Tag } from "antd";
@@ -27,7 +27,7 @@ const ClientJobDetailPage = (props: any) => {
         const init = async () => {
             if (id) {
                 setIsLoading(true)
-                const res = await callFetchJobById(id);
+                const res = await callFetchAdminJobById(id);
                 if (res?.data) {
                     setJobDetail(res.data)
                 }

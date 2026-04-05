@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { callFetchJob, callFetchResume } from '@/config/api';
+import { callFetchResume } from '@/config/api';
 import { IResume } from '@/types/backend';
 
 interface IState {

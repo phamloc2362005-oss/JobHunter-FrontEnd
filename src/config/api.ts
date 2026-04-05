@@ -116,24 +116,35 @@ export const callFetchUser = (query: string) => {
  * 
 Module Job
  */
+// ADMIN
 export const callCreateJob = (job: IJob) => {
-    return axios.post<IBackendRes<IJob>>('/api/v1/jobs', { ...job })
+    return axios.post('/api/v1/admin/jobs', { ...job })
 }
 
 export const callUpdateJob = (job: IJob, id: string) => {
-    return axios.put<IBackendRes<IJob>>(`/api/v1/jobs`, { id, ...job })
+    return axios.put('/api/v1/admin/jobs', { id, ...job })
 }
 
 export const callDeleteJob = (id: string) => {
-    return axios.delete<IBackendRes<IJob>>(`/api/v1/jobs/${id}`);
+    return axios.delete(`/api/v1/admin/jobs/${id}`);
 }
 
-export const callFetchJob = (query: string) => {
-    return axios.get<IBackendRes<IModelPaginate<IJob>>>(`/api/v1/jobs?${query}`);
+// PUBLIC - dùng cho client/homepage
+export const callFetchPublicJob = (query: string) => {
+    return axios.get(`/api/v1/jobs?${query}`);
 }
 
-export const callFetchJobById = (id: string) => {
-    return axios.get<IBackendRes<IJob>>(`/api/v1/jobs/${id}`);
+export const callFetchPublicJobById = (id: string) => {
+    return axios.get(`/api/v1/jobs/${id}`);
+}
+
+// ADMIN - dùng cho trang quản trị
+export const callFetchAdminJob = (query: string) => {
+    return axios.get(`/api/v1/admin/jobs?${query}`);
+}
+
+export const callFetchAdminJobById = (id: string) => {
+    return axios.get(`/api/v1/admin/jobs/${id}`);
 }
 
 /**

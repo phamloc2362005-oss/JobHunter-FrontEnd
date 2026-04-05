@@ -5,11 +5,16 @@ export const ALL_PERMISSIONS = {
         UPDATE: { method: "PUT", apiPath: '/api/v1/companies', module: "COMPANIES" },
         DELETE: { method: "DELETE", apiPath: '/api/v1/companies/{id}', module: "COMPANIES" },
     },
-    JOBS: {
+    JOBS_PUBLIC: {
         GET_PAGINATE: { method: "GET", apiPath: '/api/v1/jobs', module: "JOBS" },
-        CREATE: { method: "POST", apiPath: '/api/v1/jobs', module: "JOBS" },
-        UPDATE: { method: "PUT", apiPath: '/api/v1/jobs', module: "JOBS" },
-        DELETE: { method: "DELETE", apiPath: '/api/v1/jobs/{id}', module: "JOBS" },
+        GET_BY_ID: { method: "GET", apiPath: '/api/v1/jobs/{id}', module: "JOBS" },
+    },
+    JOBS: {
+        GET_PAGINATE: { method: "GET", apiPath: '/api/v1/admin/jobs', module: "JOBS" },
+        GET_BY_ID: { method: "GET", apiPath: '/api/v1/admin/jobs/{id}', module: "JOBS" },
+        CREATE: { method: "POST", apiPath: '/api/v1/admin/jobs', module: "JOBS" },
+        UPDATE: { method: "PUT", apiPath: '/api/v1/admin/jobs', module: "JOBS" },
+        DELETE: { method: "DELETE", apiPath: '/api/v1/admin/jobs/{id}', module: "JOBS" },
     },
     PERMISSIONS: {
         GET_PAGINATE: { method: "GET", apiPath: '/api/v1/permissions', module: "PERMISSIONS" },

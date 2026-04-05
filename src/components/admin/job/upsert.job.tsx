@@ -6,7 +6,7 @@ import styles from 'styles/admin.module.scss';
 import { LOCATION_LIST, SKILLS_LIST } from "@/config/utils";
 import { ICompanySelect } from "../user/modal.user";
 import { useState, useEffect } from 'react';
-import { callCreateJob, callFetchAllSkill, callFetchCompany, callFetchJobById, callUpdateJob } from "@/config/api";
+import { callCreateJob, callFetchAdminJobById, callFetchAllSkill, callFetchCompany, callUpdateJob } from "@/config/api";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { CheckSquareOutlined } from "@ant-design/icons";
@@ -39,7 +39,7 @@ const ViewUpsertJob = (props: any) => {
             setSkills(temp);
 
             if (id) {
-                const res = await callFetchJobById(id);
+                const res = await callFetchAdminJobById(id);
                 if (res && res.data) {
                     setDataUpdate(res.data);
                     setValue(res.data.description);
