@@ -81,12 +81,29 @@ const LoginPage = () => {
                                 <Input.Password />
                             </Form.Item>
 
-                            <Form.Item
+                            {/* <Form.Item
                             // wrapperCol={{ offset: 6, span: 16 }}
                             >
                                 <Button type="primary" htmlType="submit" loading={isSubmit}>
                                     Đăng nhập
                                 </Button>
+                            </Form.Item> */}
+                            <Form.Item>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        flexWrap: 'wrap',
+                                        gap: 8,
+                                        width: '100%',
+                                    }}
+                                >
+                                    <Button type="primary" htmlType="submit" loading={isSubmit}>
+                                        Đăng nhập
+                                    </Button>
+                                    <Link to="/forgot-password">Quên mật khẩu</Link>
+                                </div>
                             </Form.Item>
                             <Divider>Or</Divider>
                             <p className="text text-normal">Chưa có tài khoản ?
