@@ -16,6 +16,8 @@ const LoginPage = () => {
     let location = useLocation();
     let params = new URLSearchParams(location.search);
     const callback = params?.get("callback");
+    const backendUrl = import.meta.env.VITE_BACKEND_URL as string;
+    const googleLoginUrl = `${backendUrl}/oauth2/authorization/google`;
 
     useEffect(() => {
         //đã login => redirect to '/'
@@ -104,6 +106,11 @@ const LoginPage = () => {
                                     </Button>
                                     <Link to="/forgot-password">Quên mật khẩu</Link>
                                 </div>
+                            </Form.Item>
+                            <Form.Item>
+                                <Button type="default" href={googleLoginUrl} style={{ width: '100%' }}>
+                                    Đăng nhập bằng Google
+                                </Button>
                             </Form.Item>
                             <Divider>Or</Divider>
                             <p className="text text-normal">Chưa có tài khoản ?
