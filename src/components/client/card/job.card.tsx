@@ -108,6 +108,7 @@ const JobCard = (props: IProps) => {
                             return (
                                 <Col span={24} md={12} key={item.id}>
                                     <Card size="small" title={null} hoverable
+                                        style={{ borderRadius: 8 }}
                                         onClick={() => handleViewDetailJob(item)}
                                     >
                                         <div className={styles["card-job-content"]}>

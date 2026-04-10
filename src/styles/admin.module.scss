@@ -1,11 +1,158 @@
+// CareerAdmin-style admin shell — colors & surfaces only
+$admin-primary: #0d47a1;
+$admin-page-bg: #f4f6f9;
+$admin-border: #e5e8ef;
+$admin-text: #1a1d21;
+$admin-text-muted: #5f6368;
+
+.adminLayout {
+    min-height: 100vh;
+    background: $admin-page-bg;
+
+    // ----- Sider -----
+    :global(.ant-layout-sider) {
+        background: #fff !important;
+        border-right: 1px solid $admin-border;
+        box-shadow: 2px 0 12px rgba(15, 23, 42, 0.04);
+    }
+
+    :global(.ant-layout-sider-trigger) {
+        background: #f8f9fb !important;
+        color: $admin-text-muted !important;
+        border-top: 1px solid $admin-border;
+    }
+
+    // ----- Inline menu (desktop sidebar only; avoid horizontal mobile menu) -----
+    :global(.ant-layout-sider .ant-menu-light.ant-menu-root.ant-menu-inline) {
+        background: transparent;
+        border-inline-end: none !important;
+    }
+
+    :global(.ant-layout-sider .ant-menu-light .ant-menu-item) {
+        margin-inline: 8px;
+        width: calc(100% - 16px);
+        border-radius: 8px;
+        color: $admin-text-muted;
+        font-weight: 500;
+    }
+
+    :global(.ant-layout-sider .ant-menu-light .ant-menu-item:hover) {
+        color: $admin-primary;
+    }
+
+    :global(.ant-layout-sider .ant-menu-light .ant-menu-item-selected) {
+        background: rgba(13, 71, 161, 0.09) !important;
+        color: $admin-primary !important;
+        font-weight: 600;
+        border-right: 3px solid $admin-primary;
+        border-radius: 8px 0 0 8px;
+    }
+
+    :global(.ant-layout-sider .ant-menu-light .ant-menu-item .anticon) {
+        color: inherit;
+    }
+
+    // ----- Main content -----
+    :global(.ant-layout .ant-layout) {
+        background: $admin-page-bg;
+    }
+
+    // ----- ProTable / cards -----
+    :global(.ant-pro-table) {
+        :global(.ant-pro-card) {
+            border-radius: 12px;
+            border: 1px solid #eef0f4;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+            overflow: hidden;
+        }
+
+        :global(.ant-pro-table-search) {
+            margin-bottom: 16px;
+        }
+
+        :global(.ant-pro-table-list-toolbar-title) {
+            color: $admin-text;
+            font-weight: 700;
+        }
+    }
+
+    :global(.ant-table-wrapper .ant-table-thead > tr > th) {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: $admin-text-muted;
+    }
+
+    :global(.ant-pagination .ant-pagination-item-active) {
+        border-color: $admin-primary;
+        background: $admin-primary;
+
+        a {
+            color: #fff;
+        }
+    }
+}
+
+.adminLogo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 32px;
+    margin: 16px;
+    text-align: center;
+}
+
+.adminLogoIcon {
+    font-size: 22px;
+    color: $admin-primary;
+}
+
+.adminLogoText {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: $admin-primary;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.adminHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 20px;
+    padding: 0 8px 0 0;
+    min-height: 64px;
+    background: #fff;
+    border-bottom: 1px solid $admin-border;
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+}
+
+.adminHeaderWelcome {
+    color: $admin-text;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.adminContent {
+    padding: 20px 24px 32px;
+    background: $admin-page-bg;
+}
+
+// Job upsert page (existing)
 .upsert-job-container {
     background-color: white;
     padding: 10px 30px;
-    border-radius: 5px;
-    min-height: 100vh;
+    border-radius: 12px;
+    min-height: auto;
     height: auto;
+    border: 1px solid #eef0f4;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
 
     .title {
         padding: 10px 0 20px 0;
+        color: $admin-text;
+        font-weight: 700;
     }
 }

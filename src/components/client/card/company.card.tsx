@@ -1,7 +1,7 @@
 import { callFetchCompany } from '@/config/api';
 import { convertSlug } from '@/config/utils';
 import { ICompany } from '@/types/backend';
-import { Card, Col, Divider, Empty, Pagination, Row, Spin } from 'antd';
+import { Card, Col, Empty, Pagination, Row, Spin } from 'antd';
 import { useState, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, useNavigate } from 'react-router-dom';
@@ -83,20 +83,19 @@ const CompanyCard = (props: IProps) => {
                                 <Col span={24} md={6} key={item.id}>
                                     <Card
                                         onClick={() => handleViewDetailJob(item)}
-                                        style={{ height: 350 }}
+                                        style={{ height: 180, borderRadius: 8 }}
                                         hoverable
                                         cover={
                                             <div className={styles["card-customize"]} >
                                                 <img
-                                                    style={{ maxWidth: "200px" }}
+                                                    style={{ maxWidth: "100px", maxHeight: "70px", objectFit: "contain" }}
                                                     alt="example"
                                                     src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${item?.logo}`}
                                                 />
                                             </div>
                                         }
                                     >
-                                        <Divider />
-                                        <h3 style={{ textAlign: "center" }}>{item.name}</h3>
+                                        <h3 style={{ textAlign: "center", fontSize: 14, marginTop: 8 }}>{item.name}</h3>
                                     </Card>
                                 </Col>
                             )

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CodeOutlined, ContactsOutlined, FireOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined, TwitterOutlined } from '@ant-design/icons';
 import { Avatar, Drawer, Dropdown, MenuProps, Space, message } from 'antd';
-import { Menu, ConfigProvider } from 'antd';
+import { Menu } from 'antd';
 import styles from '@/styles/client.module.scss';
 import { isMobile } from 'react-device-detect';
 import { FaReact } from 'react-icons/fa';
@@ -101,26 +101,23 @@ const Header = (props: any) => {
                                 <FaReact onClick={() => navigate('/')} title='Hỏi Dân IT' />
                             </div>
                             <div className={styles['top-menu']}>
-                                <ConfigProvider
-                                    theme={{
-                                        token: {
-                                            colorPrimary: '#fff',
-                                            colorBgContainer: '#222831',
-                                            colorText: '#a7a7a7',
-                                        },
-                                    }}
-                                >
-
-                                    <Menu
-                                        // onClick={onClick}
-                                        selectedKeys={[current]}
-                                        mode="horizontal"
-                                        items={items}
-                                    />
-                                </ConfigProvider>
+                                <div className={styles["desktop-nav"]}>
+                                    <Link className={current === '/' ? styles["nav-active"] : styles["nav-link"]} to={'/'}>
+                                        Trang Chủ
+                                    </Link>
+                                    <Link className={current === '/job' ? styles["nav-active"] : styles["nav-link"]} to={'/job'}>
+                                        Việc Làm IT
+                                    </Link>
+                                    <Link className={current === '/company' ? styles["nav-active"] : styles["nav-link"]} to={'/company'}>
+                                        Top Công ty IT
+                                    </Link>
+                                </div>
                                 <div className={styles['extra']}>
                                     {isAuthenticated === false ?
-                                        <Link to={'/login'}>Đăng Nhập</Link>
+                                        <div className={styles["guest-actions"]}>
+                                            <span className={styles["employer-link"]}>For Employers</span>
+                                            <Link to={'/login'} className={styles["signin-btn"]}>Sign In</Link>
+                                        </div>
                                         :
                                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>

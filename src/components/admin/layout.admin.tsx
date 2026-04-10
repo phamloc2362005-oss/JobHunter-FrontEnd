@@ -11,7 +11,7 @@ import {
     BugOutlined,
     ScheduleOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Dropdown, Space, message, Avatar, Button } from 'antd';
+import { Layout, Menu, Dropdown, Space, message, Avatar, Button, ConfigProvider } from 'antd';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { callLogout } from 'config/api';
@@ -20,8 +20,53 @@ import { isMobile } from 'react-device-detect';
 import type { MenuProps } from 'antd';
 import { setLogoutAction } from '@/redux/slice/accountSlide';
 import { ALL_PERMISSIONS } from '@/config/permissions';
+import adminStyles from '@/styles/admin.module.scss';
 
 const { Content, Sider } = Layout;
+
+const adminTheme = {
+    token: {
+        colorPrimary: '#0d47a1',
+        borderRadius: 8,
+        colorBgLayout: '#f4f6f9',
+        colorText: '#1a1d21',
+        fontFamily: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
+    },
+    components: {
+        Layout: {
+            bodyBg: '#f4f6f9',
+            headerBg: '#ffffff',
+            siderBg: '#ffffff',
+        },
+        Menu: {
+            itemBg: 'transparent',
+            itemSelectedBg: 'rgba(13, 71, 161, 0.09)',
+            itemSelectedColor: '#0d47a1',
+            itemHoverBg: 'rgba(13, 71, 161, 0.05)',
+            itemColor: '#5f6368',
+            itemHoverColor: '#0d47a1',
+            iconSize: 18,
+            fontSize: 14,
+        },
+        Button: {
+            primaryShadow: '0 2px 8px rgba(13, 71, 161, 0.2)',
+        },
+        Table: {
+            headerBg: '#f8f9fb',
+            headerColor: '#2d333a',
+            borderColor: '#e8eaed',
+            rowHoverBg: 'rgba(13, 71, 161, 0.04)',
+        },
+        Input: {
+            colorBorder: '#dadce0',
+            activeBorderColor: '#0d47a1',
+            hoverBorderColor: '#0d47a1',
+        },
+        Select: {
+            colorBorder: '#dadce0',
+        },
+    },
+};
 
 const LayoutAdmin = () => {
     const location = useLocation();
@@ -155,10 +200,10 @@ const LayoutAdmin = () => {
     ];
 
     return (
-        <>
+        <ConfigProvider theme={adminTheme}>
             <Layout
                 style={{ minHeight: '100vh' }}
-                className="layout-admin"
+                className={adminStyles.adminLayout}
             >
                 {!isMobile ?
                     <Sider
@@ -166,8 +211,9 @@ const LayoutAdmin = () => {
                         collapsible
                         collapsed={collapsed}
                         onCollapse={(value) => setCollapsed(value)}>
-                        <div style={{ height: 32, margin: 16, textAlign: 'center' }}>
-                            <BugOutlined />  ADMIN
+                        <div className={adminStyles.adminLogo}>
+                            <BugOutlined className={adminStyles.adminLogoIcon} />
+                            {!collapsed && <span className={adminStyles.adminLogoText}>CareerAdmin</span>}
                         </div>
                         <Menu
                             selectedKeys={[activeMenu]}
@@ -187,7 +233,7 @@ const LayoutAdmin = () => {
 
                 <Layout>
                     {!isMobile &&
-                        <div className='admin-header' style={{ display: "flex", justifyContent: "space-between", marginRight: 20 }}>
+                        <div className={adminStyles.adminHeader}>
                             <Button
                                 type="text"
                                 icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
@@ -196,28 +242,28 @@ const LayoutAdmin = () => {
                                     fontSize: '16px',
                                     width: 64,
                                     height: 64,
+                                    color: '#5f6368',
                                 }}
                             />
 
                             <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                                <Space style={{ cursor: "pointer" }}>
-                                    Welcome {user?.name}
-                                    <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
-
+                                <Space style={{ cursor: "pointer" }} align="center">
+                                    <span className={adminStyles.adminHeaderWelcome}>
+                                        Welcome {user?.name}
+                                    </span>
+                                    <Avatar style={{ backgroundColor: '#0d47a1' }}>
+                                        {user?.name?.substring(0, 2)?.toUpperCase()}
+                                    </Avatar>
                                 </Space>
                             </Dropdown>
                         </div>
                     }
-                    <Content style={{ padding: '15px' }}>
+                    <Content className={adminStyles.adminContent}>
                         <Outlet />
                     </Content>
-                    {/* <Footer style={{ padding: 10, textAlign: 'center' }}>
-                        React Typescript series Nest.JS &copy; Hỏi Dân IT - Made with <HeartTwoTone />
-                    </Footer> */}
                 </Layout>
             </Layout>
-
-        </>
+        </ConfigProvider>
     );
 };
 

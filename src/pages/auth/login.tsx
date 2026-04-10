@@ -1,4 +1,5 @@
-import { Button, Divider, Form, Input, message, notification } from 'antd';
+import { GoogleOutlined } from '@ant-design/icons';
+import { Button, ButtonProps, Divider, Form, Input, message, notification } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { callLogin } from 'config/api';
 import { useState, useEffect } from 'react';
@@ -20,9 +21,7 @@ const LoginPage = () => {
     const googleLoginUrl = `${backendUrl}/oauth2/authorization/google`;
 
     useEffect(() => {
-        //đã login => redirect to '/'
         if (isAuthenticated) {
-            // navigate('/');
             window.location.href = '/';
         }
     }, [])
@@ -48,75 +47,75 @@ const LoginPage = () => {
         }
     };
 
+    const googleBtnProps: ButtonProps = {
+        type: 'default',
+        href: googleLoginUrl,
+        className: styles['google-btn'],
+        block: true,
+        children: (
+            <>
+                <GoogleOutlined className={styles['google-icon']} />
+                Đăng nhập bằng Google
+            </>
+        ),
+    };
 
     return (
-        <div className={styles["login-page"]}>
-            <main className={styles.main}>
-                <div className={styles.container}>
+        <div className={styles['login-page']}>
+            <main className={styles['auth-main']}>
+                <div className={styles['auth-center']}>
                     <section className={styles.wrapper}>
-                        <div className={styles.heading}>
-                            <h2 className={`${styles.text} ${styles["text-large"]}`}>Đăng Nhập</h2>
-                            <Divider />
+                        <h1 className={styles['login-title']}>Đăng Nhập</h1>
 
-                        </div>
                         <Form
                             name="basic"
-                            // style={{ maxWidth: 600, margin: '0 auto' }}
+                            layout="vertical"
                             onFinish={onFinish}
                             autoComplete="off"
+                            className={styles['login-form']}
                         >
                             <Form.Item
-                                labelCol={{ span: 24 }} //whole column
                                 label="Email"
                                 name="username"
                                 rules={[{ required: true, message: 'Email không được để trống!' }]}
                             >
-                                <Input />
+                                <Input placeholder="username@example.com" size="large" />
                             </Form.Item>
 
                             <Form.Item
-                                labelCol={{ span: 24 }} //whole column
-                                label="Mật khẩu"
+                                label={
+                                    <div className={styles['password-label-row']}>
+                                        <span>Mật khẩu</span>
+                                        <Link to="/forgot-password" className={styles['forgot-link']}>
+                                            Quên mật khẩu?
+                                        </Link>
+                                    </div>
+                                }
                                 name="password"
                                 rules={[{ required: true, message: 'Mật khẩu không được để trống!' }]}
                             >
-                                <Input.Password />
+                                <Input.Password size="large" />
                             </Form.Item>
 
-                            {/* <Form.Item
-                            // wrapperCol={{ offset: 6, span: 16 }}
-                            >
-                                <Button type="primary" htmlType="submit" loading={isSubmit}>
+                            <Form.Item className={styles['submit-wrap']}>
+                                <Button type="primary" htmlType="submit" loading={isSubmit} block size="large" className={styles['login-submit']}>
                                     Đăng nhập
                                 </Button>
-                            </Form.Item> */}
-                            <Form.Item>
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        flexWrap: 'wrap',
-                                        gap: 8,
-                                        width: '100%',
-                                    }}
-                                >
-                                    <Button type="primary" htmlType="submit" loading={isSubmit}>
-                                        Đăng nhập
-                                    </Button>
-                                    <Link to="/forgot-password">Quên mật khẩu</Link>
-                                </div>
                             </Form.Item>
-                            <Form.Item>
-                                <Button type="default" href={googleLoginUrl} style={{ width: '100%' }}>
-                                    Đăng nhập bằng Google
-                                </Button>
+
+                            <Divider plain className={styles['divider-or']}>
+                                HOẶC
+                            </Divider>
+
+                            <Form.Item className={styles['google-wrap']}>
+                                <Button {...googleBtnProps} />
                             </Form.Item>
-                            <Divider>Or</Divider>
-                            <p className="text text-normal">Chưa có tài khoản ?
-                                <span>
-                                    <Link to='/register' > Đăng Ký </Link>
-                                </span>
+
+                            <p className={styles['card-footer-text']}>
+                                Chưa có tài khoản?{' '}
+                                <Link to="/register" className={styles['card-footer-link']}>
+                                    Đăng Ký
+                                </Link>
                             </p>
                         </Form>
                     </section>

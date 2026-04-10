@@ -29,6 +29,147 @@ $shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0,
         padding: 0 2rem;
         margin: 0 auto;
     }
+}
+
+// Login page — ArchitectCareers-style layout (scoped to .login-page only)
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f4f6f8;
+
+    .auth-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .auth-center {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 32px 16px 48px;
+    }
+
+    .login-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #202124;
+        margin: 0 0 28px;
+        line-height: 1.2;
+    }
+
+    .login-form {
+        :global(.ant-form-item-label > label) {
+            color: #202124;
+            font-weight: 500;
+        }
+
+        :global(.ant-input-affix-wrapper),
+        :global(.ant-input) {
+            border-radius: 8px;
+        }
+    }
+
+    .password-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .forgot-link {
+        color: $color-blue;
+        font-size: 0.875rem;
+        font-weight: 400;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .submit-wrap {
+        margin-bottom: 8px;
+    }
+
+    .login-submit {
+        border-radius: 8px;
+        font-weight: 600;
+        height: 44px;
+    }
+
+    .divider-or {
+        margin: 20px 0 16px;
+        color: #9aa0a6;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+
+        :global(.ant-divider-inner-text) {
+            padding: 0 12px;
+        }
+    }
+
+    .google-wrap {
+        margin-bottom: 8px;
+    }
+
+    .google-btn {
+        border-radius: 8px;
+        height: 44px;
+        font-weight: 500;
+        border: 1px solid #dadce0;
+        color: #3c4043;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+
+        &:hover {
+            border-color: #dadce0;
+            color: #202124;
+            background: #f8f9fa;
+        }
+    }
+
+    .google-icon {
+        font-size: 18px;
+        color: #ea4335;
+    }
+
+    .card-footer-text {
+        text-align: center;
+        margin: 20px 0 0;
+        font-size: 0.9375rem;
+        color: #5f6368;
+    }
+
+    .card-footer-link {
+        color: $color-blue;
+        font-weight: 600;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .auth-center .wrapper {
+        max-width: 28rem;
+        width: 100%;
+        margin: 0 auto;
+        padding: 2.25rem 2rem 2rem;
+        border: none;
+        outline: none;
+        border-radius: 12px;
+        color: $color-black;
+        background: $color-white;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+}
+
+.register-page {
 
 
     .text {
