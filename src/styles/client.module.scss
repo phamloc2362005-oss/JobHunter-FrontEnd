@@ -406,10 +406,172 @@
 }
 
 .detail-job-section {
+    .jobDetailCard {
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .jobTop {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .jobMeta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+        color: #4f4f4f;
+        margin-top: 8px;
+        font-size: 14px;
+    }
+
+    .jobMetaItem {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .jobTopActions {
+        min-width: 160px;
+    }
+
+    .btnApplyV2 {
+        width: 100%;
+        border-radius: 8px;
+        font-weight: 700;
+        background: #1f5aa6;
+        border-color: #1f5aa6;
+    }
+
+    .skillsRow {
+        margin-top: 12px;
+    }
+
+    .sectionTitle {
+        margin: 0 0 10px !important;
+        color: #1f5aa6;
+        font-weight: 800;
+    }
+
+    .jobDescription {
+        color: #3a3a3a;
+        font-size: 16px;
+        line-height: 1.7em;
+    }
+
+    .jobSidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: sticky;
+        top: 16px;
+    }
+
+    .sidebarCard {
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .companyBox {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .companyLogo {
+        width: 56px;
+        height: 56px;
+        border-radius: 10px;
+        object-fit: contain;
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 6px;
+    }
+
+    .companyName {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .companyAddress {
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .similarList {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .similarItem {
+        text-decoration: none;
+        padding: 10px 10px;
+        border-radius: 10px;
+        border: 1px solid #f0f0f0;
+        background: #fff;
+        transition: background 0.15s ease;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .similarItem:hover {
+        background: #fafafa;
+    }
+
+    .similarLogo {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        object-fit: contain;
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 4px;
+        flex: 0 0 auto;
+        margin-top: 2px;
+    }
+
+    .similarBody {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .similarTitle {
+        color: #111827;
+        font-weight: 650;
+        line-height: 1.25;
+        margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .similarMeta {
+        color: #6b7280;
+        font-size: 12.5px;
+    }
+
+    .similarMeta2 {
+        color: #1f5aa6;
+        font-weight: 650;
+        font-size: 12.5px;
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
     .header {
         margin: 20px 0;
-        color: #353535;
+        color: #1f5aa6;
         font-size: 27px;
+        font-weight: 850;
     }
 
     .btn-apply {
@@ -440,11 +602,14 @@
         padding-bottom: 15px;
     }
 
-    h2 {
-        font-size: 23px;
-        color: #353535;
-        font-weight: 400;
-        margin: 25px 0 0;
+    // Only style headings inside the HTML job description content
+    .jobDescription {
+        h2 {
+            font-size: 23px;
+            color: #353535;
+            font-weight: 400;
+            margin: 25px 0 0;
+        }
     }
 
     ul {

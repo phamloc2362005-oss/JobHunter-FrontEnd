@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { callLogout } from '@/config/api';
 import { setLogoutAction } from '@/redux/slice/accountSlide';
 import ManageAccount from './modal/manage.account';
+import JobMegaMenu from './job/job-mega-menu';
 
 const Header = (props: any) => {
     const navigate = useNavigate();
@@ -105,9 +106,15 @@ const Header = (props: any) => {
                                     <Link className={current === '/' ? styles["nav-active"] : styles["nav-link"]} to={'/'}>
                                         Trang Chủ
                                     </Link>
-                                    <Link className={current === '/job' ? styles["nav-active"] : styles["nav-link"]} to={'/job'}>
-                                        Việc Làm IT
-                                    </Link>
+                                    <Dropdown
+                                        trigger={['hover']}
+                                        placement="bottomLeft"
+                                        dropdownRender={() => <JobMegaMenu />}
+                                    >
+                                        <span className={current.startsWith('/job') ? styles["nav-active"] : styles["nav-link"]}>
+                                            Việc Làm IT
+                                        </span>
+                                    </Dropdown>
                                     <Link className={current === '/company' ? styles["nav-active"] : styles["nav-link"]} to={'/company'}>
                                         Top Công ty IT
                                     </Link>

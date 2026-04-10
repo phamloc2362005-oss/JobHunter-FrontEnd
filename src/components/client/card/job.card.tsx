@@ -50,18 +50,24 @@ const JobCard = (props: IProps) => {
         //check query string
         const queryLocation = searchParams.get("location");
         const querySkills = searchParams.get("skills")
-        if (queryLocation || querySkills) {
-            let q = "";
-            if (queryLocation) {
-                q = sfIn("location", queryLocation.split(",")).toString();
-            }
+        const queryExpertise = searchParams.get("expertise")
+        const queryLevel = searchParams.get("level")
 
-            if (querySkills) {
-                q = queryLocation ?
-                    q + " and " + `${sfIn("skills", querySkills.split(","))}`
-                    : `${sfIn("skills", querySkills.split(","))}`;
-            }
+        let q = "";
+        if (queryLocation) {
+            q = sfIn("location", queryLocation.split(",")).toString();
+        }
+        if (querySkills) {
+            q = queryLocation ? q + " and " + `${sfIn("skills", querySkills.split(","))}` : `${sfIn("skills", querySkills.split(","))}`;
+        }
+        if (queryExpertise) {
+            q = q ? q + " and " + `${sfIn("expertises.id", [queryExpertise])}` : `${sfIn("expertises.id", [queryExpertise])}`;
+        }
+        if (queryLevel) {
+            q = q ? q + " and " + `level='${queryLevel}'` : `level='${queryLevel}'`;
+        }
 
+        if (q) {
             query += `&filter=${encodeURIComponent(q)}`;
         }
 

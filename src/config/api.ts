@@ -33,7 +33,7 @@ export const callUploadSingleFile = (file: any, folderType: string) => {
     bodyFormData.append('file', file);
     bodyFormData.append('folder', folderType);
 
-    return axios<IBackendRes<{ fileName: string }>>({
+    return axios<IBackendRes<{ fileName: string; fileUrl: string }>>({
         method: 'post',
         url: '/api/v1/files',
         data: bodyFormData,
@@ -90,8 +90,6 @@ export const callFetchAllSkill = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<ISkill>>>(`/api/v1/skills?${query}`);
 }
 
-
-
 /**
  * 
 Module User
@@ -121,8 +119,8 @@ export const callCreateJob = (job: IJob) => {
     return axios.post('/api/v1/admin/jobs', { ...job })
 }
 
-export const callUpdateJob = (job: IJob, id: string) => {
-    return axios.put('/api/v1/admin/jobs', { id, ...job })
+export const callUpdateJob = (job: IJob) => {
+    return axios.put('/api/v1/admin/jobs', { ...job })
 }
 
 export const callDeleteJob = (id: string) => {

@@ -100,6 +100,8 @@ export interface IJob {
     quantity: number;
     level: string;
     description: string;
+    required?: string;
+    benefit?: string;
     startDate: Date;
     endDate: Date;
     active: boolean;

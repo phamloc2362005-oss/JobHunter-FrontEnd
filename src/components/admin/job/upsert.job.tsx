@@ -1,7 +1,7 @@
 import { Breadcrumb, Col, ConfigProvider, Divider, Form, Row, message, notification } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DebounceSelect } from "../user/debouce.select";
-import { FooterToolbar, ProForm, ProFormDatePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from "@ant-design/pro-components";
+import { FooterToolbar, ProForm, ProFormDatePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
 import styles from 'styles/admin.module.scss';
 import { LOCATION_LIST, SKILLS_LIST } from "@/config/utils";
 import { ICompanySelect } from "../user/modal.user";
@@ -32,6 +32,19 @@ const ViewUpsertJob = (props: any) => {
     const id = params?.get("id"); // job id
     const [dataUpdate, setDataUpdate] = useState<IJob | null>(null);
     const [form] = Form.useForm();
+    const parseTextToList = (text?: string) => {
+        if (!text) return [];
+        return text
+            .split(/\r?\n|;/)
+            .map((item) => item.trim())
+            .filter(Boolean);
+    };
+
+    const normalizeTextField = (value: unknown): string => {
+        if (!value) return "";
+        if (Array.isArray(value)) return value.map((item) => `${item}`.trim()).filter(Boolean).join("\n");
+        return `${value}`;
+    };
 
     useEffect(() => {
         const init = async () => {
@@ -61,6 +74,8 @@ const ViewUpsertJob = (props: any) => {
                     })
                     form.setFieldsValue({
                         ...res.data,
+                        required: normalizeTextField((res.data as any).required ?? (res.data as any).requireds),
+                        benefit: normalizeTextField((res.data as any).benefit ?? (res.data as any).benefits),
                         company: {
                             label: res.data.company?.name as string,
                             value: `${res.data.company?.id}@#$${res.data.company?.logo}` as string,
@@ -116,11 +131,12 @@ const ViewUpsertJob = (props: any) => {
                 arrSkills = values?.skills?.map((item: any) => { return { id: +item } });
             }
 
-            const job = {
+            const job: any = {
+                id: +dataUpdate.id,
                 name: values.name,
                 skills: arrSkills,
                 company: {
-                    id: cp && cp.length > 0 ? cp[0] : "",
+                    id: cp && cp.length > 0 ? +cp[0] : "",
                     name: values.company.label,
                     logo: cp && cp.length > 1 ? cp[1] : ""
                 },
@@ -129,13 +145,19 @@ const ViewUpsertJob = (props: any) => {
                 quantity: values.quantity,
                 level: values.level,
                 description: value,
+                required: values.required,
+                benefit: values.benefit,
+                requireds: parseTextToList(values.required),
+                benefits: parseTextToList(values.benefit),
                 startDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.startDate) ? dayjs(values.startDate, 'DD/MM/YYYY').toDate() : values.startDate,
                 endDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.endDate) ? dayjs(values.endDate, 'DD/MM/YYYY').toDate() : values.endDate,
                 active: values.active,
 
             }
 
-            const res = await callUpdateJob(job, dataUpdate.id);
+            // Ensure backend receives numeric ids (Spring/JPA is strict here)
+            job.skills = (job.skills ?? []).map((s: any) => ({ id: +s.id }));
+            const res = await callUpdateJob(job);
             if (res.data) {
                 message.success("Cập nhật job thành công");
                 navigate('/admin/job')
@@ -162,6 +184,10 @@ const ViewUpsertJob = (props: any) => {
                 quantity: values.quantity,
                 level: values.level,
                 description: value,
+                required: values.required,
+                benefit: values.benefit,
+                requireds: parseTextToList(values.required),
+                benefits: parseTextToList(values.benefit),
                 startDate: dayjs(values.startDate, 'DD/MM/YYYY').toDate(),
                 endDate: dayjs(values.endDate, 'DD/MM/YYYY').toDate(),
                 active: values.active
@@ -368,6 +394,26 @@ const ViewUpsertJob = (props: any) => {
                                         onChange={setValue}
                                     />
                                 </ProForm.Item>
+                            </Col>
+                            <Col span={24} md={12}>
+                                <ProFormTextArea
+                                    name="required"
+                                    label="Yêu cầu công việc"
+                                    placeholder="Mỗi yêu cầu một dòng hoặc ngăn cách bằng dấu ;"
+                                    fieldProps={{
+                                        autoSize: { minRows: 5 }
+                                    }}
+                                />
+                            </Col>
+                            <Col span={24} md={12}>
+                                <ProFormTextArea
+                                    name="benefit"
+                                    label="Quyền lợi"
+                                    placeholder="Mỗi quyền lợi một dòng hoặc ngăn cách bằng dấu ;"
+                                    fieldProps={{
+                                        autoSize: { minRows: 5 }
+                                    }}
+                                />
                             </Col>
                         </Row>
                         <Divider />

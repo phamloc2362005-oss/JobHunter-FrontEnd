@@ -1,0 +1,41 @@
+.root {
+    margin-top: 1.5rem;
+}
+
+.section {
+    margin-bottom: 1.75rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.sectionTitle {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #1f5aa6;
+    margin: 0 0 0.75rem;
+    line-height: 1.35;
+}
+
+.bulletList {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: #3c4043;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+.bulletItem {
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.muted {
+    color: #80868b;
+    font-size: 0.875rem;
+    margin: 1rem 0 0;
+}

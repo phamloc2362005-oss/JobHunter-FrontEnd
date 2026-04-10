@@ -26,6 +26,7 @@ interface ICompanyForm {
 
 interface ICompanyLogo {
     name: string;
+    url: string;
     uid: string;
 }
 
@@ -44,6 +45,13 @@ const ModalCompany = (props: IProps) => {
     const [value, setValue] = useState<string>("");
     const [form] = Form.useForm();
 
+    const normalizeLogoUrl = (logo?: string) => {
+        if (!logo) return "";
+        if (logo.startsWith('http')) return logo;
+        if (logo.startsWith('/storage/')) return `${import.meta.env.VITE_BACKEND_URL}${logo}`;
+        return `${import.meta.env.VITE_BACKEND_URL}/storage/company/${logo}`;
+    }
+
     useEffect(() => {
         if (dataInit?.id && dataInit?.description) {
             setValue(dataInit.description);
@@ -53,6 +61,7 @@ const ModalCompany = (props: IProps) => {
             })
             setDataLogo([{
                 name: dataInit.logo,
+                url: normalizeLogoUrl(dataInit.logo),
                 uid: uuidv4(),
             }])
 
@@ -135,7 +144,7 @@ const ModalCompany = (props: IProps) => {
     const beforeUpload = (file: any) => {
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
         if (!isJpgOrPng) {
-            message.error('You can only upload JPG/PNG file!');
+            message.error('Chỉ hỗ trợ ảnh JPG/JPEG/PNG. Ảnh HEIC từ Mac chưa được hỗ trợ.');
         }
         const isLt2M = file.size / 1024 / 1024 < 2;
         if (!isLt2M) {
@@ -162,6 +171,7 @@ const ModalCompany = (props: IProps) => {
         if (res && res.data) {
             setDataLogo([{
                 name: res.data.fileName,
+                url: normalizeLogoUrl(res.data.fileUrl),
                 uid: uuidv4()
             }])
             if (onSuccess) onSuccess('ok')
@@ -251,7 +261,7 @@ const ModalCompany = (props: IProps) => {
                                                             uid: uuidv4(),
                                                             name: dataInit?.logo ?? "",
                                                             status: 'done',
-                                                            url: `${import.meta.env.VITE_BACKEND_URL}/storage/company/${dataInit?.logo}`,
+                                                            url: normalizeLogoUrl(dataInit?.logo),
                                                         }
                                                     ] : []
                                             }
