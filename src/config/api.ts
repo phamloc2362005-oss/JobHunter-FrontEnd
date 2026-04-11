@@ -33,13 +33,10 @@ export const callUploadSingleFile = (file: any, folderType: string) => {
     bodyFormData.append('file', file);
     bodyFormData.append('folder', folderType);
 
-    return axios<IBackendRes<{ fileName: string; fileUrl: string }>>({
+    return axios<IBackendRes<{ fileName: string; uploadedAt?: string }>>({
         method: 'post',
         url: '/api/v1/files',
         data: bodyFormData,
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
     });
 }
 

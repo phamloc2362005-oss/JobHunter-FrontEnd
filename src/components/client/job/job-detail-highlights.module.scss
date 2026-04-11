@@ -39,3 +39,31 @@
     font-size: 0.875rem;
     margin: 1rem 0 0;
 }
+
+.richHtml {
+    color: #3c4043;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+
+    :global(p) {
+        margin: 0 0 0.5rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    :global(ul),
+    :global(ol) {
+        margin: 0 0 0.5rem;
+        padding-left: 1.25rem;
+    }
+
+    :global(li) {
+        margin-bottom: 0.35rem;
+    }
+
+    :global(a) {
+        color: #1f5aa6;
+    }
+}

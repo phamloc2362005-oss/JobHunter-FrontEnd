@@ -155,4 +155,8 @@ $admin-text-muted: #5f6368;
         color: $admin-text;
         font-weight: 700;
     }
+
+    :global(.ql-container) {
+        min-height: 160px;
+    }
 }

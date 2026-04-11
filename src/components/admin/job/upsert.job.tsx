@@ -1,7 +1,7 @@
 import { Breadcrumb, Col, ConfigProvider, Divider, Form, Row, message, notification } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DebounceSelect } from "../user/debouce.select";
-import { FooterToolbar, ProForm, ProFormDatePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
+import { FooterToolbar, ProForm, ProFormDatePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from "@ant-design/pro-components";
 import styles from 'styles/admin.module.scss';
 import { LOCATION_LIST, SKILLS_LIST } from "@/config/utils";
 import { ICompanySelect } from "../user/modal.user";
@@ -20,6 +20,21 @@ interface ISkillSelect {
     key?: string;
 }
 
+const JOB_RICH_TEXT_MODULES = {
+    toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "link"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["clean"],
+    ],
+};
+
+const isQuillEmpty = (html?: string) => {
+    if (!html) return true;
+    const text = html.replace(/<[^>]+>/g, "").replace(/&nbsp;/gi, " ").trim();
+    return text.length === 0;
+};
+
 const ViewUpsertJob = (props: any) => {
     const [companies, setCompanies] = useState<ICompanySelect[]>([]);
     const [skills, setSkills] = useState<ISkillSelect[]>([]);
@@ -32,14 +47,6 @@ const ViewUpsertJob = (props: any) => {
     const id = params?.get("id"); // job id
     const [dataUpdate, setDataUpdate] = useState<IJob | null>(null);
     const [form] = Form.useForm();
-    const parseTextToList = (text?: string) => {
-        if (!text) return [];
-        return text
-            .split(/\r?\n|;/)
-            .map((item) => item.trim())
-            .filter(Boolean);
-    };
-
     const normalizeTextField = (value: unknown): string => {
         if (!value) return "";
         if (Array.isArray(value)) return value.map((item) => `${item}`.trim()).filter(Boolean).join("\n");
@@ -147,8 +154,6 @@ const ViewUpsertJob = (props: any) => {
                 description: value,
                 required: values.required,
                 benefit: values.benefit,
-                requireds: parseTextToList(values.required),
-                benefits: parseTextToList(values.benefit),
                 startDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.startDate) ? dayjs(values.startDate, 'DD/MM/YYYY').toDate() : values.startDate,
                 endDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.endDate) ? dayjs(values.endDate, 'DD/MM/YYYY').toDate() : values.endDate,
                 active: values.active,
@@ -186,8 +191,6 @@ const ViewUpsertJob = (props: any) => {
                 description: value,
                 required: values.required,
                 benefit: values.benefit,
-                requireds: parseTextToList(values.required),
-                benefits: parseTextToList(values.benefit),
                 startDate: dayjs(values.startDate, 'DD/MM/YYYY').toDate(),
                 endDate: dayjs(values.endDate, 'DD/MM/YYYY').toDate(),
                 active: values.active
@@ -390,30 +393,43 @@ const ViewUpsertJob = (props: any) => {
                                 >
                                     <ReactQuill
                                         theme="snow"
+                                        modules={JOB_RICH_TEXT_MODULES}
                                         value={value}
                                         onChange={setValue}
                                     />
                                 </ProForm.Item>
                             </Col>
                             <Col span={24} md={12}>
-                                <ProFormTextArea
+                                <ProForm.Item
                                     name="required"
                                     label="Yêu cầu công việc"
-                                    placeholder="Mỗi yêu cầu một dòng hoặc ngăn cách bằng dấu ;"
-                                    fieldProps={{
-                                        autoSize: { minRows: 5 }
-                                    }}
-                                />
+                                    rules={[
+                                        {
+                                            validator: (_: unknown, val: string) =>
+                                                isQuillEmpty(val)
+                                                    ? Promise.reject(new Error("Vui lòng nhập yêu cầu công việc"))
+                                                    : Promise.resolve(),
+                                        },
+                                    ]}
+                                >
+                                    <ReactQuill theme="snow" modules={JOB_RICH_TEXT_MODULES} placeholder="Nhập yêu cầu..." />
+                                </ProForm.Item>
                             </Col>
                             <Col span={24} md={12}>
-                                <ProFormTextArea
+                                <ProForm.Item
                                     name="benefit"
                                     label="Quyền lợi"
-                                    placeholder="Mỗi quyền lợi một dòng hoặc ngăn cách bằng dấu ;"
-                                    fieldProps={{
-                                        autoSize: { minRows: 5 }
-                                    }}
-                                />
+                                    rules={[
+                                        {
+                                            validator: (_: unknown, val: string) =>
+                                                isQuillEmpty(val)
+                                                    ? Promise.reject(new Error("Vui lòng nhập quyền lợi"))
+                                                    : Promise.resolve(),
+                                        },
+                                    ]}
+                                >
+                                    <ReactQuill theme="snow" modules={JOB_RICH_TEXT_MODULES} placeholder="Nhập quyền lợi..." />
+                                </ProForm.Item>
                             </Col>
                         </Row>
                         <Divider />

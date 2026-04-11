@@ -142,15 +142,25 @@ const ModalCompany = (props: IProps) => {
     };
 
     const beforeUpload = (file: any) => {
-        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-        if (!isJpgOrPng) {
-            message.error('Chỉ hỗ trợ ảnh JPG/JPEG/PNG. Ảnh HEIC từ Mac chưa được hỗ trợ.');
+        const allowed =
+            file.type === 'image/jpeg' ||
+            file.type === 'image/jpg' ||
+            file.type === 'image/png' ||
+            file.type === 'image/webp' ||
+            file.type === 'image/heic' ||
+            file.type === 'image/heif' ||
+            file.type === '' ||
+            file.type === 'application/octet-stream';
+        const name = (file.name || '').toLowerCase();
+        const extOk = /\.(jpe?g|png|webp|hei[cf])$/i.test(name);
+        if (!allowed && !extOk) {
+            message.error('Chỉ hỗ trợ ảnh JPG, PNG, WebP, HEIC/HEIF.');
         }
         const isLt2M = file.size / 1024 / 1024 < 2;
         if (!isLt2M) {
             message.error('Image must smaller than 2MB!');
         }
-        return isJpgOrPng && isLt2M;
+        return (allowed || extOk) && isLt2M;
     };
 
     const handleChange = (info: any) => {
@@ -168,17 +178,18 @@ const ModalCompany = (props: IProps) => {
 
     const handleUploadFileLogo = async ({ file, onSuccess, onError }: any) => {
         const res = await callUploadSingleFile(file, "company");
-        if (res && res.data) {
+        if (res && res.data?.fileName) {
+            const fileName = res.data.fileName;
             setDataLogo([{
-                name: res.data.fileName,
-                url: normalizeLogoUrl(res.data.fileUrl),
+                name: fileName,
+                url: normalizeLogoUrl(fileName),
                 uid: uuidv4()
             }])
             if (onSuccess) onSuccess('ok')
         } else {
             if (onError) {
                 setDataLogo([])
-                const error = new Error(res.message);
+                const error = new Error((res as { message?: string } | undefined)?.message ?? "Upload thất bại");
                 onError({ event: error });
             }
         }
