@@ -10,8 +10,9 @@ import {
     AliwangwangOutlined,
     BugOutlined,
     ScheduleOutlined,
+    HomeOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Dropdown, Space, message, Avatar, Button, ConfigProvider } from 'antd';
+import { Layout, Menu, Dropdown, Space, message, Avatar, Button, ConfigProvider, Breadcrumb, Typography } from 'antd';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { callLogout } from 'config/api';
@@ -23,6 +24,36 @@ import { ALL_PERMISSIONS } from '@/config/permissions';
 import adminStyles from '@/styles/admin.module.scss';
 
 const { Content, Sider } = Layout;
+const { Text } = Typography;
+
+type BreadcrumbItem = { title: React.ReactNode };
+
+const titleByPathPrefix: { prefix: string; label: string }[] = [
+    { prefix: '/admin', label: 'Dashboard' },
+    { prefix: '/admin/company', label: 'Company' },
+    { prefix: '/admin/user', label: 'User Management' },
+    { prefix: '/admin/job', label: 'Job' },
+    { prefix: '/admin/resume', label: 'Resume' },
+    { prefix: '/admin/permission', label: 'Permission' },
+    { prefix: '/admin/role', label: 'Role' },
+];
+
+const resolvePageTitle = (pathname: string) => {
+    const match = titleByPathPrefix
+        .slice()
+        .sort((a, b) => b.prefix.length - a.prefix.length)
+        .find(x => pathname === x.prefix || pathname.startsWith(`${x.prefix}/`));
+    return match?.label ?? 'Admin';
+};
+
+const buildBreadcrumb = (pathname: string): BreadcrumbItem[] => {
+    const pageTitle = resolvePageTitle(pathname);
+    return [
+        { title: <HomeOutlined /> },
+        { title: <Text strong>Admin</Text> },
+        { title: pageTitle },
+    ];
+};
 
 const adminTheme = {
     token: {
@@ -112,7 +143,7 @@ const LayoutAdmin = () => {
 
             const viewPermission = permissions?.find(item =>
                 item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
+                && item.method === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.method
             )
 
             const full = [
@@ -207,7 +238,7 @@ const LayoutAdmin = () => {
             >
                 {!isMobile ?
                     <Sider
-                        theme='light'
+                        theme='dark'
                         collapsible
                         collapsed={collapsed}
                         onCollapse={(value) => setCollapsed(value)}>
@@ -220,6 +251,8 @@ const LayoutAdmin = () => {
                             mode="inline"
                             items={menuItems}
                             onClick={(e) => setActiveMenu(e.key)}
+                            theme="dark"
+                            className={adminStyles.adminSidebarMenu}
                         />
                     </Sider>
                     :
@@ -234,25 +267,27 @@ const LayoutAdmin = () => {
                 <Layout>
                     {!isMobile &&
                         <div className={adminStyles.adminHeader}>
-                            <Button
-                                type="text"
-                                icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
-                                onClick={() => setCollapsed(!collapsed)}
-                                style={{
-                                    fontSize: '16px',
-                                    width: 64,
-                                    height: 64,
-                                    color: '#5f6368',
-                                }}
-                            />
+                            <div className={adminStyles.adminHeaderLeft}>
+                                <Button
+                                    type="text"
+                                    icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
+                                    onClick={() => setCollapsed(!collapsed)}
+                                    className={adminStyles.adminHeaderCollapseBtn}
+                                />
+                                <Breadcrumb items={buildBreadcrumb(location.pathname)} />
+                            </div>
 
                             <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                                <Space style={{ cursor: "pointer" }} align="center">
-                                    <span className={adminStyles.adminHeaderWelcome}>
-                                        Welcome {user?.name}
-                                    </span>
-                                    <Avatar style={{ backgroundColor: '#0d47a1' }}>
-                                        {user?.name?.substring(0, 2)?.toUpperCase()}
+                                <Space className={adminStyles.adminHeaderUserBox} align="center">
+                                    <div className={adminStyles.adminHeaderUserText}>
+                                        <div className={adminStyles.adminHeaderUserName}>{user?.name ?? 'Admin'}</div>
+                                        <div className={adminStyles.adminHeaderUserStatus}>
+                                            <span className={adminStyles.adminHeaderUserDot} />
+                                            Online
+                                        </div>
+                                    </div>
+                                    <Avatar className={adminStyles.adminHeaderAvatar}>
+                                        {(user?.name ?? 'AD').substring(0, 2).toUpperCase()}
                                     </Avatar>
                                 </Space>
                             </Dropdown>

@@ -31,6 +31,14 @@ const DataTable = <
     dateFormatter = 'string',
     rowSelection,
 }: ProTableProps<T, U, ValueType>) => {
+    const normalizedSearch: ProTableProps<T, U, ValueType>['search'] =
+        typeof search === 'boolean'
+            ? search
+            : ({
+                ...(search ?? {}),
+                filterType: 'query' as const,
+            });
+
     return (
         <ConfigProvider locale={vi_VN}>
             <ProTable<T, U, ValueType>
@@ -46,7 +54,7 @@ const DataTable = <
                 scroll={scroll}
                 params={params}
                 request={request}
-                search={search}
+                search={normalizedSearch}
                 polling={polling}
                 toolBarRender={toolBarRender}
                 headerTitle={headerTitle}

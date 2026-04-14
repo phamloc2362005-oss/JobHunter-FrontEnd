@@ -329,6 +329,31 @@
         letter-spacing: -1px;
     }
 
+    :global(.ant-form) {
+        :global(.ant-form-item) {
+            margin-bottom: 0;
+        }
+
+        :global(.ant-input),
+        :global(.ant-select-selector) {
+            border-radius: 7px !important;
+            min-height: 46px !important;
+            border-color: #ddd !important;
+            background: #fff !important;
+
+            &:hover {
+                border-color: #b3d8ff !important;
+            }
+
+            &:focus,
+            &.ant-input-focused,
+            &.ant-select-focused .ant-select-selector {
+                border-color: #4078ff !important;
+                box-shadow: 0 0 0 2px rgba(64, 120, 255, 0.2) !important;
+            }
+        }
+    }
+
     .ant-select-selector {
         border-radius: 7px !important;
         min-height: 46px !important;
@@ -344,13 +369,37 @@
         min-height: 46px;
         border-radius: 7px;
         font-weight: 600;
+        background: #4078ff !important;
+        border-color: #4078ff !important;
+
+        &:hover {
+            background: #2d5ae6 !important;
+            border-color: #2d5ae6 !important;
+        }
+    }
+
+    :global(.ant-btn) {
+        min-height: 46px;
+        border-radius: 7px;
+        font-weight: 600;
+    }
+
+    :global(.search-actions) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    :global(.search-actions .ant-btn-primary) {
+        width: 120px;
     }
 }
 
 .main-footer {
     border-top: 1px solid #ececec;
     color: #8f949c;
-    padding: 18px 0 20px;
+    padding: 0;
 
     .footer-top {
         display: flex;
@@ -369,7 +418,7 @@
 
     .footer-bottom {
         max-width: 1260px;
-        margin: 12px auto 0;
+        margin: 0 auto;
         padding: 0 15px;
         font-size: 12px;
     }
@@ -637,5 +686,201 @@
         justify-content: center;
         width: 100%;
         align-items: center;
+    }
+}
+
+.expertise-summary {
+    padding: 30px 0;
+
+    .section-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 36px;
+        color: #1f2937;
+        text-align: center;
+    }
+
+    :global(.ant-collapse) {
+        background: transparent;
+        border: none;
+        border-radius: 0;
+
+        :global(.ant-collapse-item) {
+            margin-bottom: 12px;
+            border: 1px solid #e6e6e6;
+            border-radius: 4px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        :global(.ant-collapse-header) {
+            padding: 12px 14px !important;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1f2937;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            &:hover {
+                background: #fafafa;
+            }
+        }
+
+        :global(.ant-collapse-content) {
+            background: #fff;
+            padding: 14px;
+
+            :global(.ant-collapse-content-box) {
+                padding: 0 !important;
+            }
+        }
+    }
+
+    .job-card-item {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f0f0f0;
+
+        h4 {
+            margin: 0 0 6px;
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        p {
+            margin: 3px 0;
+            font-size: 12px;
+            color: #6b7280;
+
+            &.job-salary {
+                color: #1f5aa6;
+                font-weight: 600;
+                font-size: 13px;
+            }
+
+            &.job-time {
+                color: #9ca3af;
+                font-size: 11px;
+            }
+        }
+
+        &:hover {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border-color: #d0d0d0;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .expertise-summary {
+        padding: 20px 0;
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+    }
+}
+
+.footer-section {
+    background: linear-gradient(180deg, #2b3138 0%, #252a32 100%);
+    color: #fff;
+    padding: 50px 0 0;
+    margin-top: 0;
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 40px;
+        margin-bottom: 0;
+
+        .footer-column {
+            h3 {
+                font-size: 28px;
+                font-weight: 700;
+                margin-bottom: 16px;
+                color: #fff;
+            }
+
+            p {
+                font-size: 14px;
+                line-height: 1.6;
+                color: #d7d7d7;
+                margin: 0;
+            }
+
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+
+                li {
+                    margin-bottom: 10px;
+
+                    a {
+                        color: #d7d7d7;
+                        text-decoration: none;
+                        font-size: 14px;
+                        transition: color 0.2s ease;
+
+                        &:hover {
+                            color: #fff;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 20px 0 0;
+        text-align: center;
+
+        p {
+            font-size: 13px;
+            color: #a7a7a7;
+            margin: 0;
+        }
+    }
+}
+
+@media (max-width: 1024px) {
+    .footer-section {
+        .footer-content {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-section {
+        padding: 40px 0 0;
+
+        .footer-content {
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .expertise-summary {
+        padding: 20px 0;
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
     }
 }

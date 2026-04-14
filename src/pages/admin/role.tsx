@@ -1,9 +1,9 @@
 import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IPermission, IRole } from "@/types/backend";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, SecurityScanOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
+import { Button, Popconfirm, Space, Tag, message, notification, Card, Col, Row, Statistic } from "antd";
 import { useState, useRef, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteRole, callFetchPermission } from "@/config/api";
@@ -14,6 +14,7 @@ import { ALL_PERMISSIONS } from "@/config/permissions";
 import Access from "@/components/share/access";
 import { sfLike } from "spring-filter-query-builder";
 import { groupByPermission } from "@/config/utils";
+import styles from 'styles/admin.module.scss';
 
 const RolePage = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
@@ -211,6 +212,37 @@ const RolePage = () => {
             <Access
                 permission={ALL_PERMISSIONS.ROLES.GET_PAGINATE}
             >
+                {/* Header Section with Title Card and Statistics */}
+                <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+                    <Col xs={24} lg={16}>
+                        <Card className={styles["admin-title-card"]}>
+                            <Row gutter={20} align="middle">
+                                <Col xs={24} sm="auto">
+                                    <div className={styles["card-icon"]}>
+                                        <SecurityScanOutlined />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm="auto" flex={1}>
+                                    <div>
+                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Vai Trò</h2>
+                                        <p className={styles["card-subtitle"]}>Quản lý vai trò người dùng, phân quyền truy cập và cấp độ quyền hạn cho các thành viên trong hệ thống.</p>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={8}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                            <Statistic
+                                title="TỔNG ROLE"
+                                value={meta.total || 0}
+                                prefix={<SecurityScanOutlined style={{ marginRight: 8 }} />}
+                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+
                 <DataTable<IRole>
                     actionRef={tableRef}
                     headerTitle="Danh sách Roles (Vai Trò)"

@@ -2,7 +2,7 @@ import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IResume } from "@/types/backend";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Space, message, notification } from "antd";
+import { Space, message, notification, Card, Col, Row, Statistic } from "antd";
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteResume } from "@/config/api";
@@ -12,7 +12,8 @@ import ViewDetailResume from "@/components/admin/resume/view.resume";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 import Access from "@/components/share/access";
 import { sfIn } from "spring-filter-query-builder";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, FileOutlined } from "@ant-design/icons";
+import styles from 'styles/admin.module.scss';
 
 const ResumePage = () => {
     const tableRef = useRef<ActionType>();
@@ -202,6 +203,37 @@ const ResumePage = () => {
             <Access
                 permission={ALL_PERMISSIONS.RESUMES.GET_PAGINATE}
             >
+                {/* Header Section with Title Card and Statistics */}
+                <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+                    <Col xs={24} lg={16}>
+                        <Card className={styles["admin-title-card"]}>
+                            <Row gutter={20} align="middle">
+                                <Col xs={24} sm="auto">
+                                    <div className={styles["card-icon"]}>
+                                        <FileOutlined />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm="auto" flex={1}>
+                                    <div>
+                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý CV</h2>
+                                        <p className={styles["card-subtitle"]}>Quản lý hồ sơ ứng viên, xem xét và duyệt CV từ các ứng viên tham gia tuyển dụng trên nền tảng.</p>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={8}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                            <Statistic
+                                title="TỔNG CV"
+                                value={meta.total || 0}
+                                prefix={<FileOutlined style={{ marginRight: 8 }} />}
+                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+
                 <DataTable<IResume>
                     actionRef={tableRef}
                     headerTitle="Danh sách Resumes"

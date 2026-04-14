@@ -1,9 +1,9 @@
 import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IJob } from "@/types/backend";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, FileTextOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
+import { Button, Popconfirm, Space, Tag, message, notification, Card, Col, Row, Statistic } from "antd";
 import { useRef } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteJob } from "@/config/api";
@@ -13,6 +13,7 @@ import { fetchJob } from "@/redux/slice/jobSlide";
 import Access from "@/components/share/access";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 import { sfIn } from "spring-filter-query-builder";
+import styles from 'styles/admin.module.scss';
 
 const JobPage = () => {
     const tableRef = useRef<ActionType>();
@@ -232,6 +233,37 @@ const JobPage = () => {
             <Access
                 permission={ALL_PERMISSIONS.JOBS.GET_PAGINATE}
             >
+                {/* Header Section with Title Card and Statistics */}
+                <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+                    <Col xs={24} lg={16}>
+                        <Card className={styles["admin-title-card"]}>
+                            <Row gutter={20} align="middle">
+                                <Col xs={24} sm="auto">
+                                    <div className={styles["card-icon"]}>
+                                        <FileTextOutlined />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm="auto" flex={1}>
+                                    <div>
+                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Việc Làm</h2>
+                                        <p className={styles["card-subtitle"]}>Quản lý các tin tuyển dụng, cập nhật thông tin công việc và giám sát yêu cầu cho các vị trí đang tuyển trên CareerAdmin.</p>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={8}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                            <Statistic
+                                title="TỔNG JOB"
+                                value={meta.total || 0}
+                                prefix={<FileTextOutlined style={{ marginRight: 8 }} />}
+                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+
                 <DataTable<IJob>
                     actionRef={tableRef}
                     headerTitle="Danh sách Jobs"

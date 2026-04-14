@@ -3,9 +3,9 @@ import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchCompany } from "@/redux/slice/companySlide";
 import { ICompany } from "@/types/backend";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, ShopOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, message, notification } from "antd";
+import { Button, Popconfirm, Space, message, notification, Card, Col, Row, Statistic } from "antd";
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteCompany } from "@/config/api";
@@ -13,6 +13,7 @@ import queryString from 'query-string';
 import Access from "@/components/share/access";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 import { sfLike } from "spring-filter-query-builder";
+import styles from 'styles/admin.module.scss';
 
 const CompanyPage = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
@@ -194,6 +195,37 @@ const CompanyPage = () => {
             <Access
                 permission={ALL_PERMISSIONS.COMPANIES.GET_PAGINATE}
             >
+                {/* Header Section with Title Card and Statistics */}
+                <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+                    <Col xs={24} lg={16}>
+                        <Card className={styles["admin-title-card"]}>
+                            <Row gutter={20} align="middle">
+                                <Col xs={24} sm="auto">
+                                    <div className={styles["card-icon"]}>
+                                        <ShopOutlined />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm="auto" flex={1}>
+                                    <div>
+                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Công ty</h2>
+                                        <p className={styles["card-subtitle"]}>Quản lý thông tin công ty, cập nhật hồ sơ và theo dõi hoạt động tuyển dụng của các doanh nghiệp trên nền tảng CareerAdmin.</p>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={8}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                            <Statistic
+                                title="TỔNG CÔNG TY"
+                                value={meta.total || 0}
+                                prefix={<ShopOutlined style={{ marginRight: 8 }} />}
+                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+
                 <DataTable<ICompany>
                     actionRef={tableRef}
                     headerTitle="Danh sách Công Ty"

@@ -1,9 +1,9 @@
 import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IPermission } from "@/types/backend";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, LockOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, message, notification } from "antd";
+import { Button, Popconfirm, Space, message, notification, Card, Col, Row, Statistic } from "antd";
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
 import { callDeletePermission } from "@/config/api";
@@ -14,6 +14,7 @@ import ModalPermission from "@/components/admin/permission/modal.permission";
 import { colorMethod } from "@/config/utils";
 import Access from "@/components/share/access";
 import { ALL_PERMISSIONS } from "@/config/permissions";
+import styles from 'styles/admin.module.scss';
 
 const PermissionPage = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
@@ -214,6 +215,37 @@ const PermissionPage = () => {
             <Access
                 permission={ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE}
             >
+                {/* Header Section with Title Card and Statistics */}
+                <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+                    <Col xs={24} lg={16}>
+                        <Card className={styles["admin-title-card"]}>
+                            <Row gutter={20} align="middle">
+                                <Col xs={24} sm="auto">
+                                    <div className={styles["card-icon"]}>
+                                        <LockOutlined />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm="auto" flex={1}>
+                                    <div>
+                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Quyền Hạn</h2>
+                                        <p className={styles["card-subtitle"]}>Quản lý danh sách quyền truy cập, cấp phép chức năng và kiểm soát truy cập tài nguyên hệ thống.</p>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={8}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                            <Statistic
+                                title="TỔNG PERMISSION"
+                                value={meta.total || 0}
+                                prefix={<LockOutlined style={{ marginRight: 8 }} />}
+                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+
                 <DataTable<IPermission>
                     actionRef={tableRef}
                     headerTitle="Danh sách Permissions (Quyền Hạn)"

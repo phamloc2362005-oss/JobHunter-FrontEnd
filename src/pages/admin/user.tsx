@@ -2,9 +2,10 @@ import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchUser } from "@/redux/slice/userSlide";
 import { IUser } from "@/types/backend";
-import { DeleteOutlined, EditOutlined, PlusOutlined, EyeOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, EyeOutlined, UserOutlined, TeamOutlined, BankOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, message, notification } from "antd";
+import { Button, Popconfirm, Space, message, notification, Card, Col, Row, Statistic } from "antd";
+import styles from 'styles/admin.module.scss';
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteUser } from "@/config/api";
@@ -208,6 +209,37 @@ const UserPage = () => {
             <Access
                 permission={ALL_PERMISSIONS.USERS.GET_PAGINATE}
             >
+                {/* Header Section with Title Card and Statistics */}
+                <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+                    <Col xs={24} lg={16}>
+                        <Card className={styles["admin-title-card"]}>
+                            <Row gutter={20} align="middle">
+                                <Col xs={24} sm="auto">
+                                    <div className={styles["card-icon"]}>
+                                        <UserOutlined />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm="auto" flex={1}>
+                                    <div>
+                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Người dùng</h2>
+                                        <p className={styles["card-subtitle"]}>Quản lý, phân quyền và giám sát hoạt động của các tài khoản quản trị và người dùng trong hệ thống CareerAdmin.</p>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={8}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                            <Statistic
+                                title="TỔNG NGƯỜI DÙNG"
+                                value={meta.total || 0}
+                                prefix={<UserOutlined style={{ marginRight: 8 }} />}
+                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+
                 <DataTable<IUser>
                     actionRef={tableRef}
                     headerTitle="Danh sách Users"

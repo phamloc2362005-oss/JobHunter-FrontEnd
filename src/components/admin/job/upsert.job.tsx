@@ -94,7 +94,7 @@ const ViewUpsertJob = (props: any) => {
             }
         }
         init();
-        return () => form.resetFields()
+        return () => form.resetFields();
     }, [id])
 
     // Usage of DebounceSelect
@@ -412,7 +412,11 @@ const ViewUpsertJob = (props: any) => {
                                         },
                                     ]}
                                 >
-                                    <ReactQuill theme="snow" modules={JOB_RICH_TEXT_MODULES} placeholder="Nhập yêu cầu..." />
+                                    <ReactQuill
+                                        theme="snow"
+                                        modules={JOB_RICH_TEXT_MODULES}
+                                        placeholder="Nhập yêu cầu..."
+                                    />
                                 </ProForm.Item>
                             </Col>
                             <Col span={24} md={12}>
@@ -428,7 +432,11 @@ const ViewUpsertJob = (props: any) => {
                                         },
                                     ]}
                                 >
-                                    <ReactQuill theme="snow" modules={JOB_RICH_TEXT_MODULES} placeholder="Nhập quyền lợi..." />
+                                    <ReactQuill
+                                        theme="snow"
+                                        modules={JOB_RICH_TEXT_MODULES}
+                                        placeholder="Nhập quyền lợi..."
+                                    />
                                 </ProForm.Item>
                             </Col>
                         </Row>

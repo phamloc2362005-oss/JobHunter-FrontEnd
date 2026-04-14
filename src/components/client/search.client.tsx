@@ -85,7 +85,7 @@ const SearchClient = () => {
                 }
             >
                 <Row gutter={[12, 12]} align="middle">
-                    <Col span={24} md={12}>
+                    <Col span={24} md={12} style={{ flex: 1 }}>
                         <ProForm.Item
                             name="skills"
                             style={{ marginBottom: 0 }}
@@ -105,7 +105,7 @@ const SearchClient = () => {
                             />
                         </ProForm.Item>
                     </Col>
-                    <Col span={24} md={8}>
+                    <Col span={24} md={8} style={{ flex: 1 }}>
                         <ProForm.Item
                             name="location"
                             style={{ marginBottom: 0 }}
@@ -125,8 +125,8 @@ const SearchClient = () => {
                             />
                         </ProForm.Item>
                     </Col>
-                    <Col span={24} md={4}>
-                        <Button type='primary' block onClick={() => form.submit()}>Search</Button>
+                    <Col span={24} md={4} className="search-actions">
+                        <Button type='primary' onClick={() => form.submit()}>Tìm kiếm</Button>
                     </Col>
                 </Row>
             </ProForm>
