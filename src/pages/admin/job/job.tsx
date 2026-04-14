@@ -27,7 +27,7 @@ const JobPage = () => {
     const handleDeleteJob = async (id: string | undefined) => {
         if (id) {
             const res = await callDeleteJob(id);
-            if (res && res.data) {
+            if (res && res.statusCode === 200) {
                 message.success('Xóa Job thành công');
                 reloadTable();
             } else {
