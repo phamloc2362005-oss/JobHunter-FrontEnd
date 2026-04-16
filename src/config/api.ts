@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory } from '@/types/backend';
 import axios from 'config/axios-customize';
 
 /**
@@ -89,6 +89,10 @@ export const callDeleteSkill = (id: string) => {
 
 export const callFetchAllSkill = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<ISkill>>>(`/api/v1/skills?${query}`);
+}
+
+export const callFetchAllSkillNoPaginate = () => {
+    return axios.get<IBackendRes<IModelPaginate<ISkill>>>(`/api/v1/skills?page=1&size=1000&sort=name,asc`);
 }
 
 /**
@@ -257,5 +261,56 @@ export const callFetchSubscriber = (query: string) => {
 
 export const callFetchSubscriberById = (id: string) => {
     return axios.get<IBackendRes<ISubscribers>>(`/api/v1/subscribers/${id}`);
+}
+
+/**
+ * 
+Module Expertise
+ */
+export const callFetchExpertiseCategories = () => {
+    return axios.get<IBackendRes<IModelPaginate<IExpertiseCategory>>>('/api/v1/expertise-category?page=1&size=1000&sort=name,asc');
+}
+
+export const callFetchExpertiseByCategory = (categoryId: string) => {
+    return axios.get<IBackendRes<IModelPaginate<IExpertise>>>(`/api/v1/expertise?page=1&size=1000&sort=name,asc&filter=expertiseCategory.id:${categoryId}`);
+}
+
+export const callCreateExpertiseCategory = (name: string) => {
+    return axios.post<IBackendRes<IExpertiseCategory>>('/api/v1/expertise-category', { name });
+}
+
+export const callUpdateExpertiseCategory = (id: string, name: string) => {
+    return axios.put<IBackendRes<IExpertiseCategory>>('/api/v1/expertise-category', { id, name });
+}
+
+export const callDeleteExpertiseCategory = (id: string) => {
+    return axios.delete<IBackendRes<IExpertiseCategory>>(`/api/v1/expertise-category/${id}`);
+}
+
+export const callFetchExpertiseCategory = (query: string) => {
+    return axios.get<IBackendRes<IModelPaginate<IExpertiseCategory>>>(`/api/v1/expertise-category?${query}`);
+}
+
+export const callCreateExpertise = (name: string, categoryId: string) => {
+    return axios.post<IBackendRes<IExpertise>>('/api/v1/expertise', {
+        name,
+        expertiseCategory: { id: categoryId }
+    });
+}
+
+export const callUpdateExpertise = (id: string, name: string, categoryId: string) => {
+    return axios.put<IBackendRes<IExpertise>>('/api/v1/expertise', {
+        id,
+        name,
+        expertiseCategory: { id: categoryId }
+    });
+}
+
+export const callDeleteExpertise = (id: string) => {
+    return axios.delete<IBackendRes<IExpertise>>(`/api/v1/expertise/${id}`);
+}
+
+export const callFetchExpertise = (query: string) => {
+    return axios.get<IBackendRes<IModelPaginate<IExpertise>>>(`/api/v1/expertise?${query}`);
 }
 

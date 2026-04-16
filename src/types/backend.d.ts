@@ -54,6 +54,7 @@ export interface ISkill {
     id?: string;
     name?: string;
     createdBy?: string;
+    updatedBy?: string;
     isDeleted?: boolean;
     deletedAt?: boolean | null;
     createdAt?: string;
@@ -177,6 +178,25 @@ export interface ISubscribers {
     createdBy?: string;
     isDeleted?: boolean;
     deletedAt?: boolean | null;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface IExpertiseCategory {
+    id?: string;
+    name: string;
+    createdBy?: string;
+    updatedBy?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface IExpertise {
+    id?: string;
+    name: string;
+    expertiseCategory?: IExpertiseCategory | null;
+    createdBy?: string;
+    updatedBy?: string;
     createdAt?: string;
     updatedAt?: string;
 }

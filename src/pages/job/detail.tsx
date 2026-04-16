@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { IJob } from "@/types/backend";
 import { callFetchPublicJob, callFetchPublicJobById } from "@/config/api";
@@ -22,8 +22,13 @@ const ClientJobDetailPage = (props: any) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     let location = useLocation();
+    let navigate = useNavigate();
     let params = new URLSearchParams(location.search);
     const id = params?.get("id"); // job id
+
+    const handleSkillClick = (skillName: string) => {
+        navigate(`/job?skills=${encodeURIComponent(skillName)}`);
+    };
 
     useEffect(() => {
         const init = async () => {
@@ -89,7 +94,12 @@ const ClientJobDetailPage = (props: any) => {
 
                                     <div className={styles["skillsRow"]}>
                                         {jobDetail?.skills?.map((item, index) => (
-                                            <Tag key={`${index}-key`} color="gold">
+                                            <Tag
+                                                key={`${index}-key`}
+                                                color="gold"
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => handleSkillClick(item.name)}
+                                            >
                                                 {item.name}
                                             </Tag>
                                         ))}

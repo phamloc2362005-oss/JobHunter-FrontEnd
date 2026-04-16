@@ -11,6 +11,8 @@ import {
     BugOutlined,
     ScheduleOutlined,
     HomeOutlined,
+    TagsOutlined,
+    ClusterOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Dropdown, Space, message, Avatar, Button, ConfigProvider, Breadcrumb, Typography } from 'antd';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -36,6 +38,8 @@ const titleByPathPrefix: { prefix: string; label: string }[] = [
     { prefix: '/admin/resume', label: 'Resume' },
     { prefix: '/admin/permission', label: 'Permission' },
     { prefix: '/admin/role', label: 'Role' },
+    { prefix: '/admin/expertise-category', label: 'Expertise Categories' },
+    { prefix: '/admin/expertise', label: 'Expertises' },
 ];
 
 const resolvePageTitle = (pathname: string) => {
@@ -146,6 +150,16 @@ const LayoutAdmin = () => {
                 && item.method === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.method
             )
 
+            const viewExpertiseCategory = permissions?.find(item =>
+                item.apiPath === ALL_PERMISSIONS.EXPERTISE_CATEGORIES.GET_PAGINATE.apiPath
+                && item.method === ALL_PERMISSIONS.EXPERTISE_CATEGORIES.GET_PAGINATE.method
+            )
+
+            const viewExpertise = permissions?.find(item =>
+                item.apiPath === ALL_PERMISSIONS.EXPERTISES.GET_PAGINATE.apiPath
+                && item.method === ALL_PERMISSIONS.EXPERTISES.GET_PAGINATE.method
+            )
+
             const full = [
                 {
                     label: <Link to='/admin'>Dashboard</Link>,
@@ -183,6 +197,16 @@ const LayoutAdmin = () => {
                     label: <Link to='/admin/role'>Role</Link>,
                     key: '/admin/role',
                     icon: <ExceptionOutlined />
+                }] : []),
+                ...(viewExpertiseCategory || ACL_ENABLE === 'false' ? [{
+                    label: <Link to='/admin/expertise-category'>Expertise Categories</Link>,
+                    key: '/admin/expertise-category',
+                    icon: <ClusterOutlined />
+                }] : []),
+                ...(viewExpertise || ACL_ENABLE === 'false' ? [{
+                    label: <Link to='/admin/expertise'>Expertises</Link>,
+                    key: '/admin/expertise',
+                    icon: <TagsOutlined />
                 }] : []),
 
 

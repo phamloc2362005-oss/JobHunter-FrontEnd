@@ -31,6 +31,8 @@ import ClientCompanyPage from './pages/company';
 import ClientCompanyDetailPage from './pages/company/detail';
 import JobTabs from './pages/admin/job/job.tabs';
 import SkillsPage from './pages/skills';
+import ExpertiseCategoryPage from './pages/admin/expertise-category';
+import ExpertisePage from './pages/admin/expertise';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -143,6 +145,20 @@ export default function App() {
           element:
             <ProtectedRoute>
               <RolePage />
+            </ProtectedRoute>
+        },
+        {
+          path: "expertise-category",
+          element:
+            <ProtectedRoute>
+              <ExpertiseCategoryPage />
+            </ProtectedRoute>
+        },
+        {
+          path: "expertise",
+          element:
+            <ProtectedRoute>
+              <ExpertisePage />
             </ProtectedRoute>
         }
       ],

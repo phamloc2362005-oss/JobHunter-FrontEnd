@@ -58,7 +58,7 @@ const JobCard = (props: IProps) => {
             q = sfIn("location", queryLocation.split(",")).toString();
         }
         if (querySkills) {
-            q = queryLocation ? q + " and " + `${sfIn("skills", querySkills.split(","))}` : `${sfIn("skills", querySkills.split(","))}`;
+            q = queryLocation ? q + " and " + `${sfIn("skills.name", querySkills.split(","))}` : `${sfIn("skills.name", querySkills.split(","))}`;
         }
         if (queryExpertise) {
             q = q ? q + " and " + `${sfIn("expertises.id", [queryExpertise])}` : `${sfIn("expertises.id", [queryExpertise])}`;

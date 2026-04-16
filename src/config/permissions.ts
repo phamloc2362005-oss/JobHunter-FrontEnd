@@ -40,6 +40,18 @@ export const ALL_PERMISSIONS = {
         UPDATE: { method: "PUT", apiPath: '/api/v1/users', module: "USERS" },
         DELETE: { method: "DELETE", apiPath: '/api/v1/users/{id}', module: "USERS" },
     },
+    EXPERTISE_CATEGORIES: {
+        GET_PAGINATE: { method: "GET", apiPath: '/api/v1/expertise-category', module: "EXPERTISE_CATEGORIES" },
+        CREATE: { method: "POST", apiPath: '/api/v1/expertise-category', module: "EXPERTISE_CATEGORIES" },
+        UPDATE: { method: "PUT", apiPath: '/api/v1/expertise-category', module: "EXPERTISE_CATEGORIES" },
+        DELETE: { method: "DELETE", apiPath: '/api/v1/expertise-category/{id}', module: "EXPERTISE_CATEGORIES" },
+    },
+    EXPERTISES: {
+        GET_PAGINATE: { method: "GET", apiPath: '/api/v1/expertise', module: "EXPERTISES" },
+        CREATE: { method: "POST", apiPath: '/api/v1/expertise', module: "EXPERTISES" },
+        UPDATE: { method: "PUT", apiPath: '/api/v1/expertise', module: "EXPERTISES" },
+        DELETE: { method: "DELETE", apiPath: '/api/v1/expertise/{id}', module: "EXPERTISES" },
+    },
 }
 
 export const ALL_MODULES = {
@@ -50,5 +62,7 @@ export const ALL_MODULES = {
     RESUMES: 'RESUMES',
     ROLES: 'ROLES',
     USERS: 'USERS',
+    EXPERTISE_CATEGORIES: 'EXPERTISE_CATEGORIES',
+    EXPERTISES: 'EXPERTISES',
     SUBSCRIBERS: 'SUBSCRIBERS'
 }

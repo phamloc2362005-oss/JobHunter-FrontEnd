@@ -1,155 +1,198 @@
 import { useState, useEffect } from 'react';
-import { Collapse, Spin, Empty, Card, Row, Col, Button } from 'antd';
+import { Spin, Empty, Row, Col } from 'antd';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import { callFetchPublicJob } from '@/config/api';
-import { IJob } from '@/types/backend';
-import { convertSlug } from '@/config/utils';
+import { callFetchExpertiseCategories, callFetchExpertiseByCategory } from '@/config/api';
 import styles from 'styles/client.module.scss';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-
-dayjs.extend(relativeTime);
-
-interface IExpertiseCategory {
-    key: string;
-    label: string;
-    jobs: IJob[];
-    loading: boolean;
-}
+import { IExpertise, IExpertiseCategory } from '@/types/backend';
+import { useNavigate } from 'react-router-dom';
 
 const ExpertiseSummary = () => {
-    const [categories, setCategories] = useState<IExpertiseCategory[]>([
-        // Left Column
-        { key: 'it-exec', label: 'IT Executive and Management', jobs: [], loading: false },
-        { key: 'mobile-dev', label: 'Mobile Application Development', jobs: [], loading: false },
-        { key: 'lowcode-nocode', label: 'Low-Code / No-Code Development', jobs: [], loading: false },
-        { key: 'blockchain', label: 'Blockchain Development', jobs: [], loading: false },
-        { key: 'qa-testing', label: 'Software Testing & Quality Assurance', jobs: [], loading: false },
-        { key: 'data-eng', label: 'Data Engineering', jobs: [], loading: false },
-        { key: 'data-mgmt', label: 'Data Management & Governance', jobs: [], loading: false },
-        { key: 'network-admin', label: 'Systems & Network Engineering / Administration', jobs: [], loading: false },
-        { key: 'it-support', label: 'IT Support & Helpdesk', jobs: [], loading: false },
-        { key: 'it-compliance', label: 'IT Compliance & Risk Management', jobs: [], loading: false },
-        { key: 'iot-robotics', label: 'IoT & Robotics', jobs: [], loading: false },
-        { key: 'project-mgmt', label: 'Project Management / Technical Communication', jobs: [], loading: false },
-        { key: 'it-consulting', label: 'IT Consulting & Sales', jobs: [], loading: false },
-        // Right Column
-        { key: 'web-dev', label: 'Web Application Development', jobs: [], loading: false },
-        { key: 'enterprise-dev', label: 'Core / Enterprise Systems Development', jobs: [], loading: false },
-        { key: 'tech-arch', label: 'Technical Architecture', jobs: [], loading: false },
-        { key: 'game-dev', label: 'Game Development', jobs: [], loading: false },
-        { key: 'data-analytics', label: 'Data Analytics & Business Intelligence', jobs: [], loading: false },
-        { key: 'ai-ml', label: 'Data Science & AI / Machine Learning', jobs: [], loading: false },
-        { key: 'cloud-computing', label: 'Cloud Computing', jobs: [], loading: false },
-        { key: 'devops', label: 'DevOps & Site Reliability (SRE)', jobs: [], loading: false },
-        { key: 'cybersecurity', label: 'Cybersecurity', jobs: [], loading: false },
-        { key: 'embedded-systems', label: 'Embedded Systems', jobs: [], loading: false },
-        { key: 'product-mgmt', label: 'Product Management', jobs: [], loading: false },
-        { key: 'design-ux', label: 'Design & User Experience', jobs: [], loading: false },
-    ]);
-
-    const [activeKeys, setActiveKeys] = useState<string[]>([]);
+    const [categories, setCategories] = useState<IExpertiseCategory[]>([]);
+    const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
+    const [expertises, setExpertises] = useState<{ [key: string]: IExpertise[] }>({});
+    const [loadingCategories, setLoadingCategories] = useState<{ [key: string]: boolean }>({});
+    const [isLoadingInitial, setIsLoadingInitial] = useState(true);
     const navigate = useNavigate();
 
-    const fetchJobsByCategory = async (categoryKey: string) => {
-        setCategories(prev => prev.map(cat => 
-            cat.key === categoryKey ? { ...cat, loading: true } : cat
-        ));
+    // Load categories on mount
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const res = await callFetchExpertiseCategories();
+                const categoryResult = Array.isArray(res?.data?.result) ? res.data.result : [];
+                if (categoryResult.length) {
+                    setCategories(categoryResult);
+                }
+            } catch (error) {
+                console.error('Error loading expertise categories:', error);
+            } finally {
+                setIsLoadingInitial(false);
+            }
+        };
+
+        loadCategories();
+    }, []);
+
+    // Load expertise data for specific category
+    const loadExpertiseData = async (categoryId: string) => {
+        setLoadingCategories(prev => ({ ...prev, [categoryId]: true }));
 
         try {
-            // Lấy các job từ API, bạn có thể tùy chỉnh query dựa trên category
-            const query = `page=1&size=6`;
-            const res = await callFetchPublicJob(query);
-            
-            if (res?.data && Array.isArray(res.data)) {
-                setCategories(prev => prev.map(cat => 
-                    cat.key === categoryKey 
-                        ? { ...cat, jobs: res.data, loading: false } 
-                        : cat
-                ));
+            const res = await callFetchExpertiseByCategory(categoryId);
+            const expertiseResult = Array.isArray(res?.data?.result) ? res.data.result : [];
+            if (Array.isArray(expertiseResult)) {
+                setExpertises(prev => ({
+                    ...prev,
+                    [categoryId]: expertiseResult
+                }));
             }
         } catch (error) {
-            console.error('Error fetching jobs:', error);
-            setCategories(prev => prev.map(cat => 
-                cat.key === categoryKey ? { ...cat, loading: false } : cat
-            ));
+            console.error(`Error loading expertise for category ${categoryId}:`, error);
+        } finally {
+            setLoadingCategories(prev => ({ ...prev, [categoryId]: false }));
         }
     };
 
-    const handleExpand = (expandedKeys: string | string[]) => {
-        const keys = Array.isArray(expandedKeys) ? expandedKeys : [expandedKeys];
-        setActiveKeys(keys);
+    // Handle toggle category
+    const handleToggle = async (categoryId: string) => {
+        if (expandedCategoryId === categoryId) {
+            // Collapse
+            setExpandedCategoryId(null);
+        } else {
+            // Expand
+            setExpandedCategoryId(categoryId);
 
-        // Fetch jobs khi mở expand
-        const newExpandedKeys = keys as string[];
-        newExpandedKeys.forEach(key => {
-            const category = categories.find(c => c.key === key);
-            if (category && category.jobs.length === 0 && !category.loading) {
-                fetchJobsByCategory(key);
+            // Lazy load expertise if not cached
+            if (!expertises[categoryId]) {
+                await loadExpertiseData(categoryId);
             }
-        });
+        }
     };
 
-    const handleNavigateToJobDetail = (jobId: string) => {
-        navigate(`/job/${convertSlug(jobId)}?id=${jobId}`);
+    const handleExpertiseClick = (expertiseName: string) => {
+        navigate(`/job?skills=${encodeURIComponent(expertiseName)}`);
     };
 
-    const items = categories.map(category => ({
-        key: category.key,
-        label: category.label,
-        children: (
-            <Spin spinning={category.loading}>
-                {category.jobs.length === 0 && !category.loading ? (
-                    <Empty description="No jobs available" />
-                ) : (
-                    <Row gutter={[12, 12]}>
-                        {category.jobs.map((job: IJob) => (
-                            <Col xs={24} sm={12} key={job.id}>
-                                <Card 
-                                    hoverable
-                                    onClick={() => job.id && handleNavigateToJobDetail(job.id)}
-                                    className={styles["job-card-item"]}
-                                >
-                                    <h4>{job.name}</h4>
-                                    <p>{job.company?.name}</p>
-                                    <p className={styles["job-salary"]}>
-                                        {job.salary ? `$${job.salary}` : 'Negotiate'}
-                                    </p>
-                                    <p className={styles["job-time"]}>
-                                        {dayjs(job.createdAt).fromNow()}
-                                    </p>
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
+    // Render category item
+    const renderCategoryItem = (category: IExpertiseCategory) => {
+        const categoryId = category.id ?? "";
+        const isExpanded = expandedCategoryId === categoryId;
+        const categoryExpertises = expertises[categoryId] || [];
+        const isLoading = loadingCategories[categoryId] || false;
+
+        return (
+            <div key={categoryId} style={{ marginBottom: '12px' }}>
+                <div
+                    onClick={() => categoryId && handleToggle(categoryId)}
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '16px',
+                        backgroundColor: isExpanded ? '#fafafa' : '#ffffff',
+                        border: '1px solid #e8e8e8',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'all 0.3s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = 'none';
+                    }}
+                >
+                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 500, color: '#262626' }}>
+                        {category.name}
+                    </h4>
+                    <span style={{ color: '#1890ff', fontSize: '14px' }}>
+                        {isExpanded ? <MinusOutlined /> : <PlusOutlined />}
+                    </span>
+                </div>
+
+                {/* Expanded content */}
+                {isExpanded && (
+                    <div
+                        style={{
+                            padding: '16px',
+                            backgroundColor: '#fafafa',
+                            border: '1px solid #e8e8e8',
+                            borderTop: 'none',
+                            borderRadius: '0 0 8px 8px',
+                            marginTop: '-1px',
+                        }}
+                    >
+                        <Spin spinning={isLoading}>
+                            {categoryExpertises.length === 0 && !isLoading ? (
+                                <Empty description="No expertise available" style={{ margin: '20px 0' }} />
+                            ) : (
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                    {categoryExpertises.map((expertise: IExpertise) => (
+                                        <span
+                                            key={expertise.id}
+                                            onClick={() => handleExpertiseClick(expertise.name)}
+                                            style={{
+                                                display: 'inline-block',
+                                                padding: '6px 12px',
+                                                backgroundColor: '#e6f7ff',
+                                                border: '1px solid #91d5ff',
+                                                borderRadius: '4px',
+                                                fontSize: '13px',
+                                                color: '#0050b3',
+                                                cursor: 'pointer',
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#bae7ff';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#e6f7ff';
+                                            }}
+                                        >
+                                            {expertise.name}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </Spin>
+                    </div>
                 )}
-            </Spin>
-        ),
-        extra: activeKeys.includes(category.key) ? <MinusOutlined /> : <PlusOutlined />,
-    }));
+            </div>
+        );
+    };
 
-    const midPoint = Math.ceil(items.length / 2);
-    const leftItems = items.slice(0, midPoint);
-    const rightItems = items.slice(midPoint);
+    // Split categories into 2 columns
+    const midPoint = Math.ceil(categories.length / 2);
+    const leftCategories = categories.slice(0, midPoint);
+    const rightCategories = categories.slice(midPoint);
+
+    if (isLoadingInitial) {
+        return (
+            <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                <Spin />
+            </div>
+        );
+    }
 
     return (
-        <div className={styles["expertise-summary"]}>
-            <h2 className={styles["section-title"]}>IT Expertise Summary</h2>
-            <Row gutter={[24, 0]}>
+        <div style={{ padding: '40px 0' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: 600, marginBottom: '32px', textAlign: 'center' }}>
+                IT Expertise Summary
+            </h2>
+
+            <Row gutter={[32, 0]}>
+                {/* Left Column */}
                 <Col xs={24} lg={12}>
-                    <Collapse 
-                        items={leftItems} 
-                        onChange={handleExpand}
-                        accordion={false}
-                    />
+                    <div>
+                        {leftCategories.map(category => renderCategoryItem(category))}
+                    </div>
                 </Col>
+
+                {/* Right Column */}
                 <Col xs={24} lg={12}>
-                    <Collapse 
-                        items={rightItems} 
-                        onChange={handleExpand}
-                        accordion={false}
-                    />
+                    <div>
+                        {rightCategories.map(category => renderCategoryItem(category))}
+                    </div>
                 </Col>
             </Row>
         </div>
@@ -157,3 +200,4 @@ const ExpertiseSummary = () => {
 };
 
 export default ExpertiseSummary;
+
