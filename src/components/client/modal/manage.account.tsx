@@ -3,12 +3,13 @@ import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
 import { IResume, ISubscribers } from "@/types/backend";
 import { useState, useEffect } from 'react';
-import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber } from "@/config/api";
+import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { MonitorOutlined } from "@ant-design/icons";
 import { SKILLS_LIST } from "@/config/utils";
 import { useAppSelector } from "@/redux/hooks";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
     open: boolean;
@@ -232,12 +233,28 @@ const JobByEmail = (props: any) => {
 }
 
 // Cập nhật mật khẩu 
-const ChangePasswordTab = () => {
+const ChangePasswordTab = (props: any) => {
+    const { onClose } = props;
     const [form] = Form.useForm();
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
-    const onFinish = () => {
-        message.success("Thông tin nhập hợp lệ");
-        form.resetFields();
+    const onFinish = async (values: any) => {
+        setIsLoading(true);
+        const res = await callChangePassword(values.currentPassword, values.newPassword);
+        setIsLoading(false);
+
+        if (res?.statusCode === 200) {
+            message.success("Đổi mật khẩu thành công!");
+            form.resetFields();
+            onClose(false);
+            navigate('/');
+        } else {
+            notification.error({
+                message: "Có lỗi xảy ra",
+                description: res?.message || "Không thể đổi mật khẩu"
+            });
+        }
     };
 
     return (
@@ -278,7 +295,7 @@ const ChangePasswordTab = () => {
                 <Input.Password placeholder="Nhập lại mật khẩu mới" autoComplete="new-password" />
             </Form.Item>
             <Form.Item>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" loading={isLoading}>
                     Cập nhật mật khẩu
                 </Button>
             </Form.Item>
@@ -312,7 +329,7 @@ const ManageAccount = (props: IProps) => {
         {
             key: 'user-password',
             label: `Thay đổi mật khẩu`,
-            children: <ChangePasswordTab/>,
+            children: <ChangePasswordTab onClose={onClose}/>,
         },
     ];
 
