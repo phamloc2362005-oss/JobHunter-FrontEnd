@@ -7,12 +7,12 @@ import { IExpertise, IExpertiseCategory } from '@/types/backend';
 import { useNavigate } from 'react-router-dom';
 
 const ExpertiseSummary = () => {
+    const navigate = useNavigate();
     const [categories, setCategories] = useState<IExpertiseCategory[]>([]);
     const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
     const [expertises, setExpertises] = useState<{ [key: string]: IExpertise[] }>({});
     const [loadingCategories, setLoadingCategories] = useState<{ [key: string]: boolean }>({});
     const [isLoadingInitial, setIsLoadingInitial] = useState(true);
-    const navigate = useNavigate();
 
     // Load categories on mount
     useEffect(() => {
@@ -67,10 +67,6 @@ const ExpertiseSummary = () => {
                 await loadExpertiseData(categoryId);
             }
         }
-    };
-
-    const handleExpertiseClick = (expertiseName: string) => {
-        navigate(`/job?skills=${encodeURIComponent(expertiseName)}`);
     };
 
     // Render category item
@@ -131,7 +127,6 @@ const ExpertiseSummary = () => {
                                     {categoryExpertises.map((expertise: IExpertise) => (
                                         <span
                                             key={expertise.id}
-                                            onClick={() => handleExpertiseClick(expertise.name)}
                                             style={{
                                                 display: 'inline-block',
                                                 padding: '6px 12px',
@@ -142,11 +137,10 @@ const ExpertiseSummary = () => {
                                                 color: '#0050b3',
                                                 cursor: 'pointer',
                                             }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.backgroundColor = '#bae7ff';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.backgroundColor = '#e6f7ff';
+                                            onClick={() => {
+                                                if (expertise.id) {
+                                                    navigate(`/job?expertise=${encodeURIComponent(expertise.id)}&source=expertise-summary`);
+                                                }
                                             }}
                                         >
                                             {expertise.name}

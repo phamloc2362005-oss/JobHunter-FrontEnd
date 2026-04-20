@@ -30,7 +30,7 @@ const JobCard = (props: IProps) => {
     const [filter, setFilter] = useState("");
     const [sortQuery, setSortQuery] = useState("sort=updatedAt,desc");
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const location = useLocation();
 
     useEffect(() => {
@@ -52,15 +52,17 @@ const JobCard = (props: IProps) => {
         const querySkills = searchParams.get("skills")
         const queryExpertise = searchParams.get("expertise")
         const queryLevel = searchParams.get("level")
+        const querySource = searchParams.get("source")
 
         let q = "";
         if (queryLocation) {
             q = sfIn("location", queryLocation.split(",")).toString();
         }
         if (querySkills) {
-            q = queryLocation ? q + " and " + `${sfIn("skills.name", querySkills.split(","))}` : `${sfIn("skills.name", querySkills.split(","))}`;
+            q = queryLocation ? q + " and " + `${sfIn("skills.id", querySkills.split(","))}` : `${sfIn("skills.id", querySkills.split(","))}`;
         }
-        if (queryExpertise) {
+        // Expertise filter chỉ áp dụng cho luồng đi từ IT Expertise Summary.
+        if (queryExpertise && querySource === "expertise-summary") {
             q = q ? q + " and " + `${sfIn("expertises.id", [queryExpertise])}` : `${sfIn("expertises.id", [queryExpertise])}`;
         }
         if (queryLevel) {

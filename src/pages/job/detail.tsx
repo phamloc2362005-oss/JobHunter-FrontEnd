@@ -26,8 +26,8 @@ const ClientJobDetailPage = (props: any) => {
     let params = new URLSearchParams(location.search);
     const id = params?.get("id"); // job id
 
-    const handleSkillClick = (skillName: string) => {
-        navigate(`/job?skills=${encodeURIComponent(skillName)}`);
+    const handleSkillClick = (skillId: string) => {
+        navigate(`/job?skills=${encodeURIComponent(skillId)}`);
     };
 
     useEffect(() => {
@@ -98,7 +98,7 @@ const ClientJobDetailPage = (props: any) => {
                                                 key={`${index}-key`}
                                                 color="gold"
                                                 style={{ cursor: 'pointer' }}
-                                                onClick={() => handleSkillClick(item.name)}
+                                                onClick={() => item.id && handleSkillClick(String(item.id))}
                                             >
                                                 {item.name}
                                             </Tag>

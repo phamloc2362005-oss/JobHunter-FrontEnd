@@ -78,13 +78,13 @@ const ExpertiseCategoryPage = () => {
 
         const res = await callDeleteExpertiseCategory(id);
         if (res && +res.statusCode === 200) {
-            message.success("Xoa category thanh cong");
+            message.success("Xóa danh mục thành công");
             reloadTable();
             return;
         }
 
         notification.error({
-            message: "Co loi xay ra",
+            message: "Có lỗi xảy ra",
             description: res.message,
         });
     };
@@ -97,14 +97,14 @@ const ExpertiseCategoryPage = () => {
                 : await callCreateExpertiseCategory(values.name.trim());
 
             if (res?.data) {
-                message.success(dataInit?.id ? "Cap nhat category thanh cong" : "Them moi category thanh cong");
+                message.success(dataInit?.id ? "Cập nhật danh mục thành công" : "Thêm mới danh mục thành công");
                 handleReset();
                 reloadTable();
                 return true;
             }
 
             notification.error({
-                message: "Co loi xay ra",
+                message: "Có lỗi xảy ra",
                 description: res.message,
             });
             return false;
@@ -128,17 +128,17 @@ const ExpertiseCategoryPage = () => {
             sorter: true,
         },
         {
-            title: "Created By",
+            title: "Người tạo",
             dataIndex: "createdBy",
             hideInSearch: true,
         },
         {
-            title: "Updated By",
+            title: "Người cập nhật",
             dataIndex: "updatedBy",
             hideInSearch: true,
         },
         {
-            title: "Created At",
+            title: "Ngày tạo",
             dataIndex: "createdAt",
             sorter: true,
             hideInSearch: true,
@@ -146,7 +146,7 @@ const ExpertiseCategoryPage = () => {
             render: (_, entity) => entity.createdAt ? dayjs(entity.createdAt).format("DD-MM-YYYY HH:mm:ss") : "",
         },
         {
-            title: "Updated At",
+            title: "Ngày cập nhật",
             dataIndex: "updatedAt",
             sorter: true,
             hideInSearch: true,
@@ -154,7 +154,7 @@ const ExpertiseCategoryPage = () => {
             render: (_, entity) => entity.updatedAt ? dayjs(entity.updatedAt).format("DD-MM-YYYY HH:mm:ss") : "",
         },
         {
-            title: "Actions",
+            title: "Thao tác",
             hideInSearch: true,
             width: 90,
             render: (_value, entity) => (
@@ -169,11 +169,11 @@ const ExpertiseCategoryPage = () => {
                     />
                     <Popconfirm
                         placement="leftTop"
-                        title="Xac nhan xoa category"
-                        description="Ban co chac chan muon xoa category nay?"
+                        title="Xác nhận xóa danh mục"
+                        description="Bạn có chắc chắn muốn xóa danh mục này?"
                         onConfirm={() => handleDelete(entity.id)}
-                        okText="Xac nhan"
-                        cancelText="Huy"
+                        okText="Xác nhận"
+                        cancelText="Hủy"
                     >
                         <DeleteOutlined style={{ fontSize: 18, color: "#ff4d4f" }} />
                     </Popconfirm>
@@ -195,8 +195,8 @@ const ExpertiseCategoryPage = () => {
                             </Col>
                             <Col xs={24} sm="auto" flex={1}>
                                 <div>
-                                    <h2 className={styles["card-title"]}>Quan ly Expertise Categories</h2>
-                                    <p className={styles["card-subtitle"]}>Them, chinh sua va xoa nhom chuyen mon de cap nhat du lieu cho IT Expertise Summary.</p>
+                                    <h2 className={styles["card-title"]}>Quản lý Nhóm chuyên môn IT</h2>
+                                    <p className={styles["card-subtitle"]}>Thêm, chỉnh sửa và xóa nhóm chuyên môn để cập nhật dữ liệu cho IT Expertise Summary.</p>
                                 </div>
                             </Col>
                         </Row>
@@ -205,7 +205,7 @@ const ExpertiseCategoryPage = () => {
                 <Col xs={24} lg={8}>
                     <Card className={styles["stat-card"]} style={{ borderLeft: "4px solid #4078ff" }}>
                         <Statistic
-                            title="TONG CATEGORY"
+                            title="TỔNG DANH MỤC"
                             value={meta.total || 0}
                             prefix={<ClusterOutlined style={{ marginRight: 8 }} />}
                             valueStyle={{ color: "#4078ff", fontSize: 32, fontWeight: 700 }}
@@ -216,7 +216,7 @@ const ExpertiseCategoryPage = () => {
 
             <DataTable<IExpertiseCategory>
                 actionRef={tableRef}
-                headerTitle="Danh sach Expertise Categories"
+                headerTitle="Danh sách Nhóm chuyên môn IT"
                 rowKey="id"
                 loading={loading}
                 columns={columns}
@@ -231,18 +231,18 @@ const ExpertiseCategoryPage = () => {
                     pageSize: meta.pageSize,
                     showSizeChanger: true,
                     total: meta.total,
-                    showTotal: (total, range) => <div>{range[0]}-{range[1]} tren {total} rows</div>,
+                    showTotal: (total, range) => <div>{range[0]}-{range[1]} trên {total} bản ghi</div>,
                 }}
                 rowSelection={false}
                 toolBarRender={() => [
                     <Button key="create" icon={<PlusOutlined />} type="primary" onClick={() => setOpenModal(true)}>
-                        Them moi
+                        Thêm mới
                     </Button>,
                 ]}
             />
 
             <ModalForm
-                title={dataInit?.id ? "Cap nhat category" : "Tao moi category"}
+                title={dataInit?.id ? "Cập nhật danh mục" : "Tạo mới danh mục"}
                 open={openModal}
                 form={form}
                 onFinish={handleSubmit}
@@ -255,18 +255,18 @@ const ExpertiseCategoryPage = () => {
                     width: isMobile ? "100%" : 520,
                     keyboard: false,
                     maskClosable: false,
-                    okText: dataInit?.id ? "Cap nhat" : "Tao moi",
-                    cancelText: "Huy",
+                    okText: dataInit?.id ? "Cập nhật" : "Tạo mới",
+                    cancelText: "Hủy",
                 }}
             >
                 <ProFormText
                     name="name"
-                    label="Ten category"
-                    placeholder="Nhap ten category"
+                    label="Tên danh mục"
+                    placeholder="Nhập tên danh mục"
                     rules={[
-                        { required: true, message: "Vui long nhap ten category" },
-                        { min: 2, message: "Ten category phai co it nhat 2 ky tu" },
-                        { max: 100, message: "Ten category khong duoc vuot qua 100 ky tu" },
+                        { required: true, message: "Vui lòng nhập tên danh mục" },
+                        { min: 2, message: "Tên danh mục phải có ít nhất 2 ký tự" },
+                        { max: 100, message: "Tên danh mục không được vượt quá 100 ký tự" },
                     ]}
                 />
             </ModalForm>

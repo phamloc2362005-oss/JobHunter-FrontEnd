@@ -100,13 +100,13 @@ const ExpertisePage = () => {
 
         const res = await callDeleteExpertise(id);
         if (res && +res.statusCode === 200) {
-            message.success("Xoa expertise thanh cong");
+            message.success("Xóa chuyên môn thành công");
             reloadTable();
             return;
         }
 
         notification.error({
-            message: "Co loi xay ra",
+            message: "Có lỗi xảy ra",
             description: res.message,
         });
     };
@@ -119,14 +119,14 @@ const ExpertisePage = () => {
                 : await callCreateExpertise(values.name.trim(), values.categoryId);
 
             if (res?.data) {
-                message.success(dataInit?.id ? "Cap nhat expertise thanh cong" : "Them moi expertise thanh cong");
+                message.success(dataInit?.id ? "Cập nhật chuyên môn thành công" : "Thêm mới chuyên môn thành công");
                 handleReset();
                 reloadTable();
                 return true;
             }
 
             notification.error({
-                message: "Co loi xay ra",
+                message: "Có lỗi xảy ra",
                 description: res.message,
             });
             return false;
@@ -150,7 +150,7 @@ const ExpertisePage = () => {
             sorter: true,
         },
         {
-            title: "Category",
+            title: "Danh mục",
             dataIndex: "categoryId",
             valueType: "select",
             fieldProps: {
@@ -161,17 +161,17 @@ const ExpertisePage = () => {
             render: (_value, entity) => entity.expertiseCategory?.name ?? "",
         },
         {
-            title: "Created By",
+            title: "Người tạo",
             dataIndex: "createdBy",
             hideInSearch: true,
         },
         {
-            title: "Updated By",
+            title: "Người cập nhật",
             dataIndex: "updatedBy",
             hideInSearch: true,
         },
         {
-            title: "Created At",
+            title: "Ngày tạo",
             dataIndex: "createdAt",
             sorter: true,
             hideInSearch: true,
@@ -179,7 +179,7 @@ const ExpertisePage = () => {
             render: (_, entity) => entity.createdAt ? dayjs(entity.createdAt).format("DD-MM-YYYY HH:mm:ss") : "",
         },
         {
-            title: "Updated At",
+            title: "Ngày cập nhật",
             dataIndex: "updatedAt",
             sorter: true,
             hideInSearch: true,
@@ -187,7 +187,7 @@ const ExpertisePage = () => {
             render: (_, entity) => entity.updatedAt ? dayjs(entity.updatedAt).format("DD-MM-YYYY HH:mm:ss") : "",
         },
         {
-            title: "Actions",
+            title: "Thao tác",
             hideInSearch: true,
             width: 90,
             render: (_value, entity) => (
@@ -205,11 +205,11 @@ const ExpertisePage = () => {
                     />
                     <Popconfirm
                         placement="leftTop"
-                        title="Xac nhan xoa expertise"
-                        description="Ban co chac chan muon xoa expertise nay?"
+                        title="Xác nhận xóa chuyên môn"
+                        description="Bạn có chắc chắn muốn xóa chuyên môn này?"
                         onConfirm={() => handleDelete(entity.id)}
-                        okText="Xac nhan"
-                        cancelText="Huy"
+                        okText="Xác nhận"
+                        cancelText="Hủy"
                     >
                         <DeleteOutlined style={{ fontSize: 18, color: "#ff4d4f" }} />
                     </Popconfirm>
@@ -231,8 +231,8 @@ const ExpertisePage = () => {
                             </Col>
                             <Col xs={24} sm="auto" flex={1}>
                                 <div>
-                                    <h2 className={styles["card-title"]}>Quan ly Expertises</h2>
-                                    <p className={styles["card-subtitle"]}>Quan ly danh sach expertise theo category de du lieu hien thi dong bo o trang IT Expertise Summary.</p>
+                                    <h2 className={styles["card-title"]}>Quản lý Chuyên môn IT</h2>
+                                    <p className={styles["card-subtitle"]}>Quản lý danh sách chuyên môn theo danh mục để dữ liệu hiển thị đồng bộ ở trang IT Expertise Summary.</p>
                                 </div>
                             </Col>
                         </Row>
@@ -241,7 +241,7 @@ const ExpertisePage = () => {
                 <Col xs={24} lg={8}>
                     <Card className={styles["stat-card"]} style={{ borderLeft: "4px solid #4078ff" }}>
                         <Statistic
-                            title="TONG EXPERTISE"
+                            title="TỔNG CHUYÊN MÔN"
                             value={meta.total || 0}
                             prefix={<TagsOutlined style={{ marginRight: 8 }} />}
                             valueStyle={{ color: "#4078ff", fontSize: 32, fontWeight: 700 }}
@@ -252,7 +252,7 @@ const ExpertisePage = () => {
 
             <DataTable<IExpertise>
                 actionRef={tableRef}
-                headerTitle="Danh sach Expertises"
+                headerTitle="Danh sách Chuyên môn IT"
                 rowKey="id"
                 loading={loading}
                 columns={columns}
@@ -267,7 +267,7 @@ const ExpertisePage = () => {
                     pageSize: meta.pageSize,
                     showSizeChanger: true,
                     total: meta.total,
-                    showTotal: (total, range) => <div>{range[0]}-{range[1]} tren {total} rows</div>,
+                    showTotal: (total, range) => <div>{range[0]}-{range[1]} trên {total} bản ghi</div>,
                 }}
                 rowSelection={false}
                 toolBarRender={() => [
@@ -281,13 +281,13 @@ const ExpertisePage = () => {
                             setOpenModal(true);
                         }}
                     >
-                        Them moi
+                        Thêm mới
                     </Button>,
                 ]}
             />
 
             <ModalForm
-                title={dataInit?.id ? "Cap nhat expertise" : "Tao moi expertise"}
+                title={dataInit?.id ? "Cập nhật chuyên môn" : "Tạo mới chuyên môn"}
                 open={openModal}
                 form={form}
                 onFinish={handleSubmit}
@@ -300,31 +300,31 @@ const ExpertisePage = () => {
                     width: isMobile ? "100%" : 560,
                     keyboard: false,
                     maskClosable: false,
-                    okText: dataInit?.id ? "Cap nhat" : "Tao moi",
-                    cancelText: "Huy",
+                    okText: dataInit?.id ? "Cập nhật" : "Tạo mới",
+                    cancelText: "Hủy",
                 }}
             >
                 <ProFormText
                     name="name"
-                    label="Ten expertise"
-                    placeholder="Nhap ten expertise"
+                    label="Tên chuyên môn"
+                    placeholder="Nhập tên chuyên môn"
                     rules={[
-                        { required: true, message: "Vui long nhap ten expertise" },
-                        { min: 2, message: "Ten expertise phai co it nhat 2 ky tu" },
-                        { max: 100, message: "Ten expertise khong duoc vuot qua 100 ky tu" },
+                        { required: true, message: "Vui lòng nhập tên chuyên môn" },
+                        { min: 2, message: "Tên chuyên môn phải có ít nhất 2 ký tự" },
+                        { max: 100, message: "Tên chuyên môn không được vượt quá 100 ký tự" },
                     ]}
                 />
 
                 <ProFormSelect
                     name="categoryId"
-                    label="Category"
-                    placeholder="Chon category"
+                    label="Danh mục"
+                    placeholder="Chọn danh mục"
                     options={categoryOptions}
                     fieldProps={{
                         showSearch: true,
                         optionFilterProp: "label",
                     }}
-                    rules={[{ required: true, message: "Vui long chon category" }]}
+                    rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
                 />
             </ModalForm>
         </div>
