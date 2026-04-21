@@ -100,14 +100,14 @@ const ExpertisePage = () => {
 
         const res = await callDeleteExpertise(id);
         if (res && +res.statusCode === 200) {
-            message.success("Xóa chuyên môn thành công");
+            message.success("Xóa vị trí/kỹ năng thành công");
             reloadTable();
             return;
         }
 
         notification.error({
             message: "Có lỗi xảy ra",
-            description: res.message,
+            description: (res as any)?.error ?? res.message,
         });
     };
 
@@ -119,7 +119,7 @@ const ExpertisePage = () => {
                 : await callCreateExpertise(values.name.trim(), values.categoryId);
 
             if (res?.data) {
-                message.success(dataInit?.id ? "Cập nhật chuyên môn thành công" : "Thêm mới chuyên môn thành công");
+                message.success(dataInit?.id ? "Cập nhật vị trí/kỹ năng thành công" : "Thêm mới vị trí/kỹ năng thành công");
                 handleReset();
                 reloadTable();
                 return true;
@@ -127,7 +127,7 @@ const ExpertisePage = () => {
 
             notification.error({
                 message: "Có lỗi xảy ra",
-                description: res.message,
+                description: (res as any)?.error ?? res.message,
             });
             return false;
         } finally {
@@ -150,7 +150,7 @@ const ExpertisePage = () => {
             sorter: true,
         },
         {
-            title: "Danh mục",
+            title: "Lĩnh vực",
             dataIndex: "categoryId",
             valueType: "select",
             fieldProps: {
@@ -231,8 +231,8 @@ const ExpertisePage = () => {
                             </Col>
                             <Col xs={24} sm="auto" flex={1}>
                                 <div>
-                                    <h2 className={styles["card-title"]}>Quản lý Chuyên môn IT</h2>
-                                    <p className={styles["card-subtitle"]}>Quản lý danh sách chuyên môn theo danh mục để dữ liệu hiển thị đồng bộ ở trang IT Expertise Summary.</p>
+                                    <h2 className={styles["card-title"]}>Quản lý Vị trí/Kỹ năng IT</h2>
+                                    <p className={styles["card-subtitle"]}>Quản lý danh sách vị trí/kỹ năng theo lĩnh vực để dữ liệu hiển thị đồng bộ ở trang IT Expertise Summary.</p>
                                 </div>
                             </Col>
                         </Row>
@@ -241,7 +241,7 @@ const ExpertisePage = () => {
                 <Col xs={24} lg={8}>
                     <Card className={styles["stat-card"]} style={{ borderLeft: "4px solid #4078ff" }}>
                         <Statistic
-                            title="TỔNG CHUYÊN MÔN"
+                            title="TỔNG VỊ TRÍ/KỸ NĂNG"
                             value={meta.total || 0}
                             prefix={<TagsOutlined style={{ marginRight: 8 }} />}
                             valueStyle={{ color: "#4078ff", fontSize: 32, fontWeight: 700 }}
@@ -252,7 +252,7 @@ const ExpertisePage = () => {
 
             <DataTable<IExpertise>
                 actionRef={tableRef}
-                headerTitle="Danh sách Chuyên môn IT"
+                headerTitle="Danh sách Vị trí/Kỹ năng IT"
                 rowKey="id"
                 loading={loading}
                 columns={columns}
@@ -287,7 +287,7 @@ const ExpertisePage = () => {
             />
 
             <ModalForm
-                title={dataInit?.id ? "Cập nhật chuyên môn" : "Tạo mới chuyên môn"}
+                title={dataInit?.id ? "Cập nhật vị trí/kỹ năng" : "Tạo mới vị trí/kỹ năng"}
                 open={openModal}
                 form={form}
                 onFinish={handleSubmit}
@@ -306,25 +306,25 @@ const ExpertisePage = () => {
             >
                 <ProFormText
                     name="name"
-                    label="Tên chuyên môn"
-                    placeholder="Nhập tên chuyên môn"
+                    label="Tên vị trí/kỹ năng"
+                    placeholder="Nhập tên vị trí/kỹ năng"
                     rules={[
-                        { required: true, message: "Vui lòng nhập tên chuyên môn" },
-                        { min: 2, message: "Tên chuyên môn phải có ít nhất 2 ký tự" },
-                        { max: 100, message: "Tên chuyên môn không được vượt quá 100 ký tự" },
+                        { required: true, message: "Vui lòng nhập tên vị trí/kỹ năng" },
+                        { min: 2, message: "Tên vị trí/kỹ năng phải có ít nhất 2 ký tự" },
+                        { max: 100, message: "Tên vị trí/kỹ năng không được vượt quá 100 ký tự" },
                     ]}
                 />
 
                 <ProFormSelect
                     name="categoryId"
-                    label="Danh mục"
-                    placeholder="Chọn danh mục"
+                    label="Lĩnh vực"
+                    placeholder="Chọn lĩnh vực"
                     options={categoryOptions}
                     fieldProps={{
                         showSearch: true,
                         optionFilterProp: "label",
                     }}
-                    rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
+                    rules={[{ required: true, message: "Vui lòng chọn lĩnh vực" }]}
                 />
             </ModalForm>
         </div>

@@ -6,15 +6,21 @@ import styles from 'styles/admin.module.scss';
 import { LOCATION_LIST, SKILLS_LIST } from "@/config/utils";
 import { ICompanySelect } from "../user/modal.user";
 import { useState, useEffect } from 'react';
-import { callCreateJob, callFetchAdminJobById, callFetchAllSkill, callFetchCompany, callUpdateJob } from "@/config/api";
+import { callCreateJob, callFetchAdminJobById, callFetchAllSkill, callFetchCompany, callFetchExpertise, callUpdateJob } from "@/config/api";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { CheckSquareOutlined } from "@ant-design/icons";
 import enUS from 'antd/lib/locale/en_US';
 import dayjs from 'dayjs';
-import { IJob, ISkill } from "@/types/backend";
+import { IExpertise, IJob, ISkill } from "@/types/backend";
 
 interface ISkillSelect {
+    label: string;
+    value: string;
+    key?: string;
+}
+
+interface IExpertiseSelect {
     label: string;
     value: string;
     key?: string;
@@ -38,6 +44,7 @@ const isQuillEmpty = (html?: string) => {
 const ViewUpsertJob = (props: any) => {
     const [companies, setCompanies] = useState<ICompanySelect[]>([]);
     const [skills, setSkills] = useState<ISkillSelect[]>([]);
+    const [expertises, setExpertises] = useState<IExpertiseSelect[]>([]);
 
     const navigate = useNavigate();
     const [value, setValue] = useState<string>("");
@@ -55,8 +62,9 @@ const ViewUpsertJob = (props: any) => {
 
     useEffect(() => {
         const init = async () => {
-            const temp = await fetchSkillList();
-            setSkills(temp);
+            const [skillsRes, expertisesRes] = await Promise.all([fetchSkillList(), fetchExpertiseList()]);
+            setSkills(skillsRes);
+            setExpertises(expertisesRes);
 
             if (id) {
                 const res = await callFetchAdminJobById(id);
@@ -79,6 +87,14 @@ const ViewUpsertJob = (props: any) => {
                             key: item.id
                         }
                     })
+                    const tempExpertises: any = (res.data as any)?.expertises?.map((item: IExpertise) => {
+                        return {
+                            label: item.name,
+                            value: `${item.id}`,
+                            key: item.id
+                        }
+                    }) ?? [];
+
                     form.setFieldsValue({
                         ...res.data,
                         required: normalizeTextField((res.data as any).required ?? (res.data as any).requireds),
@@ -88,7 +104,8 @@ const ViewUpsertJob = (props: any) => {
                             value: `${res.data.company?.id}@#$${res.data.company?.logo}` as string,
                             key: res.data.company?.id
                         },
-                        skills: temp
+                        skills: temp,
+                        expertises: tempExpertises
                     })
                 }
             }
@@ -126,6 +143,19 @@ const ViewUpsertJob = (props: any) => {
         } else return [];
     }
 
+    async function fetchExpertiseList(): Promise<IExpertiseSelect[]> {
+        const res = await callFetchExpertise(`page=1&size=1000&sort=name,asc`);
+        if (res && res.data) {
+            const list = res.data.result;
+            return list.map(item => ({
+                label: item.name as string,
+                value: `${item.id}` as string,
+                key: item.id
+            }));
+        }
+        return [];
+    }
+
     const onFinish = async (values: any) => {
         if (dataUpdate?.id) {
             //update
@@ -137,6 +167,10 @@ const ViewUpsertJob = (props: any) => {
             } else {
                 arrSkills = values?.skills?.map((item: any) => { return { id: +item } });
             }
+            const arrExpertises = (values?.expertises ?? []).map((item: any) => {
+                if (typeof item === 'object') return { id: +item.value };
+                return { id: +item };
+            });
 
             const job: any = {
                 id: +dataUpdate.id,
@@ -151,6 +185,7 @@ const ViewUpsertJob = (props: any) => {
                 salary: values.salary,
                 quantity: values.quantity,
                 level: values.level,
+                expertises: arrExpertises,
                 description: value,
                 required: values.required,
                 benefit: values.benefit,
@@ -162,6 +197,7 @@ const ViewUpsertJob = (props: any) => {
 
             // Ensure backend receives numeric ids (Spring/JPA is strict here)
             job.skills = (job.skills ?? []).map((s: any) => ({ id: +s.id }));
+            job.expertises = (job.expertises ?? []).map((e: any) => ({ id: +e.id }));
             const res = await callUpdateJob(job);
             if (res.data) {
                 message.success("Cập nhật job thành công");
@@ -176,9 +212,11 @@ const ViewUpsertJob = (props: any) => {
             //create
             const cp = values?.company?.value?.split('@#$');
             const arrSkills = values?.skills?.map((item: string) => { return { id: +item } });
+            const arrExpertises = (values?.expertises ?? []).map((item: string) => ({ id: +item }));
             const job = {
                 name: values.name,
                 skills: arrSkills,
+                expertises: arrExpertises,
                 company: {
                     id: cp && cp.length > 0 ? cp[0] : "",
                     name: values.company.label,
@@ -272,6 +310,20 @@ const ViewUpsertJob = (props: any) => {
                                 />
                             </Col>
 
+                            <Col span={24} md={6}>
+                                <ProFormSelect
+                                    name="expertises"
+                                    label="Chuyên môn"
+                                    options={expertises}
+                                    placeholder="Chọn chuyên môn"
+                                    rules={[{ required: true, message: 'Vui lòng chọn chuyên môn!' }]}
+                                    allowClear
+                                    mode="multiple"
+                                    fieldProps={{
+                                        suffixIcon: null
+                                    }}
+                                />
+                            </Col>
                             <Col span={24} md={6}>
                                 <ProFormSelect
                                     name="location"

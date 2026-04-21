@@ -139,7 +139,7 @@ const ExpertiseSummary = () => {
                                             }}
                                             onClick={() => {
                                                 if (expertise.id) {
-                                                    navigate(`/job?expertise=${encodeURIComponent(expertise.id)}&source=expertise-summary`);
+                                                    navigate(`/job?expertiseId=${encodeURIComponent(expertise.id)}`);
                                                 }
                                             }}
                                         >

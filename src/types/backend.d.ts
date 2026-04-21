@@ -91,6 +91,7 @@ export interface IJob {
     id?: string;
     name: string;
     skills: ISkill[];
+    expertises?: IExpertise[];
     company?: {
         id: string;
         name: string;
