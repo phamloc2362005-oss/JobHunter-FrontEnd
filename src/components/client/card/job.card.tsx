@@ -69,10 +69,16 @@ const JobCard = (props: IProps) => {
             query += `&filter=${encodeURIComponent(q)}`;
         }
         if (queryExpertiseId) {
-            query += `&expertiseId=${encodeURIComponent(queryExpertiseId)}`;
+            const expertiseFilter = `expertise.id=${queryExpertiseId}`;
+            query += q
+                ? `&filter=${encodeURIComponent(q + " and " + expertiseFilter)}`
+                : `&filter=${encodeURIComponent(expertiseFilter)}`;
         }
         if (queryExpertiseIds) {
-            query += `&expertiseIds=${encodeURIComponent(queryExpertiseIds)}`;
+            const expertiseIdsFilter = `expertise.id IN [${queryExpertiseIds}]`;
+            query += q
+                ? `&filter=${encodeURIComponent(q + " and " + expertiseIdsFilter)}`
+                : `&filter=${encodeURIComponent(expertiseIdsFilter)}`;
         }
 
         const res = await callFetchPublicJob(query);

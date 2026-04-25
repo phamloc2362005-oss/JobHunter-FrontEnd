@@ -87,13 +87,11 @@ const ViewUpsertJob = (props: any) => {
                             key: item.id
                         }
                     })
-                    const tempExpertises: any = (res.data as any)?.expertises?.map((item: IExpertise) => {
-                        return {
-                            label: item.name,
-                            value: `${item.id}`,
-                            key: item.id
-                        }
-                    }) ?? [];
+                    // expertise
+                    const expertiseName = (res.data as any)?.expertise;
+                    const expertiseValue = expertiseName
+                        ? expertises.find((e: any) => e.label?.toLowerCase().trim() === expertiseName?.toLowerCase().trim())?.value
+                        : null;
 
                     form.setFieldsValue({
                         ...res.data,
@@ -105,7 +103,7 @@ const ViewUpsertJob = (props: any) => {
                             key: res.data.company?.id
                         },
                         skills: temp,
-                        expertises: tempExpertises?.[0]?.value
+                        expertises: expertiseValue
                     })
                 }
             }
@@ -168,9 +166,9 @@ const ViewUpsertJob = (props: any) => {
                 arrSkills = values?.skills?.map((item: any) => { return { id: +item } });
             }
             const selectedExpertise = values?.expertises;
-            const arrExpertises = selectedExpertise
-                ? [{ id: typeof selectedExpertise === 'object' ? +selectedExpertise.value : +selectedExpertise }]
-                : [];
+            const expertiseObj = selectedExpertise
+                ? { id: typeof selectedExpertise === 'object' ? +selectedExpertise.value : +selectedExpertise }
+                : null;
 
             const job: any = {
                 id: +dataUpdate.id,
@@ -185,7 +183,7 @@ const ViewUpsertJob = (props: any) => {
                 salary: values.salary,
                 quantity: values.quantity,
                 level: values.level,
-                expertises: arrExpertises,
+                expertise: expertiseObj,
                 description: value,
                 required: values.required,
                 benefit: values.benefit,
@@ -197,7 +195,6 @@ const ViewUpsertJob = (props: any) => {
 
             // Ensure backend receives numeric ids (Spring/JPA is strict here)
             job.skills = (job.skills ?? []).map((s: any) => ({ id: +s.id }));
-            job.expertises = (job.expertises ?? []).map((e: any) => ({ id: +e.id }));
             const res = await callUpdateJob(job);
             if (res.data) {
                 message.success("Cập nhật job thành công");
@@ -212,13 +209,13 @@ const ViewUpsertJob = (props: any) => {
             //create
             const cp = values?.company?.value?.split('@#$');
             const arrSkills = values?.skills?.map((item: string) => { return { id: +item } });
-            const arrExpertises = values?.expertises
-                ? [{ id: +values.expertises }]
-                : [];
+            const expertiseObj = values?.expertises
+                ? { id: +values.expertises }
+                : null;
             const job = {
                 name: values.name,
                 skills: arrSkills,
-                expertises: arrExpertises,
+                expertise: expertiseObj,
                 company: {
                     id: cp && cp.length > 0 ? cp[0] : "",
                     name: values.company.label,
