@@ -105,7 +105,7 @@ const ViewUpsertJob = (props: any) => {
                             key: res.data.company?.id
                         },
                         skills: temp,
-                        expertises: tempExpertises
+                        expertises: tempExpertises?.[0]?.value
                     })
                 }
             }
@@ -167,10 +167,10 @@ const ViewUpsertJob = (props: any) => {
             } else {
                 arrSkills = values?.skills?.map((item: any) => { return { id: +item } });
             }
-            const arrExpertises = (values?.expertises ?? []).map((item: any) => {
-                if (typeof item === 'object') return { id: +item.value };
-                return { id: +item };
-            });
+            const selectedExpertise = values?.expertises;
+            const arrExpertises = selectedExpertise
+                ? [{ id: typeof selectedExpertise === 'object' ? +selectedExpertise.value : +selectedExpertise }]
+                : [];
 
             const job: any = {
                 id: +dataUpdate.id,
@@ -212,7 +212,9 @@ const ViewUpsertJob = (props: any) => {
             //create
             const cp = values?.company?.value?.split('@#$');
             const arrSkills = values?.skills?.map((item: string) => { return { id: +item } });
-            const arrExpertises = (values?.expertises ?? []).map((item: string) => ({ id: +item }));
+            const arrExpertises = values?.expertises
+                ? [{ id: +values.expertises }]
+                : [];
             const job = {
                 name: values.name,
                 skills: arrSkills,
@@ -318,7 +320,6 @@ const ViewUpsertJob = (props: any) => {
                                     placeholder="Chọn chuyên môn"
                                     rules={[{ required: true, message: 'Vui lòng chọn chuyên môn!' }]}
                                     allowClear
-                                    mode="multiple"
                                     fieldProps={{
                                         suffixIcon: null
                                     }}
