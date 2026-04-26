@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DebounceSelect } from "../user/debouce.select";
 import { FooterToolbar, ProForm, ProFormDatePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from "@ant-design/pro-components";
 import styles from 'styles/admin.module.scss';
-import { LOCATION_LIST, SKILLS_LIST } from "@/config/utils";
+import { LOCATION_LIST } from "@/config/utils";
 import { ICompanySelect } from "../user/modal.user";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { callCreateJob, callFetchAdminJobById, callFetchAllSkill, callFetchCompany, callFetchExpertise, callUpdateJob } from "@/config/api";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -14,16 +14,43 @@ import enUS from 'antd/lib/locale/en_US';
 import dayjs from 'dayjs';
 import { IExpertise, IJob, ISkill } from "@/types/backend";
 
-interface ISkillSelect {
+// Type cho options của Select
+interface ISkillOption {
     label: string;
     value: string;
     key?: string;
 }
 
-interface IExpertiseSelect {
+interface IExpertiseOption {
     label: string;
     value: string;
     key?: string;
+}
+
+// Type cho raw expertise từ backend (string - tên expertise)
+type RawExpertise = string | IExpertise | { id?: number; name?: string } | null | undefined;
+
+// Type cho job response từ API (định nghĩa rõ ràng)
+interface IJobResponse {
+    id: string | number;
+    name: string;
+    skills: ISkill[];
+    expertise: RawExpertise;
+    company?: {
+        id: string | number;
+        name: string;
+        logo?: string;
+    };
+    location: string;
+    salary: number;
+    quantity: number;
+    level: string;
+    description: string;
+    required?: string;
+    benefit?: string;
+    startDate: string | Date;
+    endDate: string | Date;
+    active: boolean;
 }
 
 const JOB_RICH_TEXT_MODULES = {
@@ -41,243 +68,254 @@ const isQuillEmpty = (html?: string) => {
     return text.length === 0;
 };
 
-const ViewUpsertJob = (props: any) => {
-    const [companies, setCompanies] = useState<ICompanySelect[]>([]);
-    const [skills, setSkills] = useState<ISkillSelect[]>([]);
-    const [expertises, setExpertises] = useState<IExpertiseSelect[]>([]);
+// Helper: Normalize string (trim + lowercase)
+const normalizeString = (str: string | undefined | null): string => {
+    return str?.trim().toLowerCase() ?? '';
+};
 
+// Helper: Convert ISkill[] → ISkillOption[]
+const mapSkillsToOptions = (skills: ISkill[]): ISkillOption[] => {
+    return skills.map((item) => ({
+        label: item.name,
+        value: String(item.id),
+        key: item.id,
+    }));
+};
+
+// Helper: Convert IExpertise[] → IExpertiseOption[]
+const mapExpertisesToOptions = (expertises: IExpertise[]): IExpertiseOption[] => {
+    return expertises.map((item) => ({
+        label: item.name,
+        value: String(item.id),
+        key: item.id,
+    }));
+};
+
+// Helper: Tìm expertise option từ raw expertise (string name từ backend)
+const findExpertiseOptionByName = (
+    rawExpertise: RawExpertise,
+    options: IExpertiseOption[]
+): IExpertiseOption | undefined => {
+    if (!rawExpertise) return undefined;
+
+    // Trường hợp backend trả về string (tên expertise)
+    if (typeof rawExpertise === 'string') {
+        const searchName = normalizeString(rawExpertise);
+        return options.find((opt) => normalizeString(opt.label) === searchName);
+    }
+
+    // Trường hợp backend trả về object { name: string }
+    if (typeof rawExpertise === 'object' && 'name' in rawExpertise) {
+        const searchName = normalizeString(rawExpertise.name);
+        return options.find((opt) => normalizeString(opt.label) === searchName);
+    }
+
+    return undefined;
+};
+
+// Helper: Normalize rich text fields
+const normalizeTextField = (value: unknown): string => {
+    if (!value) return "";
+    if (Array.isArray(value)) return value.map((item) => `${item}`.trim()).filter(Boolean).join("\n");
+    return `${value}`;
+};
+
+const ViewUpsertJob = () => {
     const navigate = useNavigate();
-    const [value, setValue] = useState<string>("");
-
-    let location = useLocation();
-    let params = new URLSearchParams(location.search);
-    const id = params?.get("id"); // job id
-    const [dataUpdate, setDataUpdate] = useState<IJob | null>(null);
+    const location = useLocation();
     const [form] = Form.useForm();
-    const normalizeTextField = (value: unknown): string => {
-        if (!value) return "";
-        if (Array.isArray(value)) return value.map((item) => `${item}`.trim()).filter(Boolean).join("\n");
-        return `${value}`;
-    };
 
-    const resolveExpertiseFormValue = (rawExpertise: unknown, options: IExpertiseSelect[]): string | undefined => {
-        if (!rawExpertise) return undefined;
+    // State cho form data
+    const [value, setValue] = useState<string>("");
+    const [dataUpdate, setDataUpdate] = useState<IJob | null>(null);
+    const [companies, setCompanies] = useState<ICompanySelect[]>([]);
 
-        const normalizedOptions = options.map((item) => ({
-            ...item,
-            normalizedLabel: item.label?.toLowerCase().trim(),
-            normalizedValue: `${item.value}`.trim(),
-        }));
+    // State cho dropdown options
+    const [skillOptions, setSkillOptions] = useState<ISkillOption[]>([]);
+    const [expertiseOptions, setExpertiseOptions] = useState<IExpertiseOption[]>([]);
+    const [isLoadingOptions, setIsLoadingOptions] = useState(false);
 
-        if (typeof rawExpertise === 'object') {
-            const expertise = rawExpertise as Partial<IExpertise>;
+    // Lấy job id từ URL
+    const jobId = new URLSearchParams(location.search).get("id");
 
-            if (expertise.id !== undefined && expertise.id !== null) {
-                const byId = normalizedOptions.find((item) => item.normalizedValue === `${expertise.id}`.trim());
-                if (byId) return byId.value;
-            }
-
-            if (expertise.name) {
-                const byName = normalizedOptions.find(
-                    (item) => item.normalizedLabel === expertise.name?.toLowerCase().trim()
-                );
-                if (byName) return byName.value;
-            }
-        }
-
-        const rawAsString = `${rawExpertise}`.trim();
-        const rawAsStringLower = rawAsString.toLowerCase();
-
-        const byValue = normalizedOptions.find((item) => item.normalizedValue === rawAsString);
-        if (byValue) return byValue.value;
-
-        const byLabel = normalizedOptions.find((item) => item.normalizedLabel === rawAsStringLower);
-        return byLabel?.value;
-    };
-
+    // Effect 1: Load dropdown options (skills & expertises)
     useEffect(() => {
-        const init = async () => {
-            const [skillsRes, expertisesRes] = await Promise.all([fetchSkillList(), fetchExpertiseList()]);
-            setSkills(skillsRes);
-            setExpertises(expertisesRes);
+        const loadDropdownOptions = async () => {
+            setIsLoadingOptions(true);
+            try {
+                const [skillsRes, expertisesRes] = await Promise.all([
+                    callFetchAllSkill("page=1&size=100"),
+                    callFetchExpertise("page=1&size=1000&sort=name,asc"),
+                ]);
 
-            if (id) {
-                const res = await callFetchAdminJobById(id);
-                if (res && res.data) {
-                    setDataUpdate(res.data);
-                    setValue(res.data.description);
-                    setCompanies([
-                        {
-                            label: res.data.company?.name as string,
-                            value: `${res.data.company?.id}@#$${res.data.company?.logo}` as string,
-                            key: res.data.company?.id
-                        }
-                    ])
-
-                    //skills
-                    const temp: any = res.data?.skills?.map((item: ISkill) => {
-                        return {
-                            label: item.name,
-                            value: item.id,
-                            key: item.id
-                        }
-                    })
-                    const expertiseValue = resolveExpertiseFormValue((res.data as any)?.expertise, expertisesRes);
-
-                    form.setFieldsValue({
-                        ...res.data,
-                        required: normalizeTextField((res.data as any).required ?? (res.data as any).requireds),
-                        benefit: normalizeTextField((res.data as any).benefit ?? (res.data as any).benefits),
-                        company: {
-                            label: res.data.company?.name as string,
-                            value: `${res.data.company?.id}@#$${res.data.company?.logo}` as string,
-                            key: res.data.company?.id
-                        },
-                        skills: temp,
-                        expertises: expertiseValue
-                    })
+                if (skillsRes?.data?.result) {
+                    setSkillOptions(mapSkillsToOptions(skillsRes.data.result));
                 }
+
+                if (expertisesRes?.data?.result) {
+                    setExpertiseOptions(mapExpertisesToOptions(expertisesRes.data.result));
+                }
+            } catch (error) {
+                console.error("Error loading dropdown options:", error);
+            } finally {
+                setIsLoadingOptions(false);
             }
-        }
-        init();
-        return () => form.resetFields();
-    }, [id])
+        };
 
-    // Usage of DebounceSelect
-    async function fetchCompanyList(name: string): Promise<ICompanySelect[]> {
+        loadDropdownOptions();
+    }, []);
+
+    // Effect 2: Load job data khi có jobId VÀ options đã load xong
+    useEffect(() => {
+        const loadJobData = async () => {
+            if (!jobId || expertiseOptions.length === 0) return;
+
+            try {
+                const res = await callFetchAdminJobById(jobId);
+                if (res?.data) {
+                    const job = res.data as IJobResponse;
+
+                    // Set form data
+                    setDataUpdate(job);
+                    setValue(job.description ?? "");
+
+                    // Set companies
+                    if (job.company) {
+                        setCompanies([{
+                            label: job.company.name,
+                            value: `${job.company.id}@#$${job.company.logo ?? ''}`,
+                            key: job.company.id,
+                        }]);
+                    }
+
+                    // Map skills
+                    const skillOpts = mapSkillsToOptions(job.skills ?? []);
+
+                    // Map expertise - tìm option từ tên expertise
+                    const expertiseOpt = findExpertiseOptionByName(job.expertise, expertiseOptions);
+
+                    // Set form values
+                    form.setFieldsValue({
+                        name: job.name,
+                        location: job.location,
+                        salary: job.salary,
+                        quantity: job.quantity,
+                        level: job.level,
+                        description: job.description ?? "",
+                        skills: skillOpts,
+                        expertises: expertiseOpt?.value,
+                        company: job.company ? {
+                            label: job.company.name,
+                            value: `${job.company.id}@#$${job.company.logo ?? ''}`,
+                            key: job.company.id,
+                        } : undefined,
+                        startDate: job.startDate ? dayjs(job.startDate) : undefined,
+                        endDate: job.endDate ? dayjs(job.endDate) : undefined,
+                        active: job.active,
+                        required: normalizeTextField(job.required),
+                        benefit: normalizeTextField(job.benefit),
+                    });
+                }
+            } catch (error) {
+                console.error("Error loading job data:", error);
+                notification.error({
+                    message: "Lỗi",
+                    description: "Không thể tải thông tin job",
+                });
+            }
+        };
+
+        loadJobData();
+
+        return () => {
+            form.resetFields();
+        };
+    }, [jobId, expertiseOptions, form]);
+
+    // Fetch company list cho DebounceSelect
+    const fetchCompanyList = useCallback(async (name: string): Promise<ICompanySelect[]> => {
         const res = await callFetchCompany(`page=1&size=100&name ~ '${name}'`);
-        if (res && res.data) {
-            const list = res.data.result;
-            const temp = list.map(item => {
-                return {
-                    label: item.name as string,
-                    value: `${item.id}@#$${item.logo}` as string
-                }
-            })
-            return temp;
-        } else return [];
-    }
-
-    async function fetchSkillList(): Promise<ISkillSelect[]> {
-        const res = await callFetchAllSkill(`page=1&size=100`);
-        if (res && res.data) {
-            const list = res.data.result;
-            const temp = list.map(item => {
-                return {
-                    label: item.name as string,
-                    value: `${item.id}` as string
-                }
-            })
-            return temp;
-        } else return [];
-    }
-
-    async function fetchExpertiseList(): Promise<IExpertiseSelect[]> {
-        const res = await callFetchExpertise(`page=1&size=1000&sort=name,asc`);
-        if (res && res.data) {
-            const list = res.data.result;
-            return list.map(item => ({
-                label: item.name as string,
-                value: `${item.id}` as string,
-                key: item.id
+        if (res?.data?.result) {
+            return res.data.result.map((item) => ({
+                label: item.name,
+                value: `${item.id}@#$${item.logo ?? ''}`,
             }));
         }
         return [];
-    }
+    }, []);
 
-    const onFinish = async (values: any) => {
-        if (dataUpdate?.id) {
-            //update
-            const cp = values?.company?.value?.split('@#$');
+    // Submit form
+    const onFinish = async (values: Record<string, unknown>) => {
+        try {
+            // Map skills
+            const skills = (values.skills as ISkillOption[] | string[] | undefined)?.map((item) => ({
+                id: typeof item === 'object' ? Number((item as ISkillOption).value) : Number(item),
+            })) ?? [];
 
-            let arrSkills = [];
-            if (typeof values?.skills?.[0] === 'object') {
-                arrSkills = values?.skills?.map((item: any) => { return { id: item.value } });
-            } else {
-                arrSkills = values?.skills?.map((item: any) => { return { id: +item } });
-            }
-            const selectedExpertise = values?.expertises;
-            const expertiseObj = selectedExpertise
-                ? { id: typeof selectedExpertise === 'object' ? +selectedExpertise.value : +selectedExpertise }
+            // Map expertise
+            const expertiseValue = values.expertises;
+            const expertise = expertiseValue
+                ? { id: typeof expertiseValue === 'object' ? Number((expertiseValue as IExpertiseOption).value) : Number(expertiseValue) }
                 : null;
 
-            const job: any = {
-                id: +dataUpdate.id,
+            // Map company
+            const companyValue = values.company as ICompanySelect | undefined;
+            const companyParts = companyValue?.value?.split('@#$') ?? [];
+
+            const jobData: Record<string, unknown> = {
                 name: values.name,
-                skills: arrSkills,
-                company: {
-                    id: cp && cp.length > 0 ? +cp[0] : "",
-                    name: values.company.label,
-                    logo: cp && cp.length > 1 ? cp[1] : ""
-                },
                 location: values.location,
                 salary: values.salary,
                 quantity: values.quantity,
                 level: values.level,
-                expertise: expertiseObj,
+                skills,
+                expertise,
                 description: value,
                 required: values.required,
                 benefit: values.benefit,
-                startDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.startDate) ? dayjs(values.startDate, 'DD/MM/YYYY').toDate() : values.startDate,
-                endDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.endDate) ? dayjs(values.endDate, 'DD/MM/YYYY').toDate() : values.endDate,
                 active: values.active,
+                startDate: dayjs(values.startDate as string).toDate(),
+                endDate: dayjs(values.endDate as string).toDate(),
+            };
 
+            // Thêm company & id nếu là update
+            if (dataUpdate?.id) {
+                jobData.id = Number(dataUpdate.id);
+                jobData.company = {
+                    id: companyParts[0] ? Number(companyParts[0]) : 0,
+                    name: companyValue?.label ?? '',
+                    logo: companyParts[1] ?? '',
+                };
+            } else {
+                jobData.company = {
+                    id: companyParts[0] ?? '',
+                    name: companyValue?.label ?? '',
+                    logo: companyParts[1] ?? '',
+                };
             }
 
-            // Ensure backend receives numeric ids (Spring/JPA is strict here)
-            job.skills = (job.skills ?? []).map((s: any) => ({ id: +s.id }));
-            const res = await callUpdateJob(job);
-            if (res.data) {
-                message.success("Cập nhật job thành công");
-                navigate('/admin/job')
+            // Gọi API
+            const res = dataUpdate?.id
+                ? await callUpdateJob(jobData as Parameters<typeof callUpdateJob>[0])
+                : await callCreateJob(jobData as Parameters<typeof callCreateJob>[0]);
+
+            if (res?.data) {
+                message.success(dataUpdate?.id ? "Cập nhật job thành công" : "Tạo mới job thành công");
+                navigate('/admin/job');
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
-                    description: res.message
+                    message: "Có lỗi xảy ra",
+                    description: res?.message ?? "Vui lòng thử lại",
                 });
             }
-        } else {
-            //create
-            const cp = values?.company?.value?.split('@#$');
-            const arrSkills = values?.skills?.map((item: string) => { return { id: +item } });
-            const expertiseObj = values?.expertises
-                ? { id: +values.expertises }
-                : null;
-            const job = {
-                name: values.name,
-                skills: arrSkills,
-                expertise: expertiseObj,
-                company: {
-                    id: cp && cp.length > 0 ? cp[0] : "",
-                    name: values.company.label,
-                    logo: cp && cp.length > 1 ? cp[1] : ""
-                },
-                location: values.location,
-                salary: values.salary,
-                quantity: values.quantity,
-                level: values.level,
-                description: value,
-                required: values.required,
-                benefit: values.benefit,
-                startDate: dayjs(values.startDate, 'DD/MM/YYYY').toDate(),
-                endDate: dayjs(values.endDate, 'DD/MM/YYYY').toDate(),
-                active: values.active
-            }
-
-            const res = await callCreateJob(job);
-            if (res.data) {
-                message.success("Tạo mới job thành công");
-                navigate('/admin/job')
-            } else {
-                notification.error({
-                    message: 'Có lỗi xảy ra',
-                    description: res.message
-                });
-            }
+        } catch (error) {
+            console.error("Error submitting job:", error);
+            notification.error({
+                message: "Có lỗi xảy ra",
+                description: "Vui lòng thử lại sau",
+            });
         }
-    }
-
-
+    };
 
     return (
         <div className={styles["upsert-job-container"]}>
@@ -285,249 +323,248 @@ const ViewUpsertJob = (props: any) => {
                 <Breadcrumb
                     separator=">"
                     items={[
-                        {
-                            title: <Link to="/admin/job">Manage Job</Link>,
-                        },
-                        {
-                            title: 'Upsert Job',
-                        },
+                        { title: <Link to="/admin/job">Manage Job</Link> },
+                        { title: jobId ? "Update Job" : "Create Job" },
                     ]}
                 />
             </div>
-            <div >
 
-                <ConfigProvider locale={enUS}>
-                    <ProForm
-                        form={form}
-                        onFinish={onFinish}
-                        submitter={
-                            {
-                                searchConfig: {
-                                    resetText: "Hủy",
-                                    submitText: <>{dataUpdate?.id ? "Cập nhật Job" : "Tạo mới Job"}</>
-                                },
-                                onReset: () => navigate('/admin/job'),
-                                render: (_: any, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
-                                submitButtonProps: {
-                                    icon: <CheckSquareOutlined />
-                                },
-                            }
-                        }
-                    >
-                        <Row gutter={[20, 20]}>
-                            <Col span={24} md={12}>
-                                <ProFormText
-                                    label="Tên Job"
-                                    name="name"
-                                    rules={[
-                                        { required: true, message: 'Vui lòng không bỏ trống' },
-                                    ]}
-                                    placeholder="Nhập tên job"
-                                />
-                            </Col>
-                            <Col span={24} md={6}>
-                                <ProFormSelect
-                                    name="skills"
-                                    label="Kỹ năng yêu cầu"
-                                    options={skills}
-                                    placeholder="Please select a skill"
-                                    rules={[{ required: true, message: 'Vui lòng chọn kỹ năng!' }]}
-                                    allowClear
-                                    mode="multiple"
-                                    fieldProps={{
-                                        suffixIcon: null
-                                    }}
-                                />
-                            </Col>
+            <ConfigProvider locale={enUS}>
+                <ProForm
+                    form={form}
+                    onFinish={onFinish}
+                    submitter={{
+                        searchConfig: {
+                            resetText: "Hủy",
+                            submitText: jobId ? "Cập nhật Job" : "Tạo mới Job",
+                        },
+                        onReset: () => navigate('/admin/job'),
+                        render: (_: unknown, dom: unknown[]) => <FooterToolbar>{dom}</FooterToolbar>,
+                        submitButtonProps: { icon: <CheckSquareOutlined /> },
+                    }}
+                >
+                    <Row gutter={[20, 20]}>
+                        {/* Tên Job */}
+                        <Col span={24} md={12}>
+                            <ProFormText
+                                label="Tên Job"
+                                name="name"
+                                rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
+                                placeholder="Nhập tên job"
+                            />
+                        </Col>
 
-                            <Col span={24} md={6}>
-                                <ProFormSelect
-                                    name="expertises"
-                                    label="Chuyên môn"
-                                    options={expertises}
-                                    placeholder="Chọn chuyên môn"
-                                    rules={[{ required: true, message: 'Vui lòng chọn chuyên môn!' }]}
-                                    allowClear
-                                    fieldProps={{
-                                        suffixIcon: null
-                                    }}
-                                />
-                            </Col>
-                            <Col span={24} md={6}>
-                                <ProFormSelect
-                                    name="location"
-                                    label="Địa điểm"
-                                    options={LOCATION_LIST.filter(item => item.value !== 'ALL')}
-                                    placeholder="Please select a location"
-                                    rules={[{ required: true, message: 'Vui lòng chọn địa điểm!' }]}
-                                />
-                            </Col>
-                            <Col span={24} md={6}>
-                                <ProFormDigit
-                                    label="Mức lương"
-                                    name="salary"
-                                    rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
-                                    placeholder="Nhập mức lương"
-                                    fieldProps={{
-                                        addonAfter: " đ",
-                                        formatter: (value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ','),
-                                        parser: (value) => +(value || '').replace(/\$\s?|(,*)/g, '')
-                                    }}
-                                />
-                            </Col>
-                            <Col span={24} md={6}>
-                                <ProFormDigit
-                                    label="Số lượng"
-                                    name="quantity"
-                                    rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
-                                    placeholder="Nhập số lượng"
-                                />
-                            </Col>
-                            <Col span={24} md={6}>
-                                <ProFormSelect
-                                    name="level"
-                                    label="Trình độ"
-                                    valueEnum={{
-                                        INTERN: 'INTERN',
-                                        FRESHER: 'FRESHER',
-                                        JUNIOR: 'JUNIOR',
-                                        MIDDLE: 'MIDDLE',
-                                        SENIOR: 'SENIOR',
-                                    }}
-                                    placeholder="Please select a level"
-                                    rules={[{ required: true, message: 'Vui lòng chọn level!' }]}
-                                />
-                            </Col>
+                        {/* Kỹ năng */}
+                        <Col span={24} md={6}>
+                            <ProFormSelect
+                                name="skills"
+                                label="Kỹ năng yêu cầu"
+                                options={skillOptions}
+                                placeholder="Chọn kỹ năng"
+                                rules={[{ required: true, message: 'Vui lòng chọn kỹ năng!' }]}
+                                allowClear
+                                mode="multiple"
+                                fieldProps={{ suffixIcon: null }}
+                            />
+                        </Col>
 
-                            {(dataUpdate?.id || !id) &&
-                                <Col span={24} md={6}>
-                                    <ProForm.Item
-                                        name="company"
-                                        label="Thuộc Công Ty"
-                                        rules={[{ required: true, message: 'Vui lòng chọn company!' }]}
-                                    >
-                                        <DebounceSelect
-                                            allowClear
-                                            showSearch
-                                            defaultValue={companies}
-                                            value={companies}
-                                            placeholder="Chọn công ty"
-                                            fetchOptions={fetchCompanyList}
-                                            onChange={(newValue: any) => {
-                                                if (newValue?.length === 0 || newValue?.length === 1) {
-                                                    setCompanies(newValue as ICompanySelect[]);
-                                                }
-                                            }}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </ProForm.Item>
+                        {/* Chuyên môn */}
+                        <Col span={24} md={6}>
+                            <ProFormSelect
+                                name="expertises"
+                                label="Chuyên môn"
+                                options={expertiseOptions}
+                                placeholder="Chọn chuyên môn"
+                                rules={[{ required: true, message: 'Vui lòng chọn chuyên môn!' }]}
+                                allowClear
+                                fieldProps={{ suffixIcon: null }}
+                            />
+                        </Col>
 
-                                </Col>
-                            }
+                        {/* Địa điểm */}
+                        <Col span={24} md={6}>
+                            <ProFormSelect
+                                name="location"
+                                label="Địa điểm"
+                                options={LOCATION_LIST.filter(item => item.value !== 'ALL')}
+                                placeholder="Chọn địa điểm"
+                                rules={[{ required: true, message: 'Vui lòng chọn địa điểm!' }]}
+                            />
+                        </Col>
 
-                        </Row>
-                        <Row gutter={[20, 20]}>
+                        {/* Mức lương */}
+                        <Col span={24} md={6}>
+                            <ProFormDigit
+                                label="Mức lương"
+                                name="salary"
+                                rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
+                                placeholder="Nhập mức lương"
+                                fieldProps={{
+                                    addonAfter: " đ",
+                                    formatter: (value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+                                    parser: (value) => +(value || '').replace(/\$\s?|(,*)/g, ''),
+                                }}
+                            />
+                        </Col>
+
+                        {/* Số lượng */}
+                        <Col span={24} md={6}>
+                            <ProFormDigit
+                                label="Số lượng"
+                                name="quantity"
+                                rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
+                                placeholder="Nhập số lượng"
+                            />
+                        </Col>
+
+                        {/* Trình độ */}
+                        <Col span={24} md={6}>
+                            <ProFormSelect
+                                name="level"
+                                label="Trình độ"
+                                valueEnum={{
+                                    INTERN: 'INTERN',
+                                    FRESHER: 'FRESHER',
+                                    JUNIOR: 'JUNIOR',
+                                    MIDDLE: 'MIDDLE',
+                                    SENIOR: 'SENIOR',
+                                }}
+                                placeholder="Chọn trình độ"
+                                rules={[{ required: true, message: 'Vui lòng chọn trình độ!' }]}
+                            />
+                        </Col>
+
+                        {/* Công ty */}
+                        {(!jobId || dataUpdate?.id) && (
                             <Col span={24} md={6}>
-                                <ProFormDatePicker
-                                    label="Ngày bắt đầu"
-                                    name="startDate"
-                                    normalize={(value) => value && dayjs(value, 'DD/MM/YYYY')}
-                                    fieldProps={{
-                                        format: 'DD/MM/YYYY',
-
-                                    }}
-                                    rules={[{ required: true, message: 'Vui lòng chọn ngày cấp' }]}
-                                    placeholder="dd/mm/yyyy"
-                                />
-                            </Col>
-                            <Col span={24} md={6}>
-                                <ProFormDatePicker
-                                    label="Ngày kết thúc"
-                                    name="endDate"
-                                    normalize={(value) => value && dayjs(value, 'DD/MM/YYYY')}
-                                    fieldProps={{
-                                        format: 'DD/MM/YYYY',
-
-                                    }}
-                                    // width="auto"
-                                    rules={[{ required: true, message: 'Vui lòng chọn ngày cấp' }]}
-                                    placeholder="dd/mm/yyyy"
-                                />
-                            </Col>
-                            <Col span={24} md={6}>
-                                <ProFormSwitch
-                                    label="Trạng thái"
-                                    name="active"
-                                    checkedChildren="ACTIVE"
-                                    unCheckedChildren="INACTIVE"
-                                    initialValue={true}
-                                    fieldProps={{
-                                        defaultChecked: true,
-                                    }}
-                                />
-                            </Col>
-                            <Col span={24}>
                                 <ProForm.Item
-                                    name="description"
-                                    label="Miêu tả job"
-                                    rules={[{ required: true, message: 'Vui lòng nhập miêu tả job!' }]}
+                                    name="company"
+                                    label="Thuộc Công Ty"
+                                    rules={[{ required: true, message: 'Vui lòng chọn công ty!' }]}
                                 >
-                                    <ReactQuill
-                                        theme="snow"
-                                        modules={JOB_RICH_TEXT_MODULES}
-                                        value={value}
-                                        onChange={setValue}
+                                    <DebounceSelect
+                                        allowClear
+                                        showSearch
+                                        value={companies}
+                                        placeholder="Chọn công ty"
+                                        fetchOptions={fetchCompanyList}
+                                        onChange={(newValue) => {
+                                            if (Array.isArray(newValue) && (newValue.length === 0 || newValue.length === 1)) {
+                                                setCompanies(newValue as ICompanySelect[]);
+                                            }
+                                        }}
+                                        style={{ width: '100%' }}
                                     />
                                 </ProForm.Item>
                             </Col>
-                            <Col span={24} md={12}>
-                                <ProForm.Item
-                                    name="required"
-                                    label="Yêu cầu công việc"
-                                    rules={[
-                                        {
-                                            validator: (_: unknown, val: string) =>
-                                                isQuillEmpty(val)
-                                                    ? Promise.reject(new Error("Vui lòng nhập yêu cầu công việc"))
-                                                    : Promise.resolve(),
-                                        },
-                                    ]}
-                                >
-                                    <ReactQuill
-                                        theme="snow"
-                                        modules={JOB_RICH_TEXT_MODULES}
-                                        placeholder="Nhập yêu cầu..."
-                                    />
-                                </ProForm.Item>
-                            </Col>
-                            <Col span={24} md={12}>
-                                <ProForm.Item
-                                    name="benefit"
-                                    label="Quyền lợi"
-                                    rules={[
-                                        {
-                                            validator: (_: unknown, val: string) =>
-                                                isQuillEmpty(val)
-                                                    ? Promise.reject(new Error("Vui lòng nhập quyền lợi"))
-                                                    : Promise.resolve(),
-                                        },
-                                    ]}
-                                >
-                                    <ReactQuill
-                                        theme="snow"
-                                        modules={JOB_RICH_TEXT_MODULES}
-                                        placeholder="Nhập quyền lợi..."
-                                    />
-                                </ProForm.Item>
-                            </Col>
-                        </Row>
-                        <Divider />
-                    </ProForm>
-                </ConfigProvider>
+                        )}
+                    </Row>
 
-            </div>
+                    <Row gutter={[20, 20]}>
+                        {/* Ngày bắt đầu */}
+                        <Col span={24} md={6}>
+                            <ProFormDatePicker
+                                label="Ngày bắt đầu"
+                                name="startDate"
+                                normalize={(value) => value && dayjs(value, 'DD/MM/YYYY')}
+                                fieldProps={{ format: 'DD/MM/YYYY' }}
+                                rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu' }]}
+                                placeholder="dd/mm/yyyy"
+                            />
+                        </Col>
+
+                        {/* Ngày kết thúc */}
+                        <Col span={24} md={6}>
+                            <ProFormDatePicker
+                                label="Ngày kết thúc"
+                                name="endDate"
+                                normalize={(value) => value && dayjs(value, 'DD/MM/YYYY')}
+                                fieldProps={{ format: 'DD/MM/YYYY' }}
+                                rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
+                                placeholder="dd/mm/yyyy"
+                            />
+                        </Col>
+
+                        {/* Trạng thái */}
+                        <Col span={24} md={6}>
+                            <ProFormSwitch
+                                label="Trạng thái"
+                                name="active"
+                                checkedChildren="ACTIVE"
+                                unCheckedChildren="INACTIVE"
+                                initialValue={true}
+                                fieldProps={{ defaultChecked: true }}
+                            />
+                        </Col>
+
+                        {/* Miêu tả job */}
+                        <Col span={24}>
+                            <ProForm.Item
+                                name="description"
+                                label="Miêu tả job"
+                                rules={[{ required: true, message: 'Vui lòng nhập miêu tả job!' }]}
+                            >
+                                <ReactQuill
+                                    theme="snow"
+                                    modules={JOB_RICH_TEXT_MODULES}
+                                    value={value}
+                                    onChange={(content) => {
+                                        setValue(content);
+                                        form.setFieldValue('description', content);
+                                    }}
+                                />
+                            </ProForm.Item>
+                        </Col>
+
+                        {/* Yêu cầu công việc */}
+                        <Col span={24} md={12}>
+                            <ProForm.Item
+                                name="required"
+                                label="Yêu cầu công việc"
+                                rules={[
+                                    {
+                                        validator: (_, val: string) =>
+                                            isQuillEmpty(val)
+                                                ? Promise.reject(new Error("Vui lòng nhập yêu cầu công việc"))
+                                                : Promise.resolve(),
+                                    },
+                                ]}
+                            >
+                                <ReactQuill
+                                    theme="snow"
+                                    modules={JOB_RICH_TEXT_MODULES}
+                                    placeholder="Nhập yêu cầu..."
+                                />
+                            </ProForm.Item>
+                        </Col>
+
+                        {/* Quyền lợi */}
+                        <Col span={24} md={12}>
+                            <ProForm.Item
+                                name="benefit"
+                                label="Quyền lợi"
+                                rules={[
+                                    {
+                                        validator: (_, val: string) =>
+                                            isQuillEmpty(val)
+                                                ? Promise.reject(new Error("Vui lòng nhập quyền lợi"))
+                                                : Promise.resolve(),
+                                    },
+                                ]}
+                            >
+                                <ReactQuill
+                                    theme="snow"
+                                    modules={JOB_RICH_TEXT_MODULES}
+                                    placeholder="Nhập quyền lợi..."
+                                />
+                            </ProForm.Item>
+                        </Col>
+                    </Row>
+                    <Divider />
+                </ProForm>
+            </ConfigProvider>
         </div>
-    )
-}
+    );
+};
 
 export default ViewUpsertJob;
