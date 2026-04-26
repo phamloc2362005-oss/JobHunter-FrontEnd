@@ -60,6 +60,41 @@ const ViewUpsertJob = (props: any) => {
         return `${value}`;
     };
 
+    const resolveExpertiseFormValue = (rawExpertise: unknown, options: IExpertiseSelect[]): string | undefined => {
+        if (!rawExpertise) return undefined;
+
+        const normalizedOptions = options.map((item) => ({
+            ...item,
+            normalizedLabel: item.label?.toLowerCase().trim(),
+            normalizedValue: `${item.value}`.trim(),
+        }));
+
+        if (typeof rawExpertise === 'object') {
+            const expertise = rawExpertise as Partial<IExpertise>;
+
+            if (expertise.id !== undefined && expertise.id !== null) {
+                const byId = normalizedOptions.find((item) => item.normalizedValue === `${expertise.id}`.trim());
+                if (byId) return byId.value;
+            }
+
+            if (expertise.name) {
+                const byName = normalizedOptions.find(
+                    (item) => item.normalizedLabel === expertise.name?.toLowerCase().trim()
+                );
+                if (byName) return byName.value;
+            }
+        }
+
+        const rawAsString = `${rawExpertise}`.trim();
+        const rawAsStringLower = rawAsString.toLowerCase();
+
+        const byValue = normalizedOptions.find((item) => item.normalizedValue === rawAsString);
+        if (byValue) return byValue.value;
+
+        const byLabel = normalizedOptions.find((item) => item.normalizedLabel === rawAsStringLower);
+        return byLabel?.value;
+    };
+
     useEffect(() => {
         const init = async () => {
             const [skillsRes, expertisesRes] = await Promise.all([fetchSkillList(), fetchExpertiseList()]);
@@ -87,11 +122,7 @@ const ViewUpsertJob = (props: any) => {
                             key: item.id
                         }
                     })
-                    // expertise
-                    const expertiseName = (res.data as any)?.expertise;
-                    const expertiseValue = expertiseName
-                        ? expertises.find((e: any) => e.label?.toLowerCase().trim() === expertiseName?.toLowerCase().trim())?.value
-                        : null;
+                    const expertiseValue = resolveExpertiseFormValue((res.data as any)?.expertise, expertisesRes);
 
                     form.setFieldsValue({
                         ...res.data,
