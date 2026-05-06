@@ -1,6 +1,6 @@
-import { callFetchAllSkill } from "@/config/api";
+import { callFetchAllSkill, callFetchCompany, callFetchExpertise } from "@/config/api";
 import { LOCATION_LIST } from "@/config/utils";
-import type { ISkill } from "@/types/backend";
+import type { ICompany, IExpertise, ISkill } from "@/types/backend";
 import { RightOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import { useEffect, useMemo, useState } from "react";
@@ -23,13 +23,22 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
     const [active, setActive] = useState<MenuKey>("skills");
     const [isLoading, setIsLoading] = useState(false);
     const [skills, setSkills] = useState<ISkill[]>([]);
+    const [companies, setCompanies] = useState<ICompany[]>([]);
+    const [expertises, setExpertises] = useState<IExpertise[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         const init = async () => {
             setIsLoading(true);
-            const res = await callFetchAllSkill(`page=1&size=${PAGE_SIZE_ALL}&sort=name,asc`);
-            if (res?.data?.result) setSkills(res.data.result);
+            const [skillRes, companyRes, categoryRes] = await Promise.all([
+                callFetchAllSkill(`page=1&size=${PAGE_SIZE_ALL}&sort=name,asc`),
+                callFetchCompany(`page=1&size=${PAGE_SIZE_ALL}&sort=updatedAt,desc`),
+                callFetchExpertise(`page=1&size=${PAGE_SIZE_ALL}&sort=name,asc`),
+            ]);
+
+            if (skillRes?.data?.result) setSkills(skillRes.data.result);
+            if (companyRes?.data?.result) setCompanies(companyRes.data.result);
+            if (categoryRes?.data?.result) setExpertises(categoryRes.data.result);
             setIsLoading(false);
         };
         init();
@@ -37,12 +46,15 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
 
     const leftItems: { key: MenuKey; label: string }[] = [
         { key: "skills", label: "Việc làm IT theo kỹ năng" },
+        { key: "expertise", label: "Việc làm IT theo chuyên môn" },
         { key: "level", label: "Việc làm IT theo cấp bậc" },
         { key: "company", label: "Việc làm IT theo công ty" },
         { key: "city", label: "Việc làm IT theo thành phố" },
     ];
 
     const skillLinks = useMemo(() => skills.slice(0, 40), [skills]);
+    const companyLinks = useMemo(() => companies.slice(0, 40), [companies]);
+    const expertiseLinks = useMemo(() => expertises.slice(0, 20), [expertises]);
 
     const go = (to: string) => {
         navigate(to);
@@ -90,6 +102,29 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
                         </Spin>
                     )}
 
+                    {active === "expertise" && (
+                        <Spin spinning={isLoading}>
+                            <div className={styles.grid} style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+                                {expertiseLinks.map((expertise) => (
+                                    <Link
+                                        key={String(expertise.id)}
+                                        to={`/job?expertiseId=${expertise.id}`}
+                                        className={styles.link}
+                                        onClick={() => onNavigate?.()}
+                                        title={expertise.name}
+                                    >
+                                        {expertise.name}
+                                    </Link>
+                                ))}
+                            </div>
+                            <div className={styles.footer}>
+                                <Link to="/expertise" className={styles.link} onClick={() => onNavigate?.()}>
+                                    Xem tất cả »
+                                </Link>
+                            </div>
+                        </Spin>
+                    )}
+
                     {active === "level" && (
                         <div className={styles.grid} style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
                             {LEVELS.map((lv) => (
@@ -106,19 +141,26 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
                     )}
 
                     {active === "company" && (
-                        <div>
-                            <div style={{ marginBottom: 10, fontWeight: 600 }}>Việc làm IT theo công ty</div>
-                            <div className={styles.muted} style={{ marginBottom: 12 }}>
-                                Xem danh sách công ty và chọn để xem job.
+                        <Spin spinning={isLoading}>
+                            <div className={styles.grid}>
+                                {companyLinks.map((company) => (
+                                    <Link
+                                        key={String(company.id)}
+                                        to={`/job?companyIds=${company.id}`}
+                                        className={styles.link}
+                                        onClick={() => onNavigate?.()}
+                                        title={company.name}
+                                    >
+                                        {company.name}
+                                    </Link>
+                                ))}
                             </div>
-                            <a
-                                className={styles.link}
-                                onClick={() => go("/company")}
-                                style={{ cursor: "pointer", display: "inline-block" }}
-                            >
-                                Xem tất cả công ty »
-                            </a>
-                        </div>
+                            <div className={styles.footer}>
+                                <Link to="/company" className={styles.link} onClick={() => onNavigate?.()}>
+                                    Xem tất cả công ty »
+                                </Link>
+                            </div>
+                        </Spin>
                     )}
 
                     {active === "city" && (

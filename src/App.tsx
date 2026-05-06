@@ -31,6 +31,7 @@ import ClientCompanyPage from './pages/company';
 import ClientCompanyDetailPage from './pages/company/detail';
 import JobTabs from './pages/admin/job/job.tabs';
 import SkillsPage from './pages/skills';
+import ExpertiseClientPage from './pages/expertise';
 import ExpertiseCategoryPage from './pages/admin/expertise-category';
 import ExpertisePage from './pages/admin/expertise';
 
@@ -81,6 +82,7 @@ export default function App() {
         { path: "job", element: <ClientJobPage /> },
         { path: "job/:id", element: <ClientJobDetailPage /> },
         { path: "skills", element: <SkillsPage /> },
+        { path: "expertise", element: <ExpertiseClientPage /> },
         { path: "company", element: <ClientCompanyPage /> },
         { path: "company/:id", element: <ClientCompanyDetailPage /> }
       ],

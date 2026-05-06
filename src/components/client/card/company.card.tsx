@@ -70,10 +70,16 @@ const CompanyCard = (props: IProps) => {
                 <Spin spinning={isLoading} tip="Loading...">
                     <Row gutter={[20, 20]}>
                         <Col span={24}>
-                            <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
-                                <span className={styles["title"]}>Nhà Tuyển Dụng Hàng Đầu</span>
+                            <div className={styles["section-head"]}>
+                                <div>
+                                    <span className={styles["section-badge"]}>Top employers</span>
+                                    <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
+                                        <span className={styles["title"]}>Nhà Tuyển Dụng Hàng Đầu</span>
+                                        <p className={styles["section-subtitle"]}>Các công ty IT đang nổi bật và được quan tâm nhất trên hệ thống.</p>
+                                    </div>
+                                </div>
                                 {!showPagination &&
-                                    <Link to="company">Xem tất cả</Link>
+                                    <Link to="company" className={styles["section-link"]}>Xem tất cả</Link>
                                 }
                             </div>
                         </Col>
@@ -83,19 +89,19 @@ const CompanyCard = (props: IProps) => {
                                 <Col span={24} md={6} key={item.id}>
                                     <Card
                                         onClick={() => handleViewDetailJob(item)}
-                                        style={{ height: 180, borderRadius: 8 }}
+                                        className={styles["company-card-v2"]}
                                         hoverable
                                         cover={
-                                            <div className={styles["card-customize"]} >
+                                            <div className={styles["card-customize-v2"]} >
                                                 <img
-                                                    style={{ maxWidth: "100px", maxHeight: "70px", objectFit: "contain" }}
+                                                    style={{ maxWidth: "110px", maxHeight: "74px", objectFit: "contain" }}
                                                     alt="example"
                                                     src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${item?.logo}`}
                                                 />
                                             </div>
                                         }
                                     >
-                                        <h3 style={{ textAlign: "center", fontSize: 14, marginTop: 8 }}>{item.name}</h3>
+                                        <h3 className={styles["company-card-title"]}>{item.name}</h3>
                                     </Card>
                                 </Col>
                             )

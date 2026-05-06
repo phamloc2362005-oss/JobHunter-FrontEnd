@@ -114,25 +114,32 @@ const JobCard = (props: IProps) => {
         <div className={`${styles["card-job-section"]}`}>
             <div className={`${styles["job-content"]}`}>
                 <Spin spinning={isLoading} tip="Loading...">
-                    <Row gutter={[20, 20]}>
+                    <Row gutter={[20, 20]} align="stretch">
                         <Col span={24}>
-                            <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
-                                <span className={styles["title"]}>Công Việc Mới Nhất</span>
+                            <div className={styles["section-head"]}>
+                                <div>
+                                    <span className={styles["section-badge"]}>Latest jobs</span>
+                                    <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
+                                        <span className={styles["title"]}>Công Việc Mới Nhất</span>
+                                        <p className={styles["section-subtitle"]}>Những job vừa cập nhật được đẩy lên đầu để scan nhanh hơn.</p>
+                                    </div>
+                                </div>
                                 {!showPagination &&
-                                    <Link to="job">Xem tất cả</Link>
+                                    <Link to="job" className={styles["section-link"]}>Xem tất cả</Link>
                                 }
                             </div>
                         </Col>
 
                         {displayJob?.map(item => {
                             return (
-                                <Col span={24} md={12} key={item.id}>
+                                <Col span={24} md={12} key={item.id} style={{ display: 'flex' }}>
                                     <Card size="small" title={null} hoverable
-                                        style={{ borderRadius: 8 }}
+                                        className={styles["job-card-v2"]}
+                                        style={{ width: '100%', height: '100%' }}
                                         onClick={() => handleViewDetailJob(item)}
                                     >
-                                        <div className={styles["card-job-content"]}>
-                                            <div className={styles["card-job-left"]}>
+                                        <div className={styles["card-job-content"]} style={{ height: '100%' }}>
+                                            <div className={styles["card-job-left-v2"]}>
                                                 <img
                                                     alt="example"
                                                     src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${item?.company?.logo}`}
@@ -140,8 +147,10 @@ const JobCard = (props: IProps) => {
                                             </div>
                                             <div className={styles["card-job-right"]}>
                                                 <div className={styles["job-title"]}>{item.name}</div>
-                                                <div className={styles["job-location"]}><EnvironmentOutlined style={{ color: '#58aaab' }} />&nbsp;{getLocationName(item.location)}</div>
-                                                <div><ThunderboltOutlined style={{ color: 'orange' }} />&nbsp;{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</div>
+                                                <div className={styles["job-meta-row"]}>
+                                                    <span className={styles["job-location"]}><EnvironmentOutlined style={{ color: '#0f766e' }} />&nbsp;{getLocationName(item.location)}</span>
+                                                    <span className={styles["job-salary"]}><ThunderboltOutlined style={{ color: '#f59e0b' }} />&nbsp;{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</span>
+                                                </div>
                                                 <div className={styles["job-updatedAt"]}>{item.updatedAt ? dayjs(item.updatedAt).locale('en').fromNow() : dayjs(item.createdAt).locale('en').fromNow()}</div>
                                             </div>
                                         </div>
