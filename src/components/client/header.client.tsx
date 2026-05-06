@@ -97,37 +97,44 @@ const Header = (props: any) => {
             <div className={styles["header-section"]}>
                 <div className={styles["container"]}>
                     {!isMobile ?
-                        <div style={{ display: "flex", gap: 30 }}>
-                            <div className={styles['brand']} >
-                                <FaReact onClick={() => navigate('/')} title='Hỏi Dân IT' />
+                        <div className={styles['header-row']}>
+                            <div className={styles['brand-wrap']}>
+                                <div className={styles['brand']}>
+                                    <FaReact onClick={() => navigate('/')} title='Hỏi Dân IT' />
+                                </div>
+                                <div className={styles['brand-copy']}>
+                                    <strong onClick={() => navigate('/')}>JobHunter</strong>
+                                </div>
                             </div>
                             <div className={styles['top-menu']}>
-                                <div className={styles["desktop-nav"]}>
-                                    <Link className={current === '/' ? styles["nav-active"] : styles["nav-link"]} to={'/'}>
-                                        Trang Chủ
-                                    </Link>
-                                    <Dropdown
-                                        trigger={['hover']}
-                                        placement="bottomLeft"
-                                        dropdownRender={() => <JobMegaMenu />}
-                                    >
-                                        <span className={current.startsWith('/job') ? styles["nav-active"] : styles["nav-link"]}>
-                                            Việc Làm IT
-                                        </span>
-                                    </Dropdown>
-                                    <Link className={current === '/company' ? styles["nav-active"] : styles["nav-link"]} to={'/company'}>
-                                        Top Công ty IT
-                                    </Link>
+                                <div className={styles["nav-shell"]}>
+                                    <div className={styles["desktop-nav"]}>
+                                        <Link className={current === '/' ? styles["nav-active"] : styles["nav-link"]} to={'/'}>
+                                            Trang Chủ
+                                        </Link>
+                                        <Dropdown
+                                            trigger={['hover']}
+                                            placement="bottomLeft"
+                                            dropdownRender={() => <JobMegaMenu />}
+                                        >
+                                            <span className={current.startsWith('/job') ? styles["nav-active"] : styles["nav-link"]}>
+                                                Việc Làm IT
+                                            </span>
+                                        </Dropdown>
+                                        <Link className={current === '/company' ? styles["nav-active"] : styles["nav-link"]} to={'/company'}>
+                                            Top Công ty IT
+                                        </Link>
+                                    </div>
                                 </div>
                                 <div className={styles['extra']}>
                                     {isAuthenticated === false ?
                                         <div className={styles["guest-actions"]}>
-                                            <span className={styles["employer-link"]}>For Employers</span>
+                                            <span className={styles["employer-link"]}>Nhà tuyển dụng</span>
                                             <Link to={'/login'} className={styles["signin-btn"]}>Sign In</Link>
                                         </div>
                                         :
                                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                                            <Space style={{ cursor: "pointer" }}>
+                                            <Space className={styles["user-chip"]} style={{ cursor: "pointer" }}>
                                                 <span>Welcome {user?.name}</span>
                                                 <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
                                             </Space>
@@ -140,7 +147,7 @@ const Header = (props: any) => {
                         </div>
                         :
                         <div className={styles['header-mobile']}>
-                            <span>Your APP</span>
+                            <span>JobHunter</span>
                             <MenuFoldOutlined onClick={() => setOpenMobileMenu(true)} />
                         </div>
                     }

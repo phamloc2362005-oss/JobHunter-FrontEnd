@@ -115,7 +115,7 @@ const JobCard = (props: IProps) => {
             <div className={`${styles["job-content"]}`}>
                 <Spin spinning={isLoading} tip="Loading...">
                     <Row gutter={[20, 20]} align="stretch">
-                        <Col span={24}>
+                        {showPagination && <Col span={24}>
                             <div className={styles["section-head"]}>
                                 <div>
                                     <span className={styles["section-badge"]}>Latest jobs</span>
@@ -124,11 +124,9 @@ const JobCard = (props: IProps) => {
                                         <p className={styles["section-subtitle"]}>Những job vừa cập nhật được đẩy lên đầu để scan nhanh hơn.</p>
                                     </div>
                                 </div>
-                                {!showPagination &&
-                                    <Link to="job" className={styles["section-link"]}>Xem tất cả</Link>
-                                }
+                                <Link to="job" className={styles["section-link"]}>Xem tất cả</Link>
                             </div>
-                        </Col>
+                        </Col>}
 
                         {displayJob?.map(item => {
                             return (

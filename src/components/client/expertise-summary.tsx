@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Spin, Empty, Row, Col } from 'antd';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { callFetchExpertiseCategories, callFetchExpertiseByCategory } from '@/config/api';
-import styles from 'styles/client.module.scss';
 import { IExpertise, IExpertiseCategory } from '@/types/backend';
 import { useNavigate } from 'react-router-dom';
+import styles from './expertise-summary.module.scss';
 
 const ExpertiseSummary = () => {
     const navigate = useNavigate();
@@ -77,66 +77,36 @@ const ExpertiseSummary = () => {
         const isLoading = loadingCategories[categoryId] || false;
 
         return (
-            <div key={categoryId} style={{ marginBottom: '12px' }}>
-                <div
+            <div key={categoryId} className={styles.categoryCard}>
+                <button
+                    type="button"
+                    className={styles.categoryButton}
                     onClick={() => categoryId && handleToggle(categoryId)}
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '16px',
-                        backgroundColor: isExpanded ? '#fafafa' : '#ffffff',
-                        border: '1px solid #e8e8e8',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        userSelect: 'none',
-                        transition: 'all 0.3s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.boxShadow = 'none';
-                    }}
                 >
-                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 500, color: '#262626' }}>
-                        {category.name}
-                    </h4>
-                    <span style={{ color: '#1890ff', fontSize: '14px' }}>
+                    <div>
+                        <h4 className={styles.categoryName}>{category.name}</h4>
+                        <div className={styles.categoryMeta}>
+                            {categoryExpertises.length} chuyên môn
+                        </div>
+                    </div>
+                    <span className={styles.toggleIcon}>
                         {isExpanded ? <MinusOutlined /> : <PlusOutlined />}
                     </span>
-                </div>
+                </button>
 
-                {/* Expanded content */}
                 {isExpanded && (
-                    <div
-                        style={{
-                            padding: '16px',
-                            backgroundColor: '#fafafa',
-                            border: '1px solid #e8e8e8',
-                            borderTop: 'none',
-                            borderRadius: '0 0 8px 8px',
-                            marginTop: '-1px',
-                        }}
-                    >
+                    <div className={styles.expandedPanel}>
                         <Spin spinning={isLoading}>
                             {categoryExpertises.length === 0 && !isLoading ? (
-                                <Empty description="No expertise available" style={{ margin: '20px 0' }} />
+                                <div className={styles.emptyBlock}>
+                                    <Empty description="No expertise available" />
+                                </div>
                             ) : (
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                <div className={styles.expertiseGrid}>
                                     {categoryExpertises.map((expertise: IExpertise) => (
                                         <span
                                             key={expertise.id}
-                                            style={{
-                                                display: 'inline-block',
-                                                padding: '6px 12px',
-                                                backgroundColor: '#e6f7ff',
-                                                border: '1px solid #91d5ff',
-                                                borderRadius: '4px',
-                                                fontSize: '13px',
-                                                color: '#0050b3',
-                                                cursor: 'pointer',
-                                            }}
+                                            className={styles.expertiseChip}
                                             onClick={() => {
                                                 if (expertise.id) {
                                                     navigate(`/job?expertiseId=${encodeURIComponent(expertise.id)}`);
@@ -169,22 +139,28 @@ const ExpertiseSummary = () => {
     }
 
     return (
-        <div style={{ padding: '40px 0' }}>
-            <h2 style={{ fontSize: '28px', fontWeight: 600, marginBottom: '32px', textAlign: 'center' }}>
-                IT Expertise Summary
-            </h2>
+        <div className={styles.summaryShell}>
+            <div className={styles.summaryHeader}>
+                <div>
+                    <span className={styles.kicker}>Career maps</span>
+                    <h2 className={styles.title}>IT Expertise Summary</h2>
+                    <p className={styles.subtitle}>
+                        Khám phá các nhóm chuyên môn để đi thẳng đến những job phù hợp nhất.
+                    </p>
+                </div>
+            </div>
 
-            <Row gutter={[32, 0]}>
+            <Row gutter={[20, 20]}>
                 {/* Left Column */}
                 <Col xs={24} lg={12}>
-                    <div>
+                    <div className={styles.columnWrap}>
                         {leftCategories.map(category => renderCategoryItem(category))}
                     </div>
                 </Col>
 
                 {/* Right Column */}
                 <Col xs={24} lg={12}>
-                    <div>
+                    <div className={styles.columnWrap}>
                         {rightCategories.map(category => renderCategoryItem(category))}
                     </div>
                 </Col>

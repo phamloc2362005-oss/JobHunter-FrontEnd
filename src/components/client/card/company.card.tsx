@@ -69,7 +69,7 @@ const CompanyCard = (props: IProps) => {
             <div className={styles["company-content"]}>
                 <Spin spinning={isLoading} tip="Loading...">
                     <Row gutter={[20, 20]}>
-                        <Col span={24}>
+                        {showPagination && <Col span={24}>
                             <div className={styles["section-head"]}>
                                 <div>
                                     <span className={styles["section-badge"]}>Top employers</span>
@@ -78,11 +78,9 @@ const CompanyCard = (props: IProps) => {
                                         <p className={styles["section-subtitle"]}>Các công ty IT đang nổi bật và được quan tâm nhất trên hệ thống.</p>
                                     </div>
                                 </div>
-                                {!showPagination &&
-                                    <Link to="company" className={styles["section-link"]}>Xem tất cả</Link>
-                                }
+                                <Link to="company" className={styles["section-link"]}>Xem tất cả</Link>
                             </div>
-                        </Col>
+                        </Col>}
 
                         {displayCompany?.map(item => {
                             return (

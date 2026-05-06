@@ -96,7 +96,7 @@ const HomePage = () => {
                 </div>
             </section>
 
-            <section className={`${styles["container"]} ${homeStyles.contentSection}`}>
+            <section className={`${styles["container"]} ${homeStyles.contentSection} ${homeStyles.marketContainer}`}>
                 <div className={homeStyles.sectionHeader}>
                     <div>
                         <span className={homeStyles.sectionKicker}>Market pulse</span>
@@ -109,7 +109,7 @@ const HomePage = () => {
                     <section className={homeStyles.marketSectionCompany}>
                         <div className={homeStyles.marketHeader}>
                             <div>
-                                <span className={homeStyles.marketTag}>Companies</span>
+                                <span className={homeStyles.marketTagCompany}>Companies</span>
                                 <h3>Top tuyển dụng nổi bật</h3>
                                 <p>Khám phá các nhà tuyển dụng IT đang hoạt động nổi bật trên hệ thống.</p>
                             </div>
@@ -125,7 +125,7 @@ const HomePage = () => {
                     <section className={homeStyles.marketSectionJob}>
                         <div className={homeStyles.marketHeader}>
                             <div>
-                                <span className={homeStyles.marketTag}>Jobs</span>
+                                <span className={homeStyles.marketTagJob}>Jobs</span>
                                 <h3>Việc làm mới nhất</h3>
                                 <p>Các job vừa cập nhật được đẩy lên đầu để bạn scan nhanh hơn.</p>
                             </div>
@@ -140,15 +140,7 @@ const HomePage = () => {
                 </div>
             </section>
 
-            <section className={`${styles["container"]} ${homeStyles.contentSection}`}>
-                <div className={homeStyles.sectionHeader}>
-                    <div>
-                        <span className={homeStyles.sectionKicker}>Career maps</span>
-                        <h2>Explore expertise paths</h2>
-                    </div>
-                    <p>Use the expertise catalog to jump directly into a focused job search.</p>
-                </div>
-
+            <section className={`${styles["container"]} ${homeStyles.contentSection} ${homeStyles.marketContainer}`}>
                 <div className={homeStyles.surfaceCard}>
                     <ExpertiseSummary />
                 </div>
