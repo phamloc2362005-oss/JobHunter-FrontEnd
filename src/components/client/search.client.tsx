@@ -3,8 +3,9 @@ import { EnvironmentOutlined, MonitorOutlined } from '@ant-design/icons';
 import { LOCATION_LIST } from '@/config/utils';
 import { ProForm } from '@ant-design/pro-components';
 import { useEffect, useState } from 'react';
-import { callFetchAllSkill } from '@/config/api';
+import { callFetchAllSkill, callFetchCompany } from '@/config/api';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { ICompany } from '@/types/backend';
 
 const SearchClient = () => {
     const navigate = useNavigate();
@@ -16,6 +17,10 @@ const SearchClient = () => {
         label: string;
         value: string;
     }[]>([]);
+    const [optionsCompanies, setOptionsCompanies] = useState<{
+        label: string;
+        value: string;
+    }[]>([]);
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -23,17 +28,22 @@ const SearchClient = () => {
         if (location.search) {
             const queryLocation = searchParams.get("location");
             const querySkills = searchParams.get("skills")
+            const queryCompanyIds = searchParams.get("companyIds")
             if (queryLocation) {
                 form.setFieldValue("location", queryLocation.split(","))
             }
             if (querySkills) {
                 form.setFieldValue("skills", querySkills.split(","))
             }
+            if (queryCompanyIds) {
+                form.setFieldValue("companyIds", queryCompanyIds.split(","))
+            }
         }
     }, [location.search])
 
     useEffect(() => {
         fetchSkill();
+        fetchCompany();
     }, [])
 
     const fetchSkill = async () => {
@@ -51,6 +61,21 @@ const SearchClient = () => {
         }
     }
 
+    const fetchCompany = async () => {
+        let query = `page=1&size=1000&sort=updatedAt,desc`;
+
+        const res = await callFetchCompany(query);
+        if (res && res.data) {
+            const arr = res?.data?.result?.map((item: ICompany) => {
+                return {
+                    label: item.name as string,
+                    value: item.id + "" as string
+                }
+            }) ?? [];
+            setOptionsCompanies(arr);
+        }
+    }
+
     const onFinish = async (values: any) => {
         let query = "";
         if (values?.location?.length) {
@@ -60,6 +85,10 @@ const SearchClient = () => {
             query = values.location?.length ? query + `&skills=${values?.skills?.join(",")}`
                 :
                 `skills=${values?.skills?.join(",")}`;
+        }
+        if (values?.companyIds?.length) {
+            query = query ? query + `&companyIds=${values?.companyIds?.join(",")}`
+                : `companyIds=${values?.companyIds?.join(",")}`;
         }
 
         if (!query) {
@@ -85,7 +114,7 @@ const SearchClient = () => {
                 }
             >
                 <Row gutter={[12, 12]} align="middle">
-                    <Col span={24} md={12} style={{ flex: 1 }}>
+                    <Col span={24} md={8} style={{ flex: 1 }}>
                         <ProForm.Item
                             name="skills"
                             style={{ marginBottom: 0 }}
@@ -102,6 +131,26 @@ const SearchClient = () => {
                                 }
                                 optionLabelProp="label"
                                 options={optionsSkills}
+                            />
+                        </ProForm.Item>
+                    </Col>
+                    <Col span={24} md={8} style={{ flex: 1 }}>
+                        <ProForm.Item
+                            name="companyIds"
+                            style={{ marginBottom: 0 }}
+                        >
+                            <Select
+                                mode="multiple"
+                                allowClear
+                                suffixIcon={null}
+                                style={{ width: '100%' }}
+                                placeholder={
+                                    <>
+                                        <MonitorOutlined /> Công ty...
+                                    </>
+                                }
+                                optionLabelProp="label"
+                                options={optionsCompanies}
                             />
                         </ProForm.Item>
                     </Col>
@@ -125,7 +174,7 @@ const SearchClient = () => {
                             />
                         </ProForm.Item>
                     </Col>
-                    <Col span={24} md={4} className="search-actions">
+                    <Col span={24} className="search-actions" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button type='primary' onClick={() => form.submit()}>Tìm kiếm</Button>
                     </Col>
                 </Row>

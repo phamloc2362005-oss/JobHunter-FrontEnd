@@ -50,6 +50,7 @@ const JobCard = (props: IProps) => {
         //check query string
         const queryLocation = searchParams.get("location");
         const querySkills = searchParams.get("skills")
+        const queryCompanyIds = searchParams.get("companyIds")
         const queryExpertiseId = searchParams.get("expertiseId")
         const queryExpertiseIds = searchParams.get("expertiseIds")
         const queryLevel = searchParams.get("level")
@@ -60,6 +61,9 @@ const JobCard = (props: IProps) => {
         }
         if (querySkills) {
             q = queryLocation ? q + " and " + `${sfIn("skills.id", querySkills.split(","))}` : `${sfIn("skills.id", querySkills.split(","))}`;
+        }
+        if (queryCompanyIds) {
+            q = q ? q + " and " + `${sfIn("company.id", queryCompanyIds.split(","))}` : `${sfIn("company.id", queryCompanyIds.split(","))}`;
         }
         if (queryLevel) {
             q = q ? q + " and " + `level='${queryLevel}'` : `level='${queryLevel}'`;
