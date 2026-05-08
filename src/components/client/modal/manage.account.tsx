@@ -99,7 +99,6 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [skillOptions, setSkillOptions] = useState<{ label: string; value: string }[]>([]);
     const [expertiseOptions, setExpertiseOptions] = useState<{ label: string; value: string }[]>([]);
-    const profileCacheKey = `recommendation_profile_${user?.id || user?.email || "guest"}`;
 
     const levelOptions = [
         { label: "Intern - Thực tập", value: "INTERN" },
@@ -141,47 +140,24 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
     };
 
     const loadCurrentProfile = async () => {
-        try {
-            const res = await callGetUserRecommendationProfile();
-            const profile = res?.data;
+        const res = await callGetUserRecommendationProfile();
+        const profile = res?.data;
 
-            if (profile) {
-                const values = {
-                    skillIds: (profile.skillIds ?? []).map((id: string | number) => String(id)),
-                    level: profile.level,
-                    expertiseId: profile.expertiseId !== null && profile.expertiseId !== undefined
-                        ? String(profile.expertiseId)
-                        : undefined,
-                };
-
-                form.setFieldsValue(values);
-                localStorage.setItem(profileCacheKey, JSON.stringify(values));
-                return;
-            }
-        } catch (error) {
-            // fallback below
+        if (!profile) {
+            return;
         }
 
-        const cachedProfile = localStorage.getItem(profileCacheKey);
-        if (cachedProfile) {
-            try {
-                form.setFieldsValue(JSON.parse(cachedProfile));
-            } catch (error) {
-                // ignore broken cache
-            }
-        }
+        form.setFieldsValue({
+            skillIds: (profile.skillIds ?? []).map((id: string | number) => String(id)),
+            level: profile.level,
+            expertiseId: profile.expertiseId !== null && profile.expertiseId !== undefined
+                ? String(profile.expertiseId)
+                : undefined,
+        });
     };
 
     const onFinish = async (values: any) => {
         setIsSubmitting(true);
-        const cachedValues = {
-            skillIds: (values.skillIds ?? []).map((id: string | number) => String(id)),
-            level: values.level,
-            expertiseId: values.expertiseId !== null && values.expertiseId !== undefined
-                ? String(values.expertiseId)
-                : undefined,
-        };
-
         const res = await callUpdateUserRecommendationProfile({
             skillIds: values.skillIds ?? [],
             level: values.level,
@@ -190,7 +166,6 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
         setIsSubmitting(false);
 
         if (res?.statusCode === 200) {
-            localStorage.setItem(profileCacheKey, JSON.stringify(cachedValues));
             message.success("Cập nhật hồ sơ thành công. Gợi ý việc làm sẽ chính xác hơn ngay sau đó.");
             await loadCurrentProfile();
             return;

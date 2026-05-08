@@ -76,18 +76,18 @@ const normalizeString = (str: string | undefined | null): string => {
 // Helper: Convert ISkill[] → ISkillOption[]
 const mapSkillsToOptions = (skills: ISkill[]): ISkillOption[] => {
     return skills.map((item) => ({
-        label: item.name,
-        value: String(item.id),
-        key: item.id,
+        label: item.name ?? '',
+        value: String(item.id ?? ''),
+        key: String(item.id ?? ''),
     }));
 };
 
 // Helper: Convert IExpertise[] → IExpertiseOption[]
 const mapExpertisesToOptions = (expertises: IExpertise[]): IExpertiseOption[] => {
     return expertises.map((item) => ({
-        label: item.name,
-        value: String(item.id),
-        key: item.id,
+        label: item.name ?? '',
+        value: String(item.id ?? ''),
+        key: String(item.id ?? ''),
     }));
 };
 
@@ -175,16 +175,16 @@ const ViewUpsertJob = () => {
                 if (res?.data) {
                     const job = res.data as IJobResponse;
 
-                    // Set form data
-                    setDataUpdate(job);
+                    // Set form data (cast safely to IJob)
+                    setDataUpdate(job as unknown as IJob);
                     setValue(job.description ?? "");
 
                     // Set companies
                     if (job.company) {
                         setCompanies([{
-                            label: job.company.name,
+                            label: job.company.name ?? '',
                             value: `${job.company.id}@#$${job.company.logo ?? ''}`,
-                            key: job.company.id,
+                            key: String(job.company.id ?? ''),
                         }]);
                     }
 
@@ -237,8 +237,9 @@ const ViewUpsertJob = () => {
         const res = await callFetchCompany(`page=1&size=100&name ~ '${name}'`);
         if (res?.data?.result) {
             return res.data.result.map((item) => ({
-                label: item.name,
+                label: item.name ?? '',
                 value: `${item.id}@#$${item.logo ?? ''}`,
+                key: String(item.id ?? ''),
             }));
         }
         return [];
@@ -296,8 +297,8 @@ const ViewUpsertJob = () => {
 
             // Gọi API
             const res = dataUpdate?.id
-                ? await callUpdateJob(jobData as Parameters<typeof callUpdateJob>[0])
-                : await callCreateJob(jobData as Parameters<typeof callCreateJob>[0]);
+                ? await callUpdateJob(jobData as unknown as Parameters<typeof callUpdateJob>[0])
+                : await callCreateJob(jobData as unknown as Parameters<typeof callCreateJob>[0]);
 
             if (res?.data) {
                 message.success(dataUpdate?.id ? "Cập nhật job thành công" : "Tạo mới job thành công");
@@ -339,7 +340,7 @@ const ViewUpsertJob = () => {
                             submitText: jobId ? "Cập nhật Job" : "Tạo mới Job",
                         },
                         onReset: () => navigate('/admin/job'),
-                        render: (_: unknown, dom: unknown[]) => <FooterToolbar>{dom}</FooterToolbar>,
+                        render: (_: unknown, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
                         submitButtonProps: { icon: <CheckSquareOutlined /> },
                     }}
                 >

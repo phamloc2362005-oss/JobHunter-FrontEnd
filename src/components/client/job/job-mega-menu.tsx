@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./job-mega-menu.module.scss";
 
-type MenuKey = "skills" | "expertise" | "level" | "company" | "city";
+type MenuKey = "skills" | "expertise" | "level" | "company" | "city" | "recommended";
 
 const PAGE_SIZE_ALL = 2000;
 
@@ -50,6 +50,7 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
         { key: "level", label: "Việc làm IT theo cấp bậc" },
         { key: "company", label: "Việc làm IT theo công ty" },
         { key: "city", label: "Việc làm IT theo thành phố" },
+        { key: "recommended", label: "Việc làm phù hợp" },
     ];
 
     const skillLinks = useMemo(() => skills.slice(0, 40), [skills]);
@@ -70,7 +71,13 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
                             key={it.key}
                             className={`${styles.leftItem} ${active === it.key ? styles.leftItemActive : ""}`}
                             onMouseEnter={() => setActive(it.key)}
-                            onClick={() => setActive(it.key)}
+                            onClick={() => {
+                                if (it.key === 'recommended') {
+                                    go('/recommended');
+                                    return;
+                                }
+                                setActive(it.key);
+                            }}
                         >
                             <span>{it.label}</span>
                             <RightOutlined className={styles.chev} />
@@ -177,6 +184,8 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
                             ))}
                         </div>
                     )}
+
+                    {/* 'recommended' navigates directly from left item; no right-panel dropdown needed */}
                 </div>
             </div>
         </div>

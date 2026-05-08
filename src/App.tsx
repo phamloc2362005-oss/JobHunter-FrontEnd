@@ -32,6 +32,7 @@ import ClientCompanyDetailPage from './pages/company/detail';
 import JobTabs from './pages/admin/job/job.tabs';
 import SkillsPage from './pages/skills';
 import ExpertiseClientPage from './pages/expertise';
+import RecommendedPage from './pages/recommended';
 import ExpertiseCategoryPage from './pages/admin/expertise-category';
 import ExpertisePage from './pages/admin/expertise';
 
@@ -79,6 +80,7 @@ export default function App() {
       errorElement: <NotFound />,
       children: [
         { index: true, element: <HomePage /> },
+        { path: "recommended", element: <RecommendedPage /> },
         { path: "job", element: <ClientJobPage /> },
         { path: "job/:id", element: <ClientJobDetailPage /> },
         { path: "skills", element: <SkillsPage /> },

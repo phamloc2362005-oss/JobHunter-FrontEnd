@@ -103,7 +103,11 @@ const SearchClient = () => {
 
     return (
         <div className="search-client">
-            <h1>Việc Làm IT Cho Developer "Chất"</h1>
+            <span className="search-client-kicker">Bộ lọc thông minh</span>
+            <h1>Tìm job IT đúng stack, đúng level</h1>
+            <p className="search-client-description">
+                Chọn kỹ năng, công ty và địa điểm để lọc ra danh sách việc làm sát với profile của bạn.
+            </p>
             <ProForm
                 form={form}
                 onFinish={onFinish}

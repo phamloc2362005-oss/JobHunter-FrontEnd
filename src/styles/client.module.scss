@@ -673,6 +673,20 @@
 }
 
 :global(.search-client) {
+    .search-client-kicker {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        margin: 0 auto 12px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #cbd5e1;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
     h1 {
         color: #fff;
         text-align: center;
@@ -681,6 +695,15 @@
         margin: 0 0 30px;
         line-height: 1.05;
         letter-spacing: -1px;
+    }
+
+    .search-client-description {
+        max-width: 640px;
+        margin: -16px auto 24px;
+        color: rgba(226, 232, 240, 0.78);
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.75;
     }
 
     :global(.ant-form) {
@@ -780,8 +803,17 @@
 
 @media (max-width: 768px) {
     :global(.search-client) {
+        .search-client-kicker {
+            margin-bottom: 10px;
+        }
+
         h1 {
             font-size: 30px;
+            margin-bottom: 18px;
+        }
+
+        .search-client-description {
+            margin: 0 auto 18px;
         }
     }
 
