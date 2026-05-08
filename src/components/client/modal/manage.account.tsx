@@ -1,13 +1,12 @@
-import { Button, Col, Form, Modal, Row, Select, Table, Tabs, message, notification, Input } from "antd";
+import { Alert, Button, Card, Col, Divider, Form, Modal, Row, Select, Table, Tabs, Tag, Typography, message, notification, Input } from "antd";
 import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
-import { IResume, ISubscribers } from "@/types/backend";
+import { IExpertise, IResume, ISubscribers, ISkill } from "@/types/backend";
 import { useState, useEffect } from 'react';
-import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword } from "@/config/api";
+import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { MonitorOutlined } from "@ant-design/icons";
-import { SKILLS_LIST } from "@/config/utils";
+import { ExclamationCircleOutlined, MonitorOutlined, ThunderboltOutlined } from "@ant-design/icons";
 import { useAppSelector } from "@/redux/hooks";
 import { useNavigate } from "react-router-dom";
 
@@ -94,12 +93,204 @@ const UserResume = (props: any) => {
     )
 }
 
-const UserUpdateInfo = (props: any) => {
+const UserUpdateInfo = ({ open }: { open: boolean }) => {
+    const [form] = Form.useForm();
+    const user = useAppSelector(state => state.account.user);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [skillOptions, setSkillOptions] = useState<{ label: string; value: string }[]>([]);
+    const [expertiseOptions, setExpertiseOptions] = useState<{ label: string; value: string }[]>([]);
+    const profileCacheKey = `recommendation_profile_${user?.id || user?.email || "guest"}`;
+
+    const levelOptions = [
+        { label: "Intern - Thực tập", value: "INTERN" },
+        { label: "Junior - Fresher", value: "JUNIOR" },
+        { label: "Middle - Có kinh nghiệm", value: "MIDDLE" },
+        { label: "Senior - Dày dạn", value: "SENIOR" },
+    ];
+
+    useEffect(() => {
+        const init = async () => {
+            await Promise.all([loadSkills(), loadExpertises()]);
+        };
+
+        init();
+    }, []);
+
+    useEffect(() => {
+        if (open) {
+            loadCurrentProfile();
+        }
+    }, [open]);
+
+    const loadSkills = async () => {
+        const res = await callFetchAllSkill("page=1&size=1000&sort=name,asc");
+        const options = res?.data?.result?.map((item: ISkill) => ({
+            label: item.name ?? "",
+            value: String(item.id),
+        })) ?? [];
+        setSkillOptions(options);
+    };
+
+    const loadExpertises = async () => {
+        const res = await callFetchExpertise("page=1&size=1000&sort=name,asc");
+        const options = res?.data?.result?.map((item: IExpertise) => ({
+            label: item.name ?? "",
+            value: String(item.id),
+        })) ?? [];
+        setExpertiseOptions(options);
+    };
+
+    const loadCurrentProfile = async () => {
+        try {
+            const res = await callGetUserRecommendationProfile();
+            const profile = res?.data;
+
+            if (profile) {
+                const values = {
+                    skillIds: (profile.skillIds ?? []).map((id: string | number) => String(id)),
+                    level: profile.level,
+                    expertiseId: profile.expertiseId !== null && profile.expertiseId !== undefined
+                        ? String(profile.expertiseId)
+                        : undefined,
+                };
+
+                form.setFieldsValue(values);
+                localStorage.setItem(profileCacheKey, JSON.stringify(values));
+                return;
+            }
+        } catch (error) {
+            // fallback below
+        }
+
+        const cachedProfile = localStorage.getItem(profileCacheKey);
+        if (cachedProfile) {
+            try {
+                form.setFieldsValue(JSON.parse(cachedProfile));
+            } catch (error) {
+                // ignore broken cache
+            }
+        }
+    };
+
+    const onFinish = async (values: any) => {
+        setIsSubmitting(true);
+        const cachedValues = {
+            skillIds: (values.skillIds ?? []).map((id: string | number) => String(id)),
+            level: values.level,
+            expertiseId: values.expertiseId !== null && values.expertiseId !== undefined
+                ? String(values.expertiseId)
+                : undefined,
+        };
+
+        const res = await callUpdateUserRecommendationProfile({
+            skillIds: values.skillIds ?? [],
+            level: values.level,
+            expertiseId: values.expertiseId ?? null,
+        });
+        setIsSubmitting(false);
+
+        if (res?.statusCode === 200) {
+            localStorage.setItem(profileCacheKey, JSON.stringify(cachedValues));
+            message.success("Cập nhật hồ sơ thành công. Gợi ý việc làm sẽ chính xác hơn ngay sau đó.");
+            await loadCurrentProfile();
+            return;
+        }
+
+        notification.error({
+            message: "Có lỗi xảy ra",
+            description: res?.message || "Không thể cập nhật hồ sơ gợi ý việc làm",
+        });
+    };
+
     return (
-        <div>
-            todo
+        <div style={{ display: "grid", gap: 16 }}>
+            <Card
+                bodyStyle={{ padding: 18 }}
+                style={{ borderRadius: 18, border: "1px solid rgba(22, 119, 255, 0.12)", background: "linear-gradient(180deg, #f8fbff 0%, #ffffff 100%)" }}
+            >
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
+                    <div>
+                        <Typography.Title level={4} style={{ margin: 0 }}>Hồ sơ gợi ý việc làm</Typography.Title>
+                        <Typography.Paragraph style={{ margin: "8px 0 0", color: "#64748b" }}>
+                            Cập nhật các tiêu chí này để hệ thống đẩy job phù hợp hơn với bạn.
+                        </Typography.Paragraph>
+                    </div>
+                    <Tag color="geekblue" icon={<ThunderboltOutlined />}>Xin chào {user?.name || "bạn"}</Tag>
+                </div>
+
+                <Alert
+                    showIcon
+                    type="info"
+                    icon={<ExclamationCircleOutlined />}
+                    style={{ marginTop: 16, marginBottom: 18 }}
+                    message="Tip"
+                    description="Càng chọn đúng kỹ năng, level và chuyên môn, danh sách job phù hợp càng sát với hồ sơ của bạn."
+                />
+
+                <Form layout="vertical" form={form} onFinish={onFinish} initialValues={{ skillIds: [], level: undefined, expertiseId: undefined }}>
+                    <Row gutter={[16, 8]}>
+                        <Col xs={24}>
+                            <Form.Item
+                                label="Kỹ năng"
+                                name="skillIds"
+                                rules={[{ required: true, message: "Vui lòng chọn ít nhất 1 kỹ năng" }]}
+                            >
+                                <Select
+                                    mode="multiple"
+                                    allowClear
+                                    showSearch
+                                    placeholder="Chọn kỹ năng bạn đang có"
+                                    optionFilterProp="label"
+                                    options={skillOptions}
+                                />
+                            </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={12}>
+                            <Form.Item
+                                label="Level"
+                                name="level"
+                                rules={[{ required: true, message: "Vui lòng chọn level" }]}
+                            >
+                                <Select
+                                    allowClear
+                                    placeholder="Chọn level kinh nghiệm"
+                                    options={levelOptions}
+                                />
+                            </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={12}>
+                            <Form.Item
+                                label="Chuyên môn"
+                                name="expertiseId"
+                            >
+                                <Select
+                                    allowClear
+                                    showSearch
+                                    placeholder="Chọn chuyên môn chính"
+                                    optionFilterProp="label"
+                                    options={expertiseOptions}
+                                />
+                            </Form.Item>
+                        </Col>
+
+                        <Col span={24}>
+                            <Divider style={{ margin: "4px 0 12px" }} />
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                                <Typography.Text type="secondary">
+                                    Dữ liệu này chỉ dùng cho recommendation engine.
+                                </Typography.Text>
+                                <Button type="primary" htmlType="submit" loading={isSubmitting}>
+                                    Cập nhật thông tin
+                                </Button>
+                            </div>
+                        </Col>
+                    </Row>
+                </Form>
+            </Card>
         </div>
-    )
+    );
 }
 
 const JobByEmail = (props: any) => {
@@ -324,12 +515,12 @@ const ManageAccount = (props: IProps) => {
         {
             key: 'user-update-info',
             label: `Cập nhật thông tin`,
-            children: <UserUpdateInfo />,
+            children: <UserUpdateInfo open={open} />,
         },
         {
             key: 'user-password',
             label: `Thay đổi mật khẩu`,
-            children: <ChangePasswordTab onClose={onClose}/>,
+            children: <ChangePasswordTab onClose={onClose} />,
         },
     ];
 

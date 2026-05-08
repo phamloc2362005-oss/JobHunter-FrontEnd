@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse } from '@/types/backend';
 import axios from 'config/axios-customize';
 
 /**
@@ -107,6 +107,18 @@ export const callUpdateUser = (user: IUser) => {
     return axios.put<IBackendRes<IUser>>(`/api/v1/users`, { ...user })
 }
 
+export const callUpdateUserRecommendationProfile = (payload: IRecommendationProfilePayload) => {
+    return axios.put<IBackendRes<IUser>>('/api/v1/users/profile/recommendation', {
+        ...payload,
+        skillIds: payload.skillIds?.map(item => Number(item)),
+        expertiseId: payload.expertiseId !== null && payload.expertiseId !== undefined ? Number(payload.expertiseId) : null,
+    })
+}
+
+export const callGetUserRecommendationProfile = () => {
+    return axios.get<IBackendRes<IRecommendationProfileResponse>>('/api/v1/users/profile/recommendation')
+}
+
 export const callDeleteUser = (id: string) => {
     return axios.delete<IBackendRes<IUser>>(`/api/v1/users/${id}`);
 }
@@ -139,6 +151,10 @@ export const callFetchPublicJob = (query: string) => {
 
 export const callFetchPublicJobById = (id: string) => {
     return axios.get(`/api/v1/jobs/${id}`);
+}
+
+export const callFetchRecommendedJobs = (limit: number = 6) => {
+    return axios.get<IBackendRes<IJobRecommendation[]>>(`/api/v1/recommendations/jobs?limit=${limit}`);
 }
 
 // ADMIN - dùng cho trang quản trị

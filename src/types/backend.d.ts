@@ -115,6 +115,24 @@ export interface IJob {
     updatedAt?: string;
 }
 
+export interface IJobRecommendation {
+    job: IJob;
+    score: number;
+    matchSummary: string;
+}
+
+export interface IRecommendationProfilePayload {
+    skillIds: Array<string | number>;
+    level: 'INTERN' | 'JUNIOR' | 'MIDDLE' | 'SENIOR' | string;
+    expertiseId?: string | number | null;
+}
+
+export interface IRecommendationProfileResponse {
+    skillIds: Array<string | number>;
+    level?: 'INTERN' | 'JUNIOR' | 'MIDDLE' | 'SENIOR' | string;
+    expertiseId?: string | number | null;
+}
+
 export interface IResume {
     id?: string;
     email: string;

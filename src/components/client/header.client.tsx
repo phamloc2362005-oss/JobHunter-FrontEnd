@@ -30,6 +30,16 @@ const Header = (props: any) => {
         setCurrent(location.pathname);
     }, [location])
 
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const shouldOpenAccount = params.get('manageAccount') === '1';
+
+        if (shouldOpenAccount && isAuthenticated) {
+            setOpenManageAccount(true);
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location.search, isAuthenticated, location.pathname, navigate]);
+
     const items: MenuProps['items'] = [
         {
             label: <Link to={'/'}>Trang Chủ</Link>,
@@ -68,7 +78,7 @@ const Header = (props: any) => {
             label: <label
                 style={{ cursor: 'pointer' }}
                 onClick={() => setOpenManageAccount(true)}
-            >Quản lý tài khoản</label>,
+            >Quản lí tài khoản</label>,
             key: 'manage-account',
             icon: <ContactsOutlined />
         },
