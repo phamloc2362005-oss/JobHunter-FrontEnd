@@ -1,14 +1,16 @@
 import SearchClient from '@/components/client/search.client';
-import JobCard from '@/components/client/card/job.card';
-import { ArrowRightOutlined, EnvironmentOutlined, FireOutlined, ThunderboltOutlined, TrophyOutlined } from '@ant-design/icons';
+import JobListCompact from '@/components/client/card/job-list-compact';
+import JobDetailPanel from '@/components/client/card/job-detail-panel';
+import { ArrowRightOutlined, EnvironmentOutlined, FireOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Col, Row, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '@/redux/hooks';
+import { IJob } from '@/types/backend';
+import { useState } from 'react';
 import layoutStyles from 'styles/client.module.scss';
 import styles from './index.module.scss';
 
-const ClientJobPage = (props: any) => {
-    const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+const ClientJobPage = () => {
+    const [selectedJob, setSelectedJob] = useState<IJob | undefined>();
 
     return (
         <div className={styles.pageShell}>
@@ -21,18 +23,18 @@ const ClientJobPage = (props: any) => {
                                 Tìm job IT đúng stack, đúng level
                             </Typography.Title>
                             <p className={styles.heroDescription}>
-                                Thiết kế theo kiểu TopCV và ITviec: gọn, sáng, nhiều lớp lọc và scan job nhanh hơn.
-                                Chọn kỹ năng, công ty và địa điểm để đi thẳng vào danh sách phù hợp nhất.
+                                Trang việc làm được thiết kế theo hướng job board cao cấp: nhìn nhanh, lọc nhanh, và đi thẳng vào job phù hợp.
+                                Chọn kỹ năng, địa điểm hoặc công ty để thu hẹp kết quả, hoặc bấm tìm kiếm để xem toàn bộ việc làm.
                             </p>
 
                             <div className={styles.heroActions}>
-                                <Link to={isAuthenticated ? "/recommended" : "/login"} className={styles.heroActionPrimary}>
+                                <Link to="#job-feed" className={styles.heroActionPrimary}>
                                     <ThunderboltOutlined />
-                                    Xem job phù hợp
+                                    Khám phá việc làm
                                 </Link>
-                                <Link to={isAuthenticated ? "/?manageAccount=1" : "/login"} className={styles.heroAction}>
-                                    <TrophyOutlined />
-                                    Cập nhật hồ sơ
+                                <Link to="/recommended" className={styles.heroAction}>
+                                    <ArrowRightOutlined />
+                                    Việc làm phù hợp
                                 </Link>
                             </div>
 
@@ -73,7 +75,7 @@ const ClientJobPage = (props: any) => {
                                 <span className={styles.searchKicker}>Bộ lọc nhanh</span>
                                 <h2 className={styles.searchTitle}>Tìm đúng job trong vài giây</h2>
                                 <p className={styles.searchDescription}>
-                                    Lọc theo kỹ năng, công ty và địa điểm để rút ngắn thời gian scan job.
+                                    Lọc theo kỹ năng, công ty và địa điểm để rút ngắn thời gian scan job. Không chọn gì vẫn xem được toàn bộ việc làm.
                                 </p>
                             </div>
                             <div className={styles.searchPanel}>
@@ -84,42 +86,33 @@ const ClientJobPage = (props: any) => {
                 </div>
             </section>
 
-            <section className={`${layoutStyles["container"]} ${styles.feedSection}`}>
-                <Row gutter={[20, 20]}>
-                    <Col span={24}>
-                        <div className={styles.feedHeader}>
-                            <div>
+            <section id="job-feed" className={`${layoutStyles["container"]} ${styles.feedSection}`}>
+                <Row gutter={0} className={styles.feedGrid}>
+                    {/* Job List Column */}
+                    <Col span={24} md={10} className={styles.feedCol}>
+                        <div className={styles.jobListColumn}>
+                            <div className={styles.columnHeader}>
                                 <span className={styles.sectionKicker}>Danh sách việc làm</span>
-                                <Typography.Title level={2} style={{ margin: '10px 0 0' }}>
-                                    Các job đang mở
+                                <Typography.Title level={3} style={{ margin: '8px 0 4px' }}>
+                                    Job đang mở
                                 </Typography.Title>
-                                <p>
-                                    Duyệt danh sách job theo thứ tự mới nhất, sau đó dùng bộ lọc ở trên để thu hẹp kết quả.
+                                <p className={styles.columnDescription}>
+                                    Chọn job để xem chi tiết
                                 </p>
                             </div>
-
-                            <div className={styles.feedStats}>
-                                <div className={styles.feedStat}>
-                                    <strong>Quick scan</strong>
-                                    <span>Thông tin job hiển thị theo card dễ đọc.</span>
-                                </div>
-                                <div className={styles.feedStat}>
-                                    <strong>Multi filter</strong>
-                                    <span>Search theo skill, company hoặc location.</span>
-                                </div>
-                                <div className={styles.feedStat}>
-                                    <strong>Smart match</strong>
-                                    <span>Job phù hợp hơn sẽ được đẩy lên phía trên.</span>
-                                </div>
+                            <div className={styles.listContainer}>
+                                <JobListCompact
+                                    onSelectJob={setSelectedJob}
+                                    selectedJobId={selectedJob?.id}
+                                />
                             </div>
                         </div>
                     </Col>
 
-                    <Col span={24}>
-                        <div className={styles.feedSurface}>
-                            <JobCard
-                                showPagination={true}
-                            />
+                    {/* Job Detail Column */}
+                    <Col span={24} md={14} className={styles.feedCol}>
+                        <div className={styles.jobDetailColumn}>
+                            <JobDetailPanel job={selectedJob} />
                         </div>
                     </Col>
                 </Row>

@@ -92,6 +92,28 @@ const ResumePage = () => {
             dataIndex: "companyName",
             hideInSearch: true,
         },
+        {
+            title: 'Điểm AI',
+            dataIndex: 'aiScore',
+            width: 100,
+            render: (text, record, index, action) => {
+                const score = record.aiScore || 0;
+                let color = score >= 70 ? 'green' : score >= 50 ? 'orange' : 'red';
+                return (
+                    <span style={{ 
+                        color: color, 
+                        fontWeight: 'bold',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        background: `${color}10`, // 10% opacity
+                        border: `1px solid ${color}`
+                    }}>
+                        {score > 0 ? `${score}%` : 'N/A'}
+                    </span>
+                )
+            },
+            hideInSearch: true,
+        },
 
         {
             title: 'CreatedAt',

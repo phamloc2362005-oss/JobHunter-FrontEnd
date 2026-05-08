@@ -1,197 +1,293 @@
-import { ArrowRightOutlined, CodeOutlined, EnvironmentOutlined, RiseOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import {
+    ArrowRightOutlined,
+    BulbOutlined,
+    CodeOutlined,
+    EnvironmentOutlined,
+    FireOutlined,
+    RiseOutlined,
+    RocketOutlined,
+    SafetyCertificateOutlined,
+    TeamOutlined,
+    ThunderboltOutlined,
+} from '@ant-design/icons';
 import SearchClient from '@/components/client/search.client';
 import JobCard from '@/components/client/card/job.card';
 import CompanyCard from '@/components/client/card/company.card';
 import ExpertiseSummary from '@/components/client/expertise-summary';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
-import homeStyles from './index.module.scss';
-import { useAppSelector } from '@/redux/hooks';
+import s from './index.module.scss';
+import { useEffect, useRef, useState } from 'react';
+
+/* ─── animated counter ─── */
+const useCountUp = (target: number, duration = 2000, start = false) => {
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        if (!start) return;
+        let startTime: number | null = null;
+        const step = (ts: number) => {
+            if (!startTime) startTime = ts;
+            const progress = Math.min((ts - startTime) / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.floor(ease * target));
+            if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    }, [start, target, duration]);
+    return count;
+};
+
+const StatItem = ({ value, suffix, label, icon, start }: { value: number; suffix: string; label: string; icon: React.ReactNode; start: boolean }) => {
+    const count = useCountUp(value, 1800, start);
+    return (
+        <div className={s.statItem}>
+            <span className={s.statIcon}>{icon}</span>
+            <strong className={s.statNumber}>{count.toLocaleString()}{suffix}</strong>
+            <span className={s.statLabel}>{label}</span>
+        </div>
+    );
+};
+
+const TECH_TAGS = ['React', 'Node.js', 'Java', 'Python', 'Go', 'AWS', 'Docker', 'Kubernetes', 'TypeScript', 'GraphQL', 'Vue', 'Spring Boot', 'MongoDB', 'Redis', '.NET', 'Flutter'];
 
 const HomePage = () => {
-    const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+    const statsRef = useRef<HTMLDivElement>(null);
+    const [statsVisible, setStatsVisible] = useState(false);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => { if (entry.isIntersecting) setStatsVisible(true); },
+            { threshold: 0.3 }
+        );
+        if (statsRef.current) observer.observe(statsRef.current);
+        return () => observer.disconnect();
+    }, []);
 
     return (
-        <div className={homeStyles.pageShell}>
-            <section className={homeStyles.heroSection}>
-                <div className={styles["container"]}>
-                    <div className={homeStyles.heroGrid}>
-                        <div className={homeStyles.heroCopy}>
-                            <span className={homeStyles.kicker}>JOBHUNTER · IT CAREER PLATFORM</span>
-                            <h1 className={homeStyles.heroTitle}>Find IT jobs that match your stack, team, and ambition.</h1>
-                            <p className={homeStyles.heroDescription}>
-                                Search by skills, companies, expertise, and location from one polished homepage built for faster decisions.
-                            </p>
+        <div className={s.pageShell}>
 
-                            <div className={homeStyles.heroActions}>
-                                <Link to={isAuthenticated ? "/?manageAccount=1" : "/login"} className={homeStyles.heroActionPrimary}>
-                                    <ThunderboltOutlined />
-                                    Quản lí tài khoản
-                                </Link>
-                                <Link to="/skills" className={homeStyles.heroAction}>
-                                    <CodeOutlined />
-                                    Browse skills
-                                </Link>
-                                <Link to="/expertise" className={homeStyles.heroAction}>
-                                    <ThunderboltOutlined />
-                                    Browse expertise
-                                </Link>
-                                <Link to="/company" className={homeStyles.heroAction}>
-                                    <RiseOutlined />
-                                    Top companies
-                                </Link>
-                            </div>
+            {/* ══════════════════ HERO ══════════════════ */}
+            <section className={s.heroSection}>
+                {/* animated grid background */}
+                <div className={s.gridBg} aria-hidden="true" />
+                {/* floating blobs */}
+                <div className={s.blob1} aria-hidden="true" />
+                <div className={s.blob2} aria-hidden="true" />
+                <div className={s.blob3} aria-hidden="true" />
 
-                            <div className={homeStyles.statGrid}>
-                                <div className={homeStyles.statCard}>
-                                    <strong>Fast search</strong>
-                                    <span>Filter by multiple criteria in one place</span>
-                                </div>
-                                <div className={homeStyles.statCard}>
-                                    <strong>Fresh listings</strong>
-                                    <span>Updated jobs and companies on the fly</span>
-                                </div>
-                                <div className={homeStyles.statCard}>
-                                    <strong>IT focused</strong>
-                                    <span>Designed for developers and tech roles</span>
-                                </div>
-                            </div>
-                        </div>
+                <div className={`${styles['container']} ${s.heroInner}`}>
+                    {/* badge */}
+                    <div className={s.heroBadge}>
+                        <span className={s.badgeDot} />
+                        <FireOutlined /> Platform #1 cho IT professionals tại Việt Nam
+                    </div>
 
-                        <div className={homeStyles.searchShell}>
-                            <div className={homeStyles.searchGlow} />
-                            <SearchClient />
-                        </div>
+                    <h1 className={s.heroTitle}>
+                        Tìm việc IT <span className={s.gradientText}>đúng stack</span>,<br />
+                        đúng team, đúng mức lương.
+                    </h1>
+
+                    <p className={s.heroSub}>
+                        Kết nối với hàng trăm công ty công nghệ hàng đầu. Filter theo kỹ năng,
+                        level, địa điểm và salary range — chỉ trong một cú click.
+                    </p>
+
+                    {/* search box */}
+                    <div className={s.searchBox}>
+                        <div className={s.searchGlow} aria-hidden="true" />
+                        <SearchClient />
+                    </div>
+
+                    {/* tech tags strip */}
+                    <div className={s.tagStrip}>
+                        <span className={s.tagStripLabel}>Trending:</span>
+                        {TECH_TAGS.map(tag => (
+                            <Link key={tag} to={`/job?skills=${tag}`} className={s.techTag}>{tag}</Link>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            <section className={`${styles["container"]} ${homeStyles.contentSection}`}>
-                <div className={homeStyles.sectionHeader}>
+            {/* ══════════════════ STATS BAR ══════════════════ */}
+            <section className={s.statsBar} ref={statsRef}>
+                <div className={styles['container']}>
+                    <div className={s.statsGrid}>
+                        <StatItem value={5000} suffix="+" label="Việc làm IT đang tuyển" icon={<BulbOutlined />} start={statsVisible} />
+                        <div className={s.statDivider} />
+                        <StatItem value={1200} suffix="+" label="Công ty đối tác" icon={<TeamOutlined />} start={statsVisible} />
+                        <div className={s.statDivider} />
+                        <StatItem value={98} suffix="%" label="Ứng viên hài lòng" icon={<SafetyCertificateOutlined />} start={statsVisible} />
+                        <div className={s.statDivider} />
+                        <StatItem value={48} suffix="h" label="Phản hồi trung bình" icon={<ThunderboltOutlined />} start={statsVisible} />
+                    </div>
+                </div>
+            </section>
+
+            {/* ══════════════════ QUICK PATHS ══════════════════ */}
+            <section className={`${styles['container']} ${s.section}`}>
+                <div className={s.sectionHead}>
                     <div>
-                        <span className={homeStyles.sectionKicker}>Quick paths</span>
-                        <h2>Jump straight to what you need</h2>
+                        <span className={s.chip}>🚀 Quick paths</span>
+                        <h2 className={s.sectionTitle}>Khám phá ngay theo mục tiêu</h2>
                     </div>
-                    <p>Built for people who already know whether they want a skill, an expertise path, or a target company.</p>
+                    <p className={s.sectionDesc}>
+                        Dù bạn muốn tìm kỹ năng, chuyên môn hay công ty — chúng mình đều có.
+                    </p>
                 </div>
 
-                <div className={homeStyles.featureGrid}>
-                    <Link to="/skills" className={homeStyles.featureCard}>
-                        <span className={homeStyles.featureIcon}><CodeOutlined /></span>
-                        <span className={homeStyles.featureText}>
-                            <strong>Skills</strong>
-                            <span>Browse the full skills catalog</span>
-                        </span>
-                        <ArrowRightOutlined className={homeStyles.featureArrow} />
+                <div className={s.pathGrid}>
+                    <Link to="/job" className={`${s.pathCard} ${s.pathCardPrimary}`}>
+                        <div className={s.pathCardBg} aria-hidden="true" />
+                        <span className={s.pathIcon}><ThunderboltOutlined /></span>
+                        <div className={s.pathInfo}>
+                            <strong>Việc làm IT</strong>
+                            <span>Tìm job phù hợp với stack của bạn</span>
+                        </div>
+                        <ArrowRightOutlined className={s.pathArrow} />
                     </Link>
-                    <Link to="/expertise" className={homeStyles.featureCard}>
-                        <span className={homeStyles.featureIcon}><ThunderboltOutlined /></span>
-                        <span className={homeStyles.featureText}>
-                            <strong>Expertise</strong>
-                            <span>Explore every expertise path</span>
-                        </span>
-                        <ArrowRightOutlined className={homeStyles.featureArrow} />
+                    <Link to="/skills" className={`${s.pathCard} ${s.pathCardSecondary}`}>
+                        <div className={s.pathCardBg} aria-hidden="true" />
+                        <span className={s.pathIcon}><CodeOutlined /></span>
+                        <div className={s.pathInfo}>
+                            <strong>Kỹ năng</strong>
+                            <span>Duyệt toàn bộ danh mục kỹ năng</span>
+                        </div>
+                        <ArrowRightOutlined className={s.pathArrow} />
                     </Link>
-                    <Link to="/company" className={homeStyles.featureCard}>
-                        <span className={homeStyles.featureIcon}><RiseOutlined /></span>
-                        <span className={homeStyles.featureText}>
-                            <strong>Companies</strong>
-                            <span>See the strongest IT employers</span>
-                        </span>
-                        <ArrowRightOutlined className={homeStyles.featureArrow} />
+                    <Link to="/expertise" className={`${s.pathCard} ${s.pathCardTertiary}`}>
+                        <div className={s.pathCardBg} aria-hidden="true" />
+                        <span className={s.pathIcon}><RocketOutlined /></span>
+                        <div className={s.pathInfo}>
+                            <strong>Chuyên môn</strong>
+                            <span>Khám phá mọi lộ trình chuyên môn</span>
+                        </div>
+                        <ArrowRightOutlined className={s.pathArrow} />
+                    </Link>
+                    <Link to="/company" className={`${s.pathCard} ${s.pathCardQuaternary}`}>
+                        <div className={s.pathCardBg} aria-hidden="true" />
+                        <span className={s.pathIcon}><RiseOutlined /></span>
+                        <div className={s.pathInfo}>
+                            <strong>Top Công ty</strong>
+                            <span>Nhà tuyển dụng IT hàng đầu</span>
+                        </div>
+                        <ArrowRightOutlined className={s.pathArrow} />
                     </Link>
                 </div>
             </section>
 
-            <section className={`${styles["container"]} ${homeStyles.contentSection} ${homeStyles.marketContainer}`}>
-                <div className={homeStyles.sectionHeader}>
-                    <div>
-                        <span className={homeStyles.sectionKicker}>Market pulse</span>
-                        <h2>Top companies and latest jobs</h2>
+            {/* ══════════════════ COMPANIES ══════════════════ */}
+            <section className={`${styles['container']} ${s.section}`}>
+                <div className={s.marketCard}>
+                    <div className={s.marketCardHeader}>
+                        <div className={s.marketCardLeft}>
+                            <span className={s.chipBlue}>🏢 Companies</span>
+                            <h2 className={s.marketTitle}>Top tuyển dụng nổi bật</h2>
+                            <p className={s.marketDesc}>Các nhà tuyển dụng IT đang hoạt động tích cực trên hệ thống.</p>
+                        </div>
+                        <Link to="/company" className={s.viewAllBtn}>
+                            Xem tất cả <ArrowRightOutlined />
+                        </Link>
                     </div>
-                    <p>A quick scan of the market, with recruiters and jobs presented as two focused editorial blocks.</p>
-                </div>
-
-                <div className={homeStyles.marketStack}>
-                    <section className={homeStyles.marketSectionCompany}>
-                        <div className={homeStyles.marketHeader}>
-                            <div>
-                                <span className={homeStyles.marketTagCompany}>Companies</span>
-                                <h3>Top tuyển dụng nổi bật</h3>
-                                <p>Khám phá các nhà tuyển dụng IT đang hoạt động nổi bật trên hệ thống.</p>
-                            </div>
-                            <Link to="/company" className={homeStyles.marketAction}>
-                                Xem tất cả
-                            </Link>
-                        </div>
-                        <div className={homeStyles.marketSurface}>
-                            <CompanyCard />
-                        </div>
-                    </section>
-
-                    <section className={homeStyles.marketSectionJob}>
-                        <div className={homeStyles.marketHeader}>
-                            <div>
-                                <span className={homeStyles.marketTagJob}>Jobs</span>
-                                <h3>Việc làm mới nhất</h3>
-                                <p>Các job vừa cập nhật được đẩy lên đầu để bạn scan nhanh hơn.</p>
-                            </div>
-                            <Link to="/job" className={homeStyles.marketAction}>
-                                Xem tất cả
-                            </Link>
-                        </div>
-                        <div className={homeStyles.marketSurface}>
-                            <JobCard />
-                        </div>
-                    </section>
+                    <div className={s.marketBody}>
+                        <CompanyCard />
+                    </div>
                 </div>
             </section>
 
-            <section className={`${styles["container"]} ${homeStyles.contentSection} ${homeStyles.marketContainer}`}>
-                <div className={homeStyles.surfaceCard}>
+            {/* ══════════════════ JOBS ══════════════════ */}
+            <section className={`${styles['container']} ${s.section}`}>
+                <div className={s.marketCard}>
+                    <div className={s.marketCardHeader}>
+                        <div className={s.marketCardLeft}>
+                            <span className={s.chipGreen}>⚡ Jobs</span>
+                            <h2 className={s.marketTitle}>Việc làm mới nhất</h2>
+                            <p className={s.marketDesc}>Các job vừa cập nhật được đẩy lên đầu để bạn scan nhanh hơn.</p>
+                        </div>
+                        <Link to="/job" className={s.viewAllBtn}>
+                            Xem tất cả <ArrowRightOutlined />
+                        </Link>
+                    </div>
+                    <div className={s.marketBody}>
+                        <JobCard />
+                    </div>
+                </div>
+            </section>
+
+            {/* ══════════════════ EXPERTISE ══════════════════ */}
+            <section className={`${styles['container']} ${s.section}`}>
+                <div className={s.expertiseWrap}>
                     <ExpertiseSummary />
                 </div>
             </section>
 
-            <div className={`${styles["footer-section"]} ${homeStyles.footerShell}`}>
-                <div className={`${styles["container"]}`}>
-                    <div className={styles["footer-content"]}>
-                        <div className={styles["footer-column"]}>
-                            <h3>About JobHunter</h3>
-                            <p>Find your dream job and grow your career with JobHunter, the leading job platform for IT professionals.</p>
+            {/* ══════════════════ CTA BANNER ══════════════════ */}
+            <section className={`${styles['container']} ${s.section}`}>
+                <div className={s.ctaBanner}>
+                    <div className={s.ctaBannerBg} aria-hidden="true" />
+                    <div className={s.ctaContent}>
+                        <span className={s.ctaEmoji}>🎯</span>
+                        <h2 className={s.ctaTitle}>Bạn đã sẵn sàng bứt phá sự nghiệp IT?</h2>
+                        <p className={s.ctaDesc}>
+                            Tham gia cùng hơn <strong>50,000+</strong> IT professionals đang dùng JobHunter mỗi ngày.
+                        </p>
+                        <div className={s.ctaActions}>
+                            <Link to="/job" className={s.ctaPrimary}>
+                                <ThunderboltOutlined /> Tìm việc ngay
+                            </Link>
+                            <Link to="/login" className={s.ctaSecondary}>
+                                Đăng ký miễn phí <ArrowRightOutlined />
+                            </Link>
                         </div>
-                        <div className={styles["footer-column"]}>
-                            <h3>Quick Links</h3>
-                            <ul>
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/job">Jobs</a></li>
-                                <li><a href="/company">Companies</a></li>
-                                <li><a href="/skills">Skills</a></li>
-                            </ul>
-                        </div>
-                        <div className={styles["footer-column"]}>
-                            <h3>For Employers</h3>
-                            <ul>
-                                <li><a href="#">Post a Job</a></li>
-                                <li><a href="#">Browse Candidates</a></li>
-                                <li><a href="#">Pricing</a></li>
-                                <li><a href="#">Company Dashboard</a></li>
-                            </ul>
-                        </div>
-                        <div className={styles["footer-column"]}>
-                            <h3>Contact</h3>
-                            <p>Email: support@jobhunter.com</p>
-                            <p>Phone: +84 123 456 789</p>
-                            <p>Address: Ho Chi Minh City, Vietnam</p>
-                        </div>
-                    </div>
-                    <div className={styles["footer-bottom"]}>
-                        <p>&copy; 2024 JobHunter. All rights reserved.</p>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            {/* ══════════════════ FOOTER ══════════════════ */}
+            <footer className={s.footer}>
+                <div className={`${styles['container']} ${s.footerInner}`}>
+                    <div className={s.footerBrand}>
+                        <div className={s.footerLogo}>
+                            <CodeOutlined />
+                        </div>
+                        <strong>JobHunter</strong>
+                        <p>Platform tuyển dụng IT hàng đầu Việt Nam. Built for developers, by developers.</p>
+                    </div>
+
+                    <div className={s.footerLinks}>
+                        <div className={s.footerCol}>
+                            <h4>Platform</h4>
+                            <a href="/">Trang Chủ</a>
+                            <a href="/job">Việc Làm</a>
+                            <a href="/company">Công Ty</a>
+                            <a href="/skills">Kỹ Năng</a>
+                        </div>
+                        <div className={s.footerCol}>
+                            <h4>Nhà Tuyển Dụng</h4>
+                            <a href="#">Đăng tin tuyển dụng</a>
+                            <a href="#">Tìm ứng viên</a>
+                            <a href="#">Dashboard công ty</a>
+                            <a href="#">Bảng giá</a>
+                        </div>
+                        <div className={s.footerCol}>
+                            <h4>Liên Hệ</h4>
+                            <a href="mailto:support@jobhunter.com">support@jobhunter.com</a>
+                            <a href="tel:+84123456789">+84 123 456 789</a>
+                            <span>TP. Hồ Chí Minh, Việt Nam</span>
+                        </div>
+                    </div>
+                </div>
+                <div className={s.footerBottom}>
+                    <div className={styles['container']}>
+                        <span>© 2024 JobHunter. All rights reserved.</span>
+                        <div className={s.footerBottomLinks}>
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
-    )
-}
+    );
+};
 
 export default HomePage;

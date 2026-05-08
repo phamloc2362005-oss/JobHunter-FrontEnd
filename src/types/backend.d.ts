@@ -158,6 +158,8 @@ export interface IResume {
     deletedAt?: boolean | null;
     createdAt?: string;
     updatedAt?: string;
+    aiScore?: number;
+    aiFeedback?: string;
 }
 
 export interface IPermission {

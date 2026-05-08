@@ -1,5 +1,5 @@
-import { Button, Col, Form, Row, Select, notification } from 'antd';
-import { EnvironmentOutlined, MonitorOutlined } from '@ant-design/icons';
+import { Button, Col, Form, Row, Select } from 'antd';
+import { EnvironmentOutlined, MonitorOutlined, SearchOutlined } from '@ant-design/icons';
 import { LOCATION_LIST } from '@/config/utils';
 import { ProForm } from '@ant-design/pro-components';
 import { useEffect, useState } from 'react';
@@ -92,10 +92,7 @@ const SearchClient = () => {
         }
 
         if (!query) {
-            notification.error({
-                message: 'Có lỗi xảy ra',
-                description: "Vui lòng chọn tiêu chí để search"
-            });
+            navigate('/job');
             return;
         }
         navigate(`/job?${query}`);
@@ -103,83 +100,57 @@ const SearchClient = () => {
 
     return (
         <div className="search-client">
-            <span className="search-client-kicker">Bộ lọc thông minh</span>
-            <h1>Tìm job IT đúng stack, đúng level</h1>
-            <p className="search-client-description">
+            <h1 style={{ color: '#fff', textAlign: 'center', marginBottom: '8px' }}>Tìm job IT đúng stack, đúng level</h1>
+            <p className="search-client-description" style={{ color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center', marginBottom: '32px' }}>
                 Chọn kỹ năng, công ty và địa điểm để lọc ra danh sách việc làm sát với profile của bạn.
             </p>
             <ProForm
                 form={form}
                 onFinish={onFinish}
-                submitter={
-                    {
-                        render: () => <></>
-                    }
-                }
+                submitter={{ render: () => <></> }}
             >
-                <Row gutter={[12, 12]} align="middle">
-                    <Col span={24} md={8} style={{ flex: 1 }}>
-                        <ProForm.Item
-                            name="skills"
-                            style={{ marginBottom: 0 }}
-                        >
+                <Row gutter={[8, 8]} align="middle" className="itviec-search-wrapper">
+                    <Col span={24} md={6}>
+                        <ProForm.Item name="location" style={{ marginBottom: 0 }}>
                             <Select
                                 mode="multiple"
                                 allowClear
-                                suffixIcon={null}
+                                showArrow={false}
                                 style={{ width: '100%' }}
                                 placeholder={
-                                    <>
-                                        <MonitorOutlined /> Tìm theo kỹ năng...
-                                    </>
-                                }
-                                optionLabelProp="label"
-                                options={optionsSkills}
-                            />
-                        </ProForm.Item>
-                    </Col>
-                    <Col span={24} md={8} style={{ flex: 1 }}>
-                        <ProForm.Item
-                            name="companyIds"
-                            style={{ marginBottom: 0 }}
-                        >
-                            <Select
-                                mode="multiple"
-                                allowClear
-                                suffixIcon={null}
-                                style={{ width: '100%' }}
-                                placeholder={
-                                    <>
-                                        <MonitorOutlined /> Công ty...
-                                    </>
-                                }
-                                optionLabelProp="label"
-                                options={optionsCompanies}
-                            />
-                        </ProForm.Item>
-                    </Col>
-                    <Col span={24} md={8} style={{ flex: 1 }}>
-                        <ProForm.Item
-                            name="location"
-                            style={{ marginBottom: 0 }}
-                        >
-                            <Select
-                                mode="multiple"
-                                allowClear
-                                suffixIcon={null}
-                                style={{ width: '100%' }}
-                                placeholder={
-                                    <>
-                                        <EnvironmentOutlined /> Địa điểm...
-                                    </>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <EnvironmentOutlined style={{ color: '#555' }} /> Địa điểm...
+                                    </span>
                                 }
                                 optionLabelProp="label"
                                 options={optionsLocations}
+                                className="itviec-select"
                             />
                         </ProForm.Item>
                     </Col>
-                    <Col span={24} className="search-actions" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <Button type='primary' onClick={() => form.submit()}>Tìm kiếm</Button>
+                    <Col span={24} md={14}>
+                        <ProForm.Item name="skills" style={{ marginBottom: 0 }}>
+                            <Select
+                                mode="multiple"
+                                allowClear
+                                showArrow={false}
+                                style={{ width: '100%' }}
+                                placeholder="Nhập kỹ năng, kỹ thuật (Java, React, Node.js...)"
+                                optionLabelProp="label"
+                                options={optionsSkills}
+                                className="itviec-select"
+                            />
+                        </ProForm.Item>
+                    </Col>
+                    <Col span={24} md={4}>
+                        <Button
+                            type='primary'
+                            icon={<SearchOutlined style={{ fontSize: '18px' }} />}
+                            onClick={() => form.submit()}
+                            className="itviec-button"
+                        >
+                            Tìm kiếm
+                        </Button>
                     </Col>
                 </Row>
             </ProForm>

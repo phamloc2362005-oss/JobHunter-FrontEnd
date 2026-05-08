@@ -16,11 +16,21 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     plugins: [
-      react(), 
+      react(),
       // visualizer() as PluginOption
     ],
     server: {
-      port: parseInt(env.PORT)
+      port: parseInt(env.PORT),
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8081',
+          changeOrigin: true,
+        },
+        '/storage': {
+          target: 'http://localhost:8081',
+          changeOrigin: true,
+        },
+      },
     },
     resolve: {
       alias: {

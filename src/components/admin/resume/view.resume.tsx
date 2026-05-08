@@ -94,6 +94,18 @@ const ViewDetailResume = (props: IProps) => {
                     </Descriptions.Item>
                     <Descriptions.Item label="Ngày tạo">{dataInit && dataInit.createdAt ? dayjs(dataInit.createdAt).format('DD-MM-YYYY HH:mm:ss') : ""}</Descriptions.Item>
                     <Descriptions.Item label="Ngày sửa">{dataInit && dataInit.updatedAt ? dayjs(dataInit.updatedAt).format('DD-MM-YYYY HH:mm:ss') : ""}</Descriptions.Item>
+                    <Descriptions.Item label="Điểm AI" span={2}>
+                        {dataInit?.aiScore ? (
+                            <span style={{ fontWeight: 'bold', color: dataInit.aiScore >= 70 ? 'green' : dataInit.aiScore >= 50 ? 'orange' : 'red' }}>
+                                {dataInit.aiScore}%
+                            </span>
+                        ) : "N/A"}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="AI Nhận xét" span={2}>
+                        <div style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f9f9f9', padding: '10px', borderRadius: '4px', border: '1px solid #eee' }}>
+                            {dataInit?.aiFeedback || "Chưa có nhận xét từ AI"}
+                        </div>
+                    </Descriptions.Item>
 
                 </Descriptions>
             </Drawer>
