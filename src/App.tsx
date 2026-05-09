@@ -35,6 +35,7 @@ import ExpertiseClientPage from './pages/expertise';
 import RecommendedPage from './pages/recommended';
 import ExpertiseCategoryPage from './pages/admin/expertise-category';
 import ExpertisePage from './pages/admin/expertise';
+import CvBuilderPage from './pages/cv-builder';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,7 +87,8 @@ export default function App() {
         { path: "skills", element: <SkillsPage /> },
         { path: "expertise", element: <ExpertiseClientPage /> },
         { path: "company", element: <ClientCompanyPage /> },
-        { path: "company/:id", element: <ClientCompanyDetailPage /> }
+        { path: "company/:id", element: <ClientCompanyDetailPage /> },
+        { path: "cv-builder", element: <CvBuilderPage /> }
       ],
     },
 

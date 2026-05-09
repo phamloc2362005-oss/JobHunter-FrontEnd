@@ -330,3 +330,9 @@ export const callFetchExpertise = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<IExpertise>>>(`/api/v1/expertise?${query}`);
 }
 
+/**
+ * Module AI
+ */
+export const callGenerateCv = (rawInput: string) => {
+    return axios.post<IBackendRes<any>>('/api/v1/ai/generate-cv', { rawInput });
+}
