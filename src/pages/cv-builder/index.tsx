@@ -111,12 +111,8 @@ Học vấn: Đại học Bách Khoa TP.HCM, ngành CNTT, tốt nghiệp 2023.`;
     };
 
     const handlePrint = useReactToPrint({
-        content: () => cvRef.current,
+        contentRef: cvRef,
         documentTitle: `CV_${result?.name || 'TopCV'}`,
-        onBeforeGetContent: () => {
-            message.loading('Đang chuẩn bị trang in...', 1);
-            return Promise.resolve();
-        }
     });
 
     return (
@@ -253,15 +249,7 @@ Học vấn: Đại học Bách Khoa TP.HCM, ngành CNTT, tốt nghiệp 2023.`;
                                         </div>
                                     </div>
 
-                                    {/* MỤC TIÊU NGHỀ NGHIỆP */}
-                                    <div className={styles.sidebarSection}>
-                                        <div className={styles.sidebarTitle}>
-                                            <StarOutlined /> Mục tiêu nghề nghiệp
-                                        </div>
-                                        <div className={styles.sidebarText}>
-                                            {result.careerObjective}
-                                        </div>
-                                    </div>
+
 
                                     {/* KỸ NĂNG (PROGRESS BAR) */}
                                     <div className={styles.sidebarSection}>
@@ -302,24 +290,30 @@ Học vấn: Đại học Bách Khoa TP.HCM, ngành CNTT, tốt nghiệp 2023.`;
                                         <p className={styles.cvJobTitle}>{result.jobTitle}</p>
                                     </header>
 
+                                    {/* MỤC TIÊU NGHỀ NGHIỆP */}
+                                    <div className={styles.cvSection}>
+                                        <div className={styles.cvSectionTitle}>
+                                            <StarOutlined /> Mục tiêu nghề nghiệp
+                                        </div>
+                                        <p className={styles.summaryText}>{result.careerObjective}</p>
+                                    </div>
+
                                     {/* HỌC VẤN */}
                                     {result.education && result.education.length > 0 && (
                                         <div className={styles.cvSection}>
                                             <div className={styles.cvSectionTitle}>
                                                 <StarOutlined /> Học vấn
                                             </div>
-                                            <div className={styles.timelineList}>
-                                                {result.education.map((edu, idx) => (
-                                                    <div key={idx} className={styles.timelineItem}>
-                                                        <div className={styles.timeRange}>{edu.timeRange}</div>
-                                                        <div className={styles.timelineContent}>
-                                                            <div className={styles.timelineTitle}>{edu.major}</div>
-                                                            <div className={styles.timelineSub}>{edu.school}</div>
-                                                            <div className={styles.timelineDesc}>{edu.desc}</div>
-                                                        </div>
+                                            {result.education.map((edu, idx) => (
+                                                <div key={idx} className={styles.entryBlock}>
+                                                    <div className={styles.entryHeader}>
+                                                        <span className={styles.entryTitle}>{edu.major}</span>
+                                                        <span className={styles.entryTime}>{edu.timeRange}</span>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                    <div className={styles.entrySub}>{edu.school}</div>
+                                                    <div className={styles.entryDesc}>{edu.desc}</div>
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
 
@@ -329,22 +323,20 @@ Học vấn: Đại học Bách Khoa TP.HCM, ngành CNTT, tốt nghiệp 2023.`;
                                             <div className={styles.cvSectionTitle}>
                                                 <ThunderboltOutlined /> Kinh nghiệm làm việc
                                             </div>
-                                            <div className={styles.timelineList}>
-                                                {result.experiences.map((exp, idx) => (
-                                                    <div key={idx} className={styles.timelineItem}>
-                                                        <div className={styles.timeRange}>{exp.timeRange}</div>
-                                                        <div className={styles.timelineContent}>
-                                                            <div className={styles.timelineTitle}>{exp.title}</div>
-                                                            <div className={styles.timelineSub}>{exp.company}</div>
-                                                            <ul className={styles.expBullets}>
-                                                                {exp.bullets.map((bullet, bIdx) => (
-                                                                    <li key={bIdx}>{bullet}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
+                                            {result.experiences.map((exp, idx) => (
+                                                <div key={idx} className={styles.entryBlock}>
+                                                    <div className={styles.entryHeader}>
+                                                        <span className={styles.entryTitle}>{exp.title}</span>
+                                                        <span className={styles.entryTime}>{exp.timeRange}</span>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                    <div className={styles.entrySub}>{exp.company}</div>
+                                                    <ul className={styles.expBullets}>
+                                                        {exp.bullets.map((bullet, bIdx) => (
+                                                            <li key={bIdx}>{bullet}</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                 </main>
