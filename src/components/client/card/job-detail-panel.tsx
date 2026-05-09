@@ -1,4 +1,5 @@
 import { IJob } from '@/types/backend';
+import { convertSlug } from '@/config/utils';
 import { EnvironmentOutlined, ThunderboltOutlined, HeartOutlined, HeartFilled, ShareAltOutlined } from '@ant-design/icons';
 import { Button, Tag, Empty, Space, Divider } from 'antd';
 import { useState } from 'react';
@@ -27,7 +28,8 @@ const JobDetailPanel = (props: IProps) => {
     }
 
     const handleApplyJob = () => {
-        navigate(`/job/${job.id}`);
+        const slug = convertSlug(job.name);
+        navigate(`/job/${slug}?id=${job.id}`);
     };
 
     return (
@@ -43,7 +45,9 @@ const JobDetailPanel = (props: IProps) => {
                         />
                         <div className={styles.companyDetails}>
                             <h3 className={styles.companyName}>{job.company?.name}</h3>
-                            <p className={styles.jobTitle}>{job.name}</p>
+                            <p className={styles.jobTitle} onClick={handleApplyJob}>
+                                {job.name}
+                            </p>
                         </div>
                     </div>
                 </div>
