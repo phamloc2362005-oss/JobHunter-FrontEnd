@@ -132,7 +132,11 @@ const Header = (props: any) => {
                                             placement="bottomLeft"
                                             dropdownRender={() => <JobMegaMenu />}
                                         >
-                                            <span className={current.startsWith('/job') ? styles["nav-active"] : styles["nav-link"]}>
+                                            <span
+                                                className={current.startsWith('/job') ? styles["nav-active"] : styles["nav-link"]}
+                                                onClick={() => navigate('/job')}
+                                                style={{ cursor: 'pointer' }}
+                                            >
                                                 Việc Làm IT
                                             </span>
                                         </Dropdown>

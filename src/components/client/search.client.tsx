@@ -7,7 +7,11 @@ import { callFetchAllSkill, callFetchCompany } from '@/config/api';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { ICompany } from '@/types/backend';
 
-const SearchClient = () => {
+interface SearchClientProps {
+    compact?: boolean;
+}
+
+const SearchClient = ({ compact = false }: SearchClientProps) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -100,10 +104,14 @@ const SearchClient = () => {
 
     return (
         <div className="search-client">
-            <h1 style={{ color: '#fff', textAlign: 'center', marginBottom: '8px' }}>Tìm job IT đúng stack, đúng level</h1>
-            <p className="search-client-description" style={{ color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center', marginBottom: '32px' }}>
-                Chọn kỹ năng, công ty và địa điểm để lọc ra danh sách việc làm sát với profile của bạn.
-            </p>
+            {!compact && (
+                <>
+                    <h1 style={{ color: '#fff', textAlign: 'center', marginBottom: '8px' }}>Tìm job IT đúng stack, đúng level</h1>
+                    <p className="search-client-description" style={{ color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center', marginBottom: '32px' }}>
+                        Chọn kỹ năng, công ty và địa điểm để lọc ra danh sách việc làm sát với profile của bạn.
+                    </p>
+                </>
+            )}
             <ProForm
                 form={form}
                 onFinish={onFinish}

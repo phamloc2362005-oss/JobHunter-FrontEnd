@@ -1,8 +1,8 @@
 import { callFetchPublicJob } from '@/config/api';
-import { convertSlug, getLocationName } from '@/config/utils';
+import { getLocationName } from '@/config/utils';
 import { IJob } from '@/types/backend';
-import { EnvironmentOutlined, ThunderboltOutlined, FireOutlined } from '@ant-design/icons';
-import { Empty, Spin, Tag } from 'antd';
+import { EnvironmentOutlined, DollarOutlined, FireOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { Empty, Spin } from 'antd';
 import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import styles from './job-list-compact.module.scss';
@@ -13,36 +13,31 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 interface IProps {
-    onSelectJob: (job: IJob) => void;
+    onSelectJob: (job: IJob | undefined) => void;
     selectedJobId?: number | string;
+    onTotalChange?: (total: number) => void;
 }
 
 const JobListCompact = (props: IProps) => {
-    const { onSelectJob, selectedJobId } = props;
+    const { onSelectJob, selectedJobId, onTotalChange } = props;
 
     const [displayJob, setDisplayJob] = useState<IJob[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [total, setTotal] = useState<number>(0);
 
-    const [current, setCurrent] = useState(1);
-    const [pageSize, setPageSize] = useState(15);
-    const [filter, setFilter] = useState("");
-    const [sortQuery, setSortQuery] = useState("sort=updatedAt,desc");
+    const [current] = useState(1);
+    const [pageSize] = useState(20);
+    const [sortQuery] = useState("sort=updatedAt,desc");
     const [searchParams] = useSearchParams();
     const location = useLocation();
 
     useEffect(() => {
         fetchJob();
-    }, [current, pageSize, filter, sortQuery, location]);
+    }, [location]);
 
     const fetchJob = async () => {
         setIsLoading(true);
-        let query = `page=${current}&size=${pageSize}`;
-        if (filter) {
-            query += `&${filter}`;
-        }
-        if (sortQuery) {
-            query += `&${sortQuery}`;
-        }
+        let query = `page=${current}&size=${pageSize}&${sortQuery}`;
 
         const queryLocation = searchParams.get("location");
         const querySkills = searchParams.get("skills");
@@ -52,44 +47,42 @@ const JobListCompact = (props: IProps) => {
         const queryLevel = searchParams.get("level");
 
         let q = "";
-        if (queryLocation) {
-            q = sfIn("location", queryLocation.split(",")).toString();
-        }
-        if (querySkills) {
-            q = queryLocation ? q + " and " + `${sfIn("skills.id", querySkills.split(","))}` : `${sfIn("skills.id", querySkills.split(","))}`;
-        }
-        if (queryCompanyIds) {
-            q = q ? q + " and " + `${sfIn("company.id", queryCompanyIds.split(","))}` : `${sfIn("company.id", queryCompanyIds.split(","))}`;
-        }
-        if (queryLevel) {
-            q = q ? q + " and " + `level='${queryLevel}'` : `level='${queryLevel}'`;
-        }
+        if (queryLocation) q = sfIn("location", queryLocation.split(",")).toString();
+        if (querySkills) q = q ? q + " and " + `${sfIn("skills.id", querySkills.split(","))}` : `${sfIn("skills.id", querySkills.split(","))}`;
+        if (queryCompanyIds) q = q ? q + " and " + `${sfIn("company.id", queryCompanyIds.split(","))}` : `${sfIn("company.id", queryCompanyIds.split(","))}`;
+        if (queryLevel) q = q ? q + ` and level='${queryLevel}'` : `level='${queryLevel}'`;
 
-        if (q) {
-            query += `&filter=${encodeURIComponent(q)}`;
-        }
+        if (q) query += `&filter=${encodeURIComponent(q)}`;
+
         if (queryExpertiseId) {
-            const expertiseFilter = `expertise.id=${queryExpertiseId}`;
-            query += q
-                ? `&filter=${encodeURIComponent(q + " and " + expertiseFilter)}`
-                : `&filter=${encodeURIComponent(expertiseFilter)}`;
+            const ef = `expertise.id=${queryExpertiseId}`;
+            query += q ? `&filter=${encodeURIComponent(q + " and " + ef)}` : `&filter=${encodeURIComponent(ef)}`;
         }
         if (queryExpertiseIds) {
-            const expertiseIdsFilter = `expertise.id IN [${queryExpertiseIds}]`;
-            query += q
-                ? `&filter=${encodeURIComponent(q + " and " + expertiseIdsFilter)}`
-                : `&filter=${encodeURIComponent(expertiseIdsFilter)}`;
+            const ef = `expertise.id IN [${queryExpertiseIds}]`;
+            query += q ? `&filter=${encodeURIComponent(q + " and " + ef)}` : `&filter=${encodeURIComponent(ef)}`;
         }
 
         try {
             const res = await callFetchPublicJob(query);
             if (res && res.data) {
-                setDisplayJob(res.data.result || []);
-                if (res.data.result && res.data.result.length > 0 && !selectedJobId) {
-                    onSelectJob(res.data.result[0]);
+                const newTotal = res.data.meta?.total ?? 0;
+                const results = res.data.result || [];
+                setDisplayJob(results);
+                setTotal(newTotal);
+                onTotalChange?.(newTotal);
+                // Always auto-select first job after every fetch
+                // (covers filter-change, initial load, empty results)
+                if (results.length > 0) {
+                    onSelectJob(results[0]);
+                } else {
+                    onSelectJob(undefined); // clear detail panel
                 }
             } else {
                 setDisplayJob([]);
+                setTotal(0);
+                onTotalChange?.(0);
+                onSelectJob(undefined);
             }
         } catch (error) {
             console.error('Failed to fetch public jobs', error);
@@ -99,12 +92,18 @@ const JobListCompact = (props: IProps) => {
         }
     };
 
-    const isNew = (createdAt?: string) => {
-        if (!createdAt) return false;
-        const jobDate = dayjs(createdAt);
-        const now = dayjs();
-        const daysDiff = now.diff(jobDate, 'day');
-        return daysDiff <= 2;
+    /** HOT nếu đăng trong 1 ngày, SUPER HOT nếu trong 2 giờ */
+    const getHotLevel = (createdAt?: string): 'super' | 'hot' | null => {
+        if (!createdAt) return null;
+        const diff = dayjs().diff(dayjs(createdAt), 'hour');
+        if (diff <= 2) return 'super';
+        if (diff <= 24) return 'hot';
+        return null;
+    };
+
+    const formatSalary = (salary?: number) => {
+        if (!salary) return null;
+        return salary.toLocaleString('vi-VN') + ' đ';
     };
 
     return (
@@ -112,58 +111,77 @@ const JobListCompact = (props: IProps) => {
             <Spin spinning={isLoading} tip="Đang tải...">
                 {displayJob && displayJob.length > 0 ? (
                     <div className={styles.listWrapper}>
-                        {displayJob.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`${styles.jobItem} ${selectedJobId === item.id ? styles.active : ''}`}
-                                onClick={() => onSelectJob(item)}
-                            >
-                                <div className={styles.jobItemContent}>
-                                    <div className={styles.jobItemLeft}>
+                        {displayJob.map((item) => {
+                            const hotLevel = getHotLevel(item.createdAt);
+                            const isActive = selectedJobId === item.id;
+                            return (
+                                <div
+                                    key={item.id}
+                                    className={`${styles.jobCard} ${isActive ? styles.active : ''} ${hotLevel === 'super' ? styles.superHot : hotLevel === 'hot' ? styles.hotCard : ''}`}
+                                    onClick={() => onSelectJob(item)}
+                                >
+                                    {/* HOT badge */}
+                                    {hotLevel && (
+                                        <span className={`${styles.hotBadge} ${hotLevel === 'super' ? styles.superBadge : ''}`}>
+                                            {hotLevel === 'super' ? '🔥 SUPER HOT' : '🟠 HOT'}
+                                        </span>
+                                    )}
+
+                                    {/* Posted time */}
+                                    <div className={styles.postedTime}>
+                                        Đăng {dayjs(item.updatedAt || item.createdAt).fromNow()}
+                                    </div>
+
+                                    {/* Job title */}
+                                    <div className={styles.jobTitle}>{item.name}</div>
+
+                                    {/* Company row */}
+                                    <div className={styles.companyRow}>
                                         <img
                                             alt={item.company?.name}
                                             src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${item?.company?.logo}`}
                                             className={styles.companyLogo}
                                         />
+                                        <span className={styles.companyName}>{item.company?.name}</span>
                                     </div>
-                                    <div className={styles.jobItemRight}>
-                                        <div className={styles.jobItemHeader}>
-                                            <div className={styles.jobTitle}>{item.name}</div>
-                                            {isNew(item.createdAt) && (
-                                                <Tag
-                                                    icon={<FireOutlined />}
-                                                    color="red"
-                                                    className={styles.newBadge}
-                                                >
-                                                    HOT
-                                                </Tag>
-                                            )}
+
+                                    {/* Salary */}
+                                    {item.salary ? (
+                                        <div className={styles.salary}>
+                                            <DollarOutlined /> {formatSalary(item.salary)}
                                         </div>
-                                        <div className={styles.companyName}>{item.company?.name}</div>
-                                        <div className={styles.jobCategory}>{item.level}</div>
-                                        <div className={styles.jobMeta}>
-                                            <span className={styles.location}>
-                                                <EnvironmentOutlined /> {getLocationName(item.location)}
-                                            </span>
-                                            <span className={styles.workModel}>Remote</span>
-                                        </div>
-                                        <div className={styles.skillsTags}>
-                                            {item.skills?.slice(0, 3).map((skill) => (
-                                                <Tag key={skill.id} className={styles.skillTag}>
-                                                    {skill.name}
-                                                </Tag>
+                                    ) : (
+                                        <div className={styles.salaryHidden}>Đăng nhập để xem mức lương</div>
+                                    )}
+
+                                    {/* Meta row */}
+                                    <div className={styles.metaRow}>
+                                        <span className={styles.metaItem}>
+                                            <ThunderboltOutlined /> {item.level}
+                                        </span>
+                                        <span className={styles.dot}>·</span>
+                                        <span className={styles.metaItem}>
+                                            <EnvironmentOutlined /> {getLocationName(item.location)}
+                                        </span>
+                                    </div>
+
+                                    {/* Skills */}
+                                    {item.skills && item.skills.length > 0 && (
+                                        <div className={styles.skillsRow}>
+                                            {item.skills.slice(0, 4).map(s => (
+                                                <span key={s.id} className={styles.skillTag}>{s.name}</span>
                                             ))}
-                                            {item.skills && item.skills.length > 3 && (
-                                                <Tag className={styles.skillTag}>+{item.skills.length - 3}</Tag>
+                                            {item.skills.length > 4 && (
+                                                <span className={styles.skillTag}>+{item.skills.length - 4}</span>
                                             )}
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
-                    !isLoading && <Empty description="Không có job nào" />
+                    !isLoading && <Empty description="Không có job nào" style={{ padding: '40px 0' }} />
                 )}
             </Spin>
         </div>
