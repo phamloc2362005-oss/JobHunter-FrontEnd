@@ -221,3 +221,18 @@ export interface IExpertise {
     createdAt?: string;
     updatedAt?: string;
 }
+
+export interface IInterviewQuestion {
+    id: number;
+    question: string;
+    type: 'technical' | 'behavioral' | 'situational';
+    hint?: string;
+}
+
+export interface IInterviewEvaluation {
+    success: boolean;
+    score: number;
+    feedback: string;
+    suggestion: string;
+    rating: 'Xuất sắc' | 'Tốt' | 'Khá' | 'Cần cải thiện' | 'Chưa đạt';
+}

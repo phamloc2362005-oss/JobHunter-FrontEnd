@@ -1,0 +1,968 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+// ========================
+// VARIABLES
+// ========================
+$primary: #6366f1;
+$primary-light: #818cf8;
+$primary-dark: #4f46e5;
+$secondary: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$bg-dark: #0f172a;
+$bg-card: #1e293b;
+$bg-card-hover: #263451;
+$text-primary: #f1f5f9;
+$text-secondary: #94a3b8;
+$text-muted: #64748b;
+$border: rgba(255, 255, 255, 0.08);
+$gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+$gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+$gradient-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+
+// ========================
+// PAGE WRAPPER
+// ========================
+.pageWrapper {
+    min-height: 100vh;
+    background: $bg-dark;
+    font-family: 'Inter', sans-serif;
+    color: $text-primary;
+    padding: 32px 16px 80px;
+
+    @media (max-width: 768px) {
+        padding: 16px 12px 60px;
+    }
+}
+
+.container {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+// ========================
+// HEADER
+// ========================
+.header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.backBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: $bg-card;
+    border: 1px solid $border;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 18px;
+
+    &:hover {
+        background: $bg-card-hover;
+        color: $text-primary;
+        border-color: $primary;
+    }
+}
+
+.headerTitle {
+    flex: 1;
+
+    h1 {
+        font-size: 22px;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0 0 4px;
+
+        .aiChip {
+            display: inline-block;
+            background: $gradient-primary;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    p {
+        font-size: 13px;
+        color: $text-muted;
+        margin: 0;
+    }
+}
+
+// ========================
+// INTRO SCREEN
+// ========================
+.introCard {
+    background: $bg-card;
+    border: 1px solid $border;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    animation: fadeInUp 0.4s ease;
+
+    @media (max-width: 600px) {
+        padding: 24px 20px;
+    }
+}
+
+.introIcon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+
+.introTitle {
+    font-size: 26px;
+    font-weight: 800;
+    color: $text-primary;
+    margin: 0 0 12px;
+
+    span {
+        background: $gradient-primary;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}
+
+.introSubtitle {
+    font-size: 15px;
+    color: $text-secondary;
+    margin: 0 0 28px;
+    line-height: 1.6;
+}
+
+.jobInfoBox {
+    background: rgba($primary, 0.08);
+    border: 1px solid rgba($primary, 0.2);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    text-align: left;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.jobInfoIcon {
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.jobInfoContent {
+    flex: 1;
+
+    h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0 0 6px;
+    }
+
+    p {
+        font-size: 13px;
+        color: $text-secondary;
+        margin: 0 0 10px;
+    }
+}
+
+.jobTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.jobTag {
+    background: rgba($primary, 0.15);
+    color: $primary-light;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba($primary, 0.25);
+}
+
+.levelTag {
+    background: rgba($warning, 0.15);
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba($warning, 0.25);
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.infoItem {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid $border;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+
+    .infoNum {
+        font-size: 28px;
+        font-weight: 800;
+        background: $gradient-primary;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: block;
+    }
+
+    .infoLabel {
+        font-size: 12px;
+        color: $text-muted;
+        margin-top: 4px;
+    }
+}
+
+.startBtn {
+    background: $gradient-primary;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 40px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba($primary, 0.35);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba($primary, 0.5);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+// ========================
+// PROGRESS BAR
+// ========================
+.progressWrapper {
+    margin-bottom: 24px;
+    animation: fadeInUp 0.3s ease;
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.progressLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-secondary;
+}
+
+.progressPercent {
+    font-size: 13px;
+    font-weight: 700;
+    color: $primary-light;
+}
+
+.progressBar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: $gradient-primary;
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ========================
+// QUESTION CARD
+// ========================
+.questionCard {
+    background: $bg-card;
+    border: 1px solid $border;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+    animation: slideInRight 0.35s ease;
+
+    @media (max-width: 600px) {
+        padding: 20px 16px;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.questionMeta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.questionNum {
+    background: $gradient-primary;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.questionType {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.technical {
+        background: rgba(99, 102, 241, 0.15);
+        color: $primary-light;
+        border: 1px solid rgba(99, 102, 241, 0.25);
+    }
+    &.behavioral {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    &.situational {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+}
+
+.questionText {
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-primary;
+    line-height: 1.6;
+    margin-bottom: 16px;
+
+    @media (max-width: 600px) {
+        font-size: 15px;
+    }
+}
+
+.hintBox {
+    background: rgba($warning, 0.06);
+    border: 1px solid rgba($warning, 0.15);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+
+    .hintIcon {
+        font-size: 16px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .hintText {
+        font-size: 13px;
+        color: #fbbf24;
+        line-height: 1.5;
+    }
+}
+
+// ========================
+// ANSWER AREA
+// ========================
+.answerCard {
+    background: $bg-card;
+    border: 1px solid $border;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 16px;
+}
+
+.answerLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-secondary;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::before {
+        content: '';
+        width: 3px;
+        height: 14px;
+        background: $gradient-primary;
+        border-radius: 2px;
+        display: inline-block;
+    }
+}
+
+.answerTextarea {
+    width: 100%;
+    min-height: 160px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid $border;
+    border-radius: 12px;
+    padding: 16px;
+    color: $text-primary;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.7;
+    resize: vertical;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+
+    &::placeholder {
+        color: $text-muted;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+    }
+}
+
+.answerActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.skipBtn {
+    background: transparent;
+    color: $text-muted;
+    border: 1px solid $border;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: $text-secondary;
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+}
+
+.submitBtn {
+    background: $gradient-primary;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 16px rgba($primary, 0.3);
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba($primary, 0.4);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+// Spinner
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+// ========================
+// EVALUATION RESULT
+// ========================
+.evalCard {
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 16px;
+    animation: fadeInUp 0.4s ease;
+    border: 1px solid;
+
+    &.excellent {
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.2);
+    }
+    &.good {
+        background: rgba(99, 102, 241, 0.08);
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+    &.fair {
+        background: rgba(245, 158, 11, 0.08);
+        border-color: rgba(245, 158, 11, 0.2);
+    }
+    &.poor {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+}
+
+.evalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.evalRating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .ratingIcon {
+        font-size: 24px;
+    }
+
+    .ratingLabel {
+        font-size: 16px;
+        font-weight: 700;
+    }
+}
+
+.evalScore {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+
+    .scoreNum {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1;
+    }
+    .scoreMax {
+        font-size: 16px;
+        color: $text-muted;
+    }
+}
+
+.evalFeedback {
+    font-size: 14px;
+    color: $text-secondary;
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+
+.evalSuggestion {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: $text-muted;
+    line-height: 1.6;
+    display: flex;
+    gap: 8px;
+
+    .suggestionIcon {
+        flex-shrink: 0;
+        font-size: 15px;
+    }
+}
+
+// Next button after eval
+.nextBtn {
+    background: $gradient-primary;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 16px rgba($primary, 0.3);
+    margin-top: 20px;
+    width: 100%;
+    justify-content: center;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba($primary, 0.4);
+    }
+}
+
+// ========================
+// RESULT SCREEN
+// ========================
+.resultCard {
+    background: $bg-card;
+    border: 1px solid $border;
+    border-radius: 20px;
+    padding: 40px;
+    animation: fadeInUp 0.5s ease;
+
+    @media (max-width: 600px) {
+        padding: 24px 16px;
+    }
+}
+
+.resultHeader {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.resultEmoji {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.resultTitle {
+    font-size: 26px;
+    font-weight: 800;
+    color: $text-primary;
+    margin: 0 0 8px;
+}
+
+.resultSubtitle {
+    font-size: 14px;
+    color: $text-secondary;
+    margin: 0;
+}
+
+.scoreBoard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 36px;
+    padding: 28px;
+    background: rgba($primary, 0.06);
+    border: 1px solid rgba($primary, 0.15);
+    border-radius: 16px;
+    flex-wrap: wrap;
+}
+
+.scoreCircle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: $gradient-primary;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba($primary, 0.4);
+
+    .scoreAvg {
+        font-size: 34px;
+        font-weight: 800;
+        color: white;
+        line-height: 1;
+    }
+    .scoreLabel {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 2px;
+    }
+}
+
+.scoreStats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: $text-secondary;
+
+    .statDot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+
+        &.dotGreen { background: $secondary; }
+        &.dotBlue { background: $primary; }
+        &.dotYellow { background: $warning; }
+    }
+
+    .statVal {
+        font-weight: 700;
+        color: $text-primary;
+        margin-left: auto;
+        padding-left: 16px;
+    }
+}
+
+// Question breakdown
+.breakdownTitle {
+    font-size: 15px;
+    font-weight: 700;
+    color: $text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.breakdownList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.breakdownItem {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid $border;
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+
+    .bdNum {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba($primary, 0.2);
+        color: $primary-light;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .bdContent {
+        flex: 1;
+
+        .bdQuestion {
+            font-size: 13px;
+            font-weight: 600;
+            color: $text-primary;
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .bdFeedback {
+            font-size: 12px;
+            color: $text-muted;
+            line-height: 1.6;
+        }
+    }
+
+    .bdScore {
+        font-size: 18px;
+        font-weight: 800;
+        flex-shrink: 0;
+        line-height: 1;
+
+        &.high { color: $secondary; }
+        &.mid { color: $warning; }
+        &.low { color: $danger; }
+    }
+}
+
+.resultActions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.retryBtn {
+    flex: 1;
+    background: $gradient-primary;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba($primary, 0.3);
+    min-width: 140px;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba($primary, 0.4);
+    }
+}
+
+.backJobBtn {
+    flex: 1;
+    background: transparent;
+    color: $text-secondary;
+    border: 1px solid $border;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 140px;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.15);
+        color: $text-primary;
+    }
+}
+
+// ========================
+// LOADING SCREEN
+// ========================
+.loadingScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    gap: 20px;
+    animation: fadeInUp 0.3s ease;
+}
+
+.loadingSpinner {
+    width: 56px;
+    height: 56px;
+    border: 4px solid rgba($primary, 0.15);
+    border-top-color: $primary;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loadingText {
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-secondary;
+    text-align: center;
+}
+
+.loadingDots {
+    display: flex;
+    gap: 6px;
+
+    span {
+        width: 8px;
+        height: 8px;
+        background: $primary;
+        border-radius: 50%;
+        animation: bounce 1.4s ease-in-out infinite;
+
+        &:nth-child(1) { animation-delay: 0s; }
+        &:nth-child(2) { animation-delay: 0.2s; }
+        &:nth-child(3) { animation-delay: 0.4s; }
+    }
+}
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+// ========================
+// ANIMATIONS
+// ========================
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

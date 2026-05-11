@@ -870,6 +870,9 @@
 
     .jobTopActions {
         min-width: 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .btnApplyV2 {
@@ -878,6 +881,28 @@
         font-weight: 700;
         background: #1f5aa6;
         border-color: #1f5aa6;
+    }
+
+    .btnInterviewV2 {
+        width: 100%;
+        border-radius: 8px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+
+        &:hover {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+            color: #fff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        }
     }
 
     .skillsRow {

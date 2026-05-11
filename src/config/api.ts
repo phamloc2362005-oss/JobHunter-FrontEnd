@@ -336,3 +336,24 @@ export const callFetchExpertise = (query: string) => {
 export const callGenerateCv = (rawInput: string) => {
     return axios.post<IBackendRes<any>>('/api/v1/ai/generate-cv', { rawInput });
 }
+
+export const callGenerateInterviewQuestions = (
+    jobTitle: string,
+    jobDescription: string,
+    jobLevel: string,
+    skills: string
+) => {
+    return axios.post<IBackendRes<IInterviewQuestion[]>>('/api/v1/ai/interview/questions', {
+        jobTitle, jobDescription, jobLevel, skills
+    });
+}
+
+export const callEvaluateInterviewAnswer = (
+    question: string,
+    answer: string,
+    jobContext: string
+) => {
+    return axios.post<IBackendRes<IInterviewEvaluation>>('/api/v1/ai/interview/evaluate', {
+        question, answer, jobContext
+    });
+}

@@ -78,6 +78,17 @@ const JobDetailPanel = (props: IProps) => {
                     </button>
                 </div>
 
+                {/* Interview Practice Button */}
+                <Button
+                    size="large"
+                    block
+                    className={styles.interviewBtn}
+                    onClick={() => navigate(`/interview/${job.id}`)}
+                    style={{ marginBottom: 16 }}
+                >
+                    🎤 Luyện phỏng vấn với AI
+                </Button>
+
                 <Divider className={styles.divider} />
 
                 {/* Location & Work Type & Posted Time */}

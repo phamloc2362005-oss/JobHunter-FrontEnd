@@ -89,6 +89,14 @@ const ClientJobDetailPage = (props: any) => {
                                             <Button type="primary" size="large" className={styles["btnApplyV2"]} onClick={() => setIsModalOpen(true)}>
                                                 Apply Now
                                             </Button>
+                                            <Button
+                                                size="large"
+                                                className={styles["btnInterviewV2"]}
+                                                onClick={() => navigate(`/interview/${jobDetail.id}`)}
+                                                icon={<span>🎤</span>}
+                                            >
+                                                Luyện phỏng vấn
+                                            </Button>
                                         </div>
                                     </div>
 
