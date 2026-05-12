@@ -14,6 +14,16 @@
     pointer-events: none;
 }
 
+.page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 12% 65%, rgba(99, 102, 241, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 88% 75%, rgba(14, 165, 233, 0.08) 0%, transparent 35%);
+    pointer-events: none;
+}
+
 .hero {
     position: relative;
     padding: 64px 0 48px;
@@ -28,6 +38,16 @@
     background-image:
         radial-gradient(circle at 15% 25%, rgba(45, 212, 191, 0.28) 0%, transparent 40%),
         radial-gradient(circle at 85% 20%, rgba(251, 191, 36, 0.2) 0%, transparent 35%);
+    pointer-events: none;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(120deg, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0) 45%),
+        radial-gradient(circle at 20% 85%, rgba(45, 212, 191, 0.12) 0%, transparent 38%);
     pointer-events: none;
 }
 
@@ -86,6 +106,7 @@
     min-width: 150px;
     color: #e2e8f0;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
 }
 
 .heroStat strong {
@@ -107,6 +128,7 @@
     padding: 24px;
     color: #e2e8f0;
     box-shadow: 0 24px 60px rgba(2, 6, 23, 0.45);
+    backdrop-filter: blur(12px);
 }
 
 .heroPanel h3 {
@@ -144,7 +166,7 @@
 }
 
 .listShell {
-    background: #ffffff;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     border-radius: 28px;
     padding: 18px;
     border: 1px solid rgba(15, 23, 42, 0.08);
