@@ -128,7 +128,7 @@ const ViewUpsertJob = () => {
     // State cho form data
     const [value, setValue] = useState<string>("");
     const [dataUpdate, setDataUpdate] = useState<IJob | null>(null);
-    const [companies, setCompanies] = useState<ICompanySelect[]>([]);
+    const [company, setCompany] = useState<ICompanySelect | undefined>(undefined);
 
     // State cho dropdown options
     const [skillOptions, setSkillOptions] = useState<ISkillOption[]>([]);
@@ -179,13 +179,13 @@ const ViewUpsertJob = () => {
                     setDataUpdate(job as unknown as IJob);
                     setValue(job.description ?? "");
 
-                    // Set companies
+                    // Set company
                     if (job.company) {
-                        setCompanies([{
+                        setCompany({
                             label: job.company.name ?? '',
                             value: `${job.company.id}@#$${job.company.logo ?? ''}`,
                             key: String(job.company.id ?? ''),
-                        }]);
+                        });
                     }
 
                     // Map skills
@@ -446,13 +446,11 @@ const ViewUpsertJob = () => {
                                     <DebounceSelect
                                         allowClear
                                         showSearch
-                                        value={companies}
+                                        value={company}
                                         placeholder="Chọn công ty"
                                         fetchOptions={fetchCompanyList}
                                         onChange={(newValue) => {
-                                            if (Array.isArray(newValue) && (newValue.length === 0 || newValue.length === 1)) {
-                                                setCompanies(newValue as ICompanySelect[]);
-                                            }
+                                            setCompany(newValue as ICompanySelect);
                                         }}
                                         style={{ width: '100%' }}
                                     />

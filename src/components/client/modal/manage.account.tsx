@@ -3,13 +3,14 @@ import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
 import { IExpertise, IJob, IResume, ISubscribers, ISkill } from "@/types/backend";
 import { useState, useEffect } from 'react';
-import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile, callFetchFavoriteJobs } from "@/config/api";
+import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile, callFetchFavoriteJobs, callFetchAccount, callUpdateUser } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { ExclamationCircleOutlined, MonitorOutlined, ThunderboltOutlined } from "@ant-design/icons";
 import { useAppSelector } from "@/redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { convertSlug } from "@/config/utils";
+import { DebounceSelect } from "../../admin/user/debouce.select";
 
 interface IProps {
     open: boolean;
@@ -98,8 +99,9 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
     const [form] = Form.useForm();
     const user = useAppSelector(state => state.account.user);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [skillOptions, setSkillOptions] = useState<{ label: string; value: string }[]>([]);
-    const [expertiseOptions, setExpertiseOptions] = useState<{ label: string; value: string }[]>([]);
+    const [allSkills, setAllSkills] = useState<any[]>([]);
+    const [allExpertises, setAllExpertises] = useState<any[]>([]);
+
 
     const levelOptions = [
         { label: "Intern - Thực tập", value: "INTERN" },
@@ -108,73 +110,130 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
         { label: "Senior - Dày dạn", value: "SENIOR" },
     ];
 
-    useEffect(() => {
-        const init = async () => {
-            await Promise.all([loadSkills(), loadExpertises()]);
-        };
 
-        init();
-    }, []);
+
+    const fetchSkillList = async (name: string): Promise<any[]> => {
+        if (name === "" && allSkills.length > 0) {
+            return allSkills;
+        }
+        const res = await callFetchAllSkill(`page=1&size=100&name ~ '${name}'`);
+        const result = res?.data?.result?.map((item: ISkill) => ({
+            label: item.name ?? "",
+            value: String(item.id),
+        })) ?? [];
+        if (name === "") {
+            setAllSkills(result);
+        }
+        return result;
+    };
+    
+    const fetchExpertiseList = async (name: string): Promise<any[]> => {
+        if (name === "" && allExpertises.length > 0) {
+            return allExpertises;
+        }
+        const res = await callFetchExpertise(`page=1&size=100&name ~ '${name}'`);
+        const result = res?.data?.result?.map((item: IExpertise) => ({
+            label: item.name ?? "",
+            value: String(item.id),
+        })) ?? [];
+        if (name === "") {
+            setAllExpertises(result);
+        }
+        return result;
+    };
+
+    const loadData = async () => {
+        setIsSubmitting(true);
+        try {
+            const [accRes, profileRes] = await Promise.all([
+                callFetchAccount(),
+                callGetUserRecommendationProfile(),
+                fetchSkillList(""),
+                fetchExpertiseList("")
+            ]);
+
+            const formData: any = {};
+
+            if (accRes.data) {
+                const userData = (accRes.data as any).user;
+                formData.name = userData.name;
+                formData.email = userData.email;
+                formData.age = userData.age;
+                formData.gender = userData.gender;
+                formData.address = userData.address;
+            }
+
+            if (profileRes.data) {
+                const profile = profileRes.data;
+                const skillDetails = (profile.skillDetails ?? []).map((item: any) => ({
+                    label: item.label,
+                    value: item.value
+                }));
+                formData.skillIds = skillDetails;
+
+                formData.level = profile.level;
+
+                const expertiseDetail = profile.expertiseDetail ? { 
+                    label: profile.expertiseDetail.label, 
+                    value: profile.expertiseDetail.value 
+                } : undefined;
+                formData.expertiseId = expertiseDetail;
+            }
+
+            if (Object.keys(formData).length > 0) {
+                form.setFieldsValue(formData);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     useEffect(() => {
         if (open) {
-            loadCurrentProfile();
+            loadData();
         }
     }, [open]);
 
-    const loadSkills = async () => {
-        const res = await callFetchAllSkill("page=1&size=1000&sort=name,asc");
-        const options = res?.data?.result?.map((item: ISkill) => ({
-            label: item.name ?? "",
-            value: String(item.id),
-        })) ?? [];
-        setSkillOptions(options);
-    };
-
-    const loadExpertises = async () => {
-        const res = await callFetchExpertise("page=1&size=1000&sort=name,asc");
-        const options = res?.data?.result?.map((item: IExpertise) => ({
-            label: item.name ?? "",
-            value: String(item.id),
-        })) ?? [];
-        setExpertiseOptions(options);
-    };
-
-    const loadCurrentProfile = async () => {
-        const res = await callGetUserRecommendationProfile();
-        const profile = res?.data;
-
-        if (!profile) {
-            return;
-        }
-
-        form.setFieldsValue({
-            skillIds: (profile.skillIds ?? []).map((id: string | number) => String(id)),
-            level: profile.level,
-            expertiseId: profile.expertiseId !== null && profile.expertiseId !== undefined
-                ? String(profile.expertiseId)
-                : undefined,
-        });
-    };
-
     const onFinish = async (values: any) => {
         setIsSubmitting(true);
-        const res = await callUpdateUserRecommendationProfile({
-            skillIds: values.skillIds ?? [],
+
+        // 1. Update basic info
+        const userUpdateRes = await callUpdateUser({
+            id: user.id,
+            name: values.name,
+            age: values.age,
+            gender: values.gender,
+            address: values.address,
+            email: values.email
+        } as any);
+
+        // 2. Update recommendation profile
+        const skillIds = values.skillIds?.map((item: any) =>
+            typeof item === 'object' ? Number(item.value) : Number(item)
+        ) ?? [];
+        const expertiseId = values.expertiseId ?
+            (typeof values.expertiseId === 'object' ? Number(values.expertiseId.value) : Number(values.expertiseId))
+            : null;
+
+        const profileRes = await callUpdateUserRecommendationProfile({
+            skillIds,
             level: values.level,
-            expertiseId: values.expertiseId ?? null,
+            expertiseId,
         });
+
         setIsSubmitting(false);
 
-        if (res?.statusCode === 200) {
-            message.success("Cập nhật hồ sơ thành công. Gợi ý việc làm sẽ chính xác hơn ngay sau đó.");
-            await loadCurrentProfile();
+        if (userUpdateRes.data && profileRes?.statusCode === 200) {
+            message.success("Cập nhật thông tin thành công.");
+            await loadData();
             return;
         }
 
         notification.error({
             message: "Có lỗi xảy ra",
-            description: res?.message || "Không thể cập nhật hồ sơ gợi ý việc làm",
+            description: "Không thể cập nhật thông tin cá nhân",
         });
     };
 
@@ -203,21 +262,85 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
                     description="Càng chọn đúng kỹ năng, level và chuyên môn, danh sách job phù hợp càng sát với hồ sơ của bạn."
                 />
 
-                <Form layout="vertical" form={form} onFinish={onFinish} initialValues={{ skillIds: [], level: undefined, expertiseId: undefined }}>
+                <Form
+                    layout="vertical"
+                    form={form}
+                    onFinish={onFinish}
+                    initialValues={{
+                        skillIds: [],
+                        level: undefined,
+                        expertiseId: undefined,
+                        gender: 'OTHER'
+                    }}
+                >
                     <Row gutter={[16, 8]}>
+                        <Col xs={24} md={12}>
+                            <Form.Item
+                                label="Email"
+                                name="email"
+                            >
+                                <Input disabled />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item
+                                label="Họ tên"
+                                name="name"
+                                rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
+                            >
+                                <Input placeholder="Nhập họ tên" />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={8}>
+                            <Form.Item
+                                label="Tuổi"
+                                name="age"
+                                rules={[{ required: true, message: "Vui lòng nhập tuổi" }]}
+                            >
+                                <Input type="number" placeholder="Nhập tuổi" />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={8}>
+                            <Form.Item
+                                label="Giới tính"
+                                name="gender"
+                                rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
+                            >
+                                <Select
+                                    options={[
+                                        { label: "Nam", value: "MALE" },
+                                        { label: "Nữ", value: "FEMALE" },
+                                        { label: "Khác", value: "OTHER" },
+                                    ]}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={8}>
+                            <Form.Item
+                                label="Địa chỉ"
+                                name="address"
+                                rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+                            >
+                                <Input placeholder="Nhập địa chỉ" />
+                            </Form.Item>
+                        </Col>
+
+                        <Col span={24}>
+                            <Divider orientation="left" style={{ margin: "12px 0" }}>Hồ sơ nghề nghiệp</Divider>
+                        </Col>
+
                         <Col xs={24}>
                             <Form.Item
                                 label="Kỹ năng"
                                 name="skillIds"
                                 rules={[{ required: true, message: "Vui lòng chọn ít nhất 1 kỹ năng" }]}
                             >
-                                <Select
+                                <DebounceSelect
                                     mode="multiple"
                                     allowClear
                                     showSearch
                                     placeholder="Chọn kỹ năng bạn đang có"
-                                    optionFilterProp="label"
-                                    options={skillOptions}
+                                    fetchOptions={fetchSkillList}
                                 />
                             </Form.Item>
                         </Col>
@@ -241,12 +364,11 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
                                 label="Chuyên môn"
                                 name="expertiseId"
                             >
-                                <Select
+                                <DebounceSelect
                                     allowClear
                                     showSearch
                                     placeholder="Chọn chuyên môn chính"
-                                    optionFilterProp="label"
-                                    options={expertiseOptions}
+                                    fetchOptions={fetchExpertiseList}
                                 />
                             </Form.Item>
                         </Col>
@@ -272,16 +394,19 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
 const JobByEmail = (props: any) => {
     const [form] = Form.useForm();
     const user = useAppSelector(state => state.account.user);
-    const [optionsSkills, setOptionsSkills] = useState<{
-        label: string;
-        value: string;
-    }[]>([]);
-
+    const [skills, setSkills] = useState<{ label: string; value: string }[]>([]);
     const [subscriber, setSubscriber] = useState<ISubscribers | null>(null);
+
+    const fetchSkillList = async (name: string): Promise<any[]> => {
+        const res = await callFetchAllSkill(`page=1&size=100&name ~ '${name}'`);
+        return res?.data?.result?.map((item: ISkill) => ({
+            label: item.name ?? "",
+            value: String(item.id),
+        })) ?? [];
+    };
 
     useEffect(() => {
         const init = async () => {
-            await fetchSkill();
             const res = await callGetSubscriberSkills();
             if (res && res.data) {
                 setSubscriber(res.data);
@@ -292,26 +417,12 @@ const JobByEmail = (props: any) => {
                         value: item.id + "" as string
                     }
                 });
+                setSkills(arr);
                 form.setFieldValue("skills", arr);
             }
         }
         init();
     }, [])
-
-    const fetchSkill = async () => {
-        let query = `page=1&size=100&sort=createdAt,desc`;
-
-        const res = await callFetchAllSkill(query);
-        if (res && res.data) {
-            const arr = res?.data?.result?.map(item => {
-                return {
-                    label: item.name as string,
-                    value: item.id + "" as string
-                }
-            }) ?? [];
-            setOptionsSkills(arr);
-        }
-    }
 
     const onFinish = async (values: any) => {
         const { skills } = values;
@@ -375,18 +486,14 @@ const JobByEmail = (props: any) => {
                             rules={[{ required: true, message: 'Vui lòng chọn ít nhất 1 skill!' }]}
 
                         >
-                            <Select
+                            <DebounceSelect
                                 mode="multiple"
                                 allowClear
-                                suffixIcon={null}
-                                style={{ width: '100%' }}
-                                placeholder={
-                                    <>
-                                        <MonitorOutlined /> Tìm theo kỹ năng...
-                                    </>
-                                }
-                                optionLabelProp="label"
-                                options={optionsSkills}
+                                showSearch
+                                placeholder="Chọn kỹ năng bạn đang có"
+                                fetchOptions={fetchSkillList}
+                                value={skills}
+                                onChange={(val: any) => setSkills(val)}
                             />
                         </Form.Item>
                     </Col>
