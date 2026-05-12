@@ -133,6 +133,13 @@
     }
 }
 
+.likeBtnActive {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25);
+}
+
 .divider {
     margin: 16px 0 !important;
     background-color: #e5e7eb;

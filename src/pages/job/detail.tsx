@@ -93,7 +93,6 @@ const ClientJobDetailPage = (props: any) => {
                                                 size="large"
                                                 className={styles["btnInterviewV2"]}
                                                 onClick={() => navigate(`/interview/${jobDetail.id}`)}
-                                                icon={<span>🎤</span>}
                                             >
                                                 Luyện phỏng vấn
                                             </Button>

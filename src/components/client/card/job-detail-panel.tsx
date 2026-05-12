@@ -1,9 +1,11 @@
 import { IJob } from '@/types/backend';
 import { convertSlug } from '@/config/utils';
+import { callAddFavoriteJob, callCheckFavoriteJob, callRemoveFavoriteJob } from '@/config/api';
 import { EnvironmentOutlined, ThunderboltOutlined, HeartOutlined, HeartFilled, ShareAltOutlined } from '@ant-design/icons';
-import { Button, Tag, Empty, Space, Divider } from 'antd';
-import { useState } from 'react';
+import { Button, Tag, Empty, Space, Divider, notification } from 'antd';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@/redux/hooks';
 import styles from './job-detail-panel.module.scss';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -18,6 +20,27 @@ const JobDetailPanel = (props: IProps) => {
     const { job } = props;
     const [isLiked, setIsLiked] = useState(false);
     const navigate = useNavigate();
+    const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+
+    useEffect(() => {
+        let isActive = true;
+        const checkFavorite = async () => {
+            if (!job?.id || !isAuthenticated) {
+                if (isActive) setIsLiked(false);
+                return;
+            }
+            try {
+                const res = await callCheckFavoriteJob(job.id);
+                if (isActive) setIsLiked(!!res?.data);
+            } catch (err) {
+                if (isActive) setIsLiked(false);
+            }
+        };
+        checkFavorite();
+        return () => {
+            isActive = false;
+        };
+    }, [job?.id, isAuthenticated]);
 
     if (!job) {
         return (
@@ -30,6 +53,27 @@ const JobDetailPanel = (props: IProps) => {
     const handleApplyJob = () => {
         const slug = convertSlug(job.name);
         navigate(`/job/${slug}?id=${job.id}`);
+    };
+
+    const handleToggleFavorite = async () => {
+        if (!job?.id) return;
+        if (!isAuthenticated) {
+            notification.warning({ message: 'Vui lòng đăng nhập để lưu job yêu thích' });
+            navigate('/login');
+            return;
+        }
+        const nextState = !isLiked;
+        setIsLiked(nextState);
+        try {
+            if (nextState) {
+                await callAddFavoriteJob(job.id);
+            } else {
+                await callRemoveFavoriteJob(job.id);
+            }
+        } catch (err) {
+            setIsLiked(!nextState);
+            notification.error({ message: 'Không thể cập nhật job yêu thích' });
+        }
     };
 
     return (
@@ -71,8 +115,8 @@ const JobDetailPanel = (props: IProps) => {
                         Ứng tuyển ngay
                     </Button>
                     <button
-                        className={styles.likeBtn}
-                        onClick={() => setIsLiked(!isLiked)}
+                        className={`${styles.likeBtn} ${isLiked ? styles.likeBtnActive : ''}`}
+                        onClick={handleToggleFavorite}
                     >
                         {isLiked ? <HeartFilled /> : <HeartOutlined />}
                     </button>
@@ -86,7 +130,7 @@ const JobDetailPanel = (props: IProps) => {
                     onClick={() => navigate(`/interview/${job.id}`)}
                     style={{ marginBottom: 16 }}
                 >
-                    🎤 Luyện phỏng vấn với AI
+                    Luyện phỏng vấn với AI
                 </Button>
 
                 <Divider className={styles.divider} />

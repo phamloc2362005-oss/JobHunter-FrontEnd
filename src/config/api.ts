@@ -157,6 +157,23 @@ export const callFetchRecommendedJobs = (limit: number = 6) => {
     return axios.get<IBackendRes<IJobRecommendation[]>>(`/api/v1/recommendations/jobs?limit=${limit}`);
 }
 
+// FAVORITES - user saved jobs
+export const callFetchFavoriteJobs = () => {
+    return axios.get<IBackendRes<IJob[]>>('/api/v1/favorites');
+}
+
+export const callCheckFavoriteJob = (jobId: string | number) => {
+    return axios.get<IBackendRes<boolean>>(`/api/v1/favorites/${jobId}`);
+}
+
+export const callAddFavoriteJob = (jobId: string | number) => {
+    return axios.post<IBackendRes<boolean>>(`/api/v1/favorites/${jobId}`);
+}
+
+export const callRemoveFavoriteJob = (jobId: string | number) => {
+    return axios.delete<IBackendRes<boolean>>(`/api/v1/favorites/${jobId}`);
+}
+
 // ADMIN - dùng cho trang quản trị
 export const callFetchAdminJob = (query: string) => {
     return axios.get(`/api/v1/admin/jobs?${query}`);

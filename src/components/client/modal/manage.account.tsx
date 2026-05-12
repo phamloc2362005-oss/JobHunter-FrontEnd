@@ -1,14 +1,15 @@
 import { Alert, Button, Card, Col, Divider, Form, Modal, Row, Select, Table, Tabs, Tag, Typography, message, notification, Input } from "antd";
 import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
-import { IExpertise, IResume, ISubscribers, ISkill } from "@/types/backend";
+import { IExpertise, IJob, IResume, ISubscribers, ISkill } from "@/types/backend";
 import { useState, useEffect } from 'react';
-import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile } from "@/config/api";
+import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile, callFetchFavoriteJobs } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { ExclamationCircleOutlined, MonitorOutlined, ThunderboltOutlined } from "@ant-design/icons";
 import { useAppSelector } from "@/redux/hooks";
 import { useNavigate } from "react-router-dom";
+import { convertSlug } from "@/config/utils";
 
 interface IProps {
     open: boolean;
@@ -469,6 +470,89 @@ const ChangePasswordTab = (props: any) => {
     );
 };
 
+const FavoriteJobsTab = ({ onClose }: { onClose: (v: boolean) => void }) => {
+    const [listJob, setListJob] = useState<IJob[]>([]);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const init = async () => {
+            setIsFetching(true);
+            const res = await callFetchFavoriteJobs();
+            if (res && res.data) {
+                setListJob(res.data as IJob[]);
+            }
+            setIsFetching(false);
+        }
+        init();
+    }, []);
+
+    const columns: ColumnsType<IJob> = [
+        {
+            title: 'STT',
+            key: 'index',
+            width: 50,
+            align: "center",
+            render: (text, record, index) => {
+                return (
+                    <>
+                        {(index + 1)}
+                    </>)
+            }
+        },
+        {
+            title: 'Job title',
+            dataIndex: "name",
+        },
+        {
+            title: 'Công Ty',
+            dataIndex: ["company", "name"],
+        },
+        {
+            title: 'Địa điểm',
+            dataIndex: "location",
+        },
+        {
+            title: 'Cập nhật',
+            dataIndex: "updatedAt",
+            render(value, record) {
+                const time = record.updatedAt || record.createdAt;
+                return time ? <>{dayjs(time).format('DD-MM-YYYY HH:mm:ss')}</> : <>—</>;
+            },
+        },
+        {
+            title: '',
+            dataIndex: "",
+            render(value, record) {
+                const slug = convertSlug(record.name || "job");
+                return (
+                    <Button
+                        type="link"
+                        onClick={() => {
+                            onClose(false);
+                            navigate(`/job/${encodeURIComponent(slug)}?id=${record.id}`);
+                        }}
+                    >
+                        Xem chi tiết
+                    </Button>
+                )
+            },
+        },
+    ];
+
+    return (
+        <div>
+            <Table<IJob>
+                columns={columns}
+                dataSource={listJob}
+                loading={isFetching}
+                pagination={false}
+                rowKey={(record) => `${record.id}`}
+            />
+        </div>
+    );
+};
+
 const ManageAccount = (props: IProps) => {
     const { open, onClose } = props;
 
@@ -481,6 +565,11 @@ const ManageAccount = (props: IProps) => {
             key: 'user-resume',
             label: `Rải CV`,
             children: <UserResume />,
+        },
+        {
+            key: 'favorite-jobs',
+            label: `Job yêu thích`,
+            children: <FavoriteJobsTab onClose={onClose} />,
         },
         {
             key: 'email-by-skills',
