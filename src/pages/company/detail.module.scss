@@ -1,0 +1,146 @@
+.page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 50%, #f8fafc 100%);
+    padding-bottom: 60px;
+}
+
+.hero {
+    background: linear-gradient(130deg, #0b1220 0%, #0b2f3c 45%, #0a3b3f 100%);
+    padding: 52px 0 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 15% 25%, rgba(45, 212, 191, 0.28) 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.24) 0%, transparent 35%);
+    pointer-events: none;
+}
+
+.heroInner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+    color: #f8fafc;
+}
+
+.logoWrap {
+    width: 120px;
+    height: 120px;
+    border-radius: 24px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logoWrap img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.heroInfo {
+    flex: 1;
+    min-width: 220px;
+}
+
+.heroInfo h1 {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 800;
+}
+
+.heroInfo p {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.8);
+    font-size: 14px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(45, 212, 191, 0.16);
+    border: 1px solid rgba(45, 212, 191, 0.32);
+    color: #99f6e4;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.contentWrap {
+    margin-top: -48px;
+}
+
+.contentCard {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 24px 40px rgba(15, 23, 42, 0.1);
+    padding: 28px;
+}
+
+.contentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.contentHeader h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.location {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #0f766e;
+    background: rgba(20, 184, 166, 0.1);
+    border: 1px solid rgba(20, 184, 166, 0.24);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.description {
+    color: #334155;
+    line-height: 1.8;
+    font-size: 14px;
+}
+
+.description h2,
+.description h3 {
+    color: #0f172a;
+    margin-top: 16px;
+}
+
+.description p {
+    margin: 0 0 12px;
+}
+
+@media (max-width: 720px) {
+    .contentCard {
+        padding: 20px;
+    }
+}

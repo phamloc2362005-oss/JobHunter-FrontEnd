@@ -10,28 +10,30 @@ import {
     CloseOutlined,
     ThunderboltOutlined,
     ApartmentOutlined,
+    CodeOutlined,
 } from '@ant-design/icons';
 import { LOCATION_LIST } from '@/config/utils';
 import { callFetchAllSkill } from '@/config/api';
 import layoutStyles from 'styles/client.module.scss';
 import styles from './index.module.scss';
+import homeStyles from '@/pages/home/index.module.scss';
 
 const LEVEL_OPTIONS = [
-    { label: 'Intern',   value: 'INTERN'   },
-    { label: 'Fresher',  value: 'FRESHER'  },
-    { label: 'Junior',   value: 'JUNIOR'   },
-    { label: 'Middle',   value: 'MIDDLE'   },
-    { label: 'Senior',   value: 'SENIOR'   },
+    { label: 'Intern', value: 'INTERN' },
+    { label: 'Fresher', value: 'FRESHER' },
+    { label: 'Junior', value: 'JUNIOR' },
+    { label: 'Middle', value: 'MIDDLE' },
+    { label: 'Senior', value: 'SENIOR' },
 ];
 
 const getLocationLabel = (v: string) =>
     LOCATION_LIST.find(l => l.value === v)?.label ?? v;
 
 const ClientJobPage = () => {
-    const [selectedJob, setSelectedJob]   = useState<IJob | undefined>();
-    const [total, setTotal]               = useState<number | null>(null);
-    const [searchParams]                  = useSearchParams();
-    const navigate                        = useNavigate();
+    const [selectedJob, setSelectedJob] = useState<IJob | undefined>();
+    const [total, setTotal] = useState<number | null>(null);
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     /* ── Skill options from API ── */
     const [skillOptions, setSkillOptions] = useState<{ label: string; value: string }[]>([]);
@@ -47,25 +49,25 @@ const ClientJobPage = () => {
 
     /* ── Local form state (not bound to URL directly) ── */
     const [localLocation, setLocalLocation] = useState<string[]>([]);
-    const [localSkills,   setLocalSkills]   = useState<string[]>([]);
-    const [localLevel,    setLocalLevel]    = useState<string | null>(null);
+    const [localSkills, setLocalSkills] = useState<string[]>([]);
+    const [localLevel, setLocalLevel] = useState<string | null>(null);
 
     /* Initialise from URL on first load */
     useEffect(() => {
         const loc = searchParams.get('location');
-        const sk  = searchParams.get('skills');
-        const lv  = searchParams.get('level');
+        const sk = searchParams.get('skills');
+        const lv = searchParams.get('level');
         if (loc) setLocalLocation(loc.split(','));
-        if (sk)  setLocalSkills(sk.split(','));
-        if (lv)  setLocalLevel(lv);
+        if (sk) setLocalSkills(sk.split(','));
+        if (lv) setLocalLevel(lv);
     }, []); // run once on mount
 
     /* ── Apply = navigate with all collected params ── */
     const applySearch = () => {
         const params = new URLSearchParams();
         if (localLocation.length) params.set('location', localLocation.join(','));
-        if (localSkills.length)   params.set('skills', localSkills.join(','));
-        if (localLevel)           params.set('level', localLevel);
+        if (localSkills.length) params.set('skills', localSkills.join(','));
+        if (localLevel) params.set('level', localLevel);
         const qs = params.toString();
         navigate(qs ? `/job?${qs}` : '/job');
     };
@@ -79,8 +81,8 @@ const ClientJobPage = () => {
 
     /* Active URL params (for result heading + "Xem tất cả" link) */
     const urlLocation = searchParams.get('location');
-    const urlLevel    = searchParams.get('level');
-    const hasFilters  = !!(urlLocation || searchParams.get('skills') || urlLevel || searchParams.get('companyIds'));
+    const urlLevel = searchParams.get('level');
+    const hasFilters = !!(urlLocation || searchParams.get('skills') || urlLevel || searchParams.get('companyIds'));
 
     const handleTotalChange = useCallback((n: number) => setTotal(n), []);
 
@@ -259,6 +261,51 @@ const ClientJobPage = () => {
                     </Col>
                 </Row>
             </div>
+
+            {/* ══════════════════ FOOTER ══════════════════ */}
+            <footer className={homeStyles.footer}>
+                <div className={`${layoutStyles['container']} ${homeStyles.footerInner}`}>
+                    <div className={homeStyles.footerBrand}>
+                        <div className={homeStyles.footerLogo}>
+                            <CodeOutlined />
+                        </div>
+                        <strong>JobHunter</strong>
+                        <p>Platform tuyển dụng IT hàng đầu Việt Nam. Built for developers, by developers.</p>
+                    </div>
+
+                    <div className={homeStyles.footerLinks}>
+                        <div className={homeStyles.footerCol}>
+                            <h4>Platform</h4>
+                            <a href="/">Trang Chủ</a>
+                            <a href="/job">Việc Làm</a>
+                            <a href="/company">Công Ty</a>
+                            <a href="/skills">Kỹ Năng</a>
+                        </div>
+                        <div className={homeStyles.footerCol}>
+                            <h4>Nhà Tuyển Dụng</h4>
+                            <a href="#">Đăng tin tuyển dụng</a>
+                            <a href="#">Tìm ứng viên</a>
+                            <a href="#">Dashboard công ty</a>
+                            <a href="#">Bảng giá</a>
+                        </div>
+                        <div className={homeStyles.footerCol}>
+                            <h4>Liên Hệ</h4>
+                            <a href="mailto:support@jobhunter.com">support@jobhunter.com</a>
+                            <a href="tel:+84123456789">+84 123 456 789</a>
+                            <span>TP. Hồ Chí Minh, Việt Nam</span>
+                        </div>
+                    </div>
+                </div>
+                <div className={homeStyles.footerBottom}>
+                    <div className={layoutStyles['container']}>
+                        <span>© 2024 JobHunter. All rights reserved.</span>
+                        <div className={homeStyles.footerBottomLinks}>
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 };

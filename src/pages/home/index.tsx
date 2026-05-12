@@ -241,7 +241,6 @@ const HomePage = () => {
                     </div>
                 </div>
             </section>
-
             {/* ══════════════════ FOOTER ══════════════════ */}
             <footer className={s.footer}>
                 <div className={`${styles['container']} ${s.footerInner}`}>
@@ -286,6 +285,7 @@ const HomePage = () => {
                     </div>
                 </div>
             </footer>
+
         </div>
     );
 };

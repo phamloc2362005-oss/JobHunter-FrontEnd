@@ -6,13 +6,16 @@ import { useState, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
+import cardStyles from './company.card.module.scss';
 
 interface IProps {
     showPagination?: boolean;
+    variant?: 'home' | 'catalog';
 }
 
 const CompanyCard = (props: IProps) => {
-    const { showPagination = false } = props;
+    const { showPagination = false, variant = 'home' } = props;
+    const isCatalog = variant === 'catalog';
 
     const [displayCompany, setDisplayCompany] = useState<ICompany[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -65,20 +68,20 @@ const CompanyCard = (props: IProps) => {
     }
 
     return (
-        <div className={`${styles["company-section"]}`}>
-            <div className={styles["company-content"]}>
+        <div className={`${styles["company-section"]} ${isCatalog ? cardStyles.catalogSection : ''}`}>
+            <div className={isCatalog ? cardStyles.catalogContent : styles["company-content"]}>
                 <Spin spinning={isLoading} tip="Loading...">
                     <Row gutter={[20, 20]}>
                         {showPagination && <Col span={24}>
-                            <div className={styles["section-head"]}>
+                            <div className={isCatalog ? cardStyles.catalogHeader : styles["section-head"]}>
                                 <div>
-                                    <span className={styles["section-badge"]}>Top employers</span>
+                                    <span className={isCatalog ? cardStyles.catalogBadge : styles["section-badge"]}>Top employers</span>
                                     <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
-                                        <span className={styles["title"]}>Nhà Tuyển Dụng Hàng Đầu</span>
-                                        <p className={styles["section-subtitle"]}>Các công ty IT đang nổi bật và được quan tâm nhất trên hệ thống.</p>
+                                        <span className={isCatalog ? cardStyles.catalogTitle : styles["title"]}>Nhà Tuyển Dụng Hàng Đầu</span>
+                                        <p className={isCatalog ? cardStyles.catalogSubtitle : styles["section-subtitle"]}>Các công ty IT đang nổi bật và được quan tâm nhất trên hệ thống.</p>
                                     </div>
                                 </div>
-                                <Link to="company" className={styles["section-link"]}>Xem tất cả</Link>
+                                <Link to="company" className={isCatalog ? cardStyles.catalogAction : styles["section-link"]}>Xem tất cả</Link>
                             </div>
                         </Col>}
 
@@ -87,10 +90,10 @@ const CompanyCard = (props: IProps) => {
                                 <Col span={24} md={6} key={item.id}>
                                     <Card
                                         onClick={() => handleViewDetailJob(item)}
-                                        className={styles["company-card-v2"]}
+                                        className={`${styles["company-card-v2"]} ${isCatalog ? cardStyles.catalogCard : ''}`}
                                         hoverable
                                         cover={
-                                            <div className={styles["card-customize-v2"]} >
+                                            <div className={isCatalog ? cardStyles.logoWrap : styles["card-customize-v2"]}>
                                                 <img
                                                     style={{ maxWidth: "110px", maxHeight: "74px", objectFit: "contain" }}
                                                     alt="example"
@@ -99,7 +102,20 @@ const CompanyCard = (props: IProps) => {
                                             </div>
                                         }
                                     >
-                                        <h3 className={styles["company-card-title"]}>{item.name}</h3>
+                                        {isCatalog ? (
+                                            <div className={cardStyles.cardBody}>
+                                                <h3 className={cardStyles.companyName}>{item.name}</h3>
+                                                <div className={cardStyles.companyMeta}>
+                                                    {item.address || 'Chưa cập nhật địa chỉ'}
+                                                </div>
+                                                <div className={cardStyles.cardFooter}>
+                                                    <span>Khám phá profile</span>
+                                                    <span className={cardStyles.cardTag}>Chi tiết</span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <h3 className={styles["company-card-title"]}>{item.name}</h3>
+                                        )}
                                     </Card>
                                 </Col>
                             )
