@@ -50,6 +50,20 @@ export interface ICompany {
     updatedAt?: string;
 }
 
+export interface IReview {
+    id?: string;
+    rating: number;
+    content: string;
+    title?: string;
+    pros?: string;
+    cons?: string;
+    createdAt?: string;
+    user?: {
+        id: string;
+        name: string;
+    }
+}
+
 export interface ISkill {
     id?: string;
     name?: string;

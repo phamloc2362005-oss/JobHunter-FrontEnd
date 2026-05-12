@@ -4,10 +4,10 @@ import { ICompany } from "@/types/backend";
 import { callFetchCompanyById } from "@/config/api";
 import styles from 'styles/client.module.scss';
 import parse from 'html-react-parser';
-import { Col, Row, Skeleton, Card, Divider } from "antd";
-import { EnvironmentOutlined, ThunderboltOutlined, TeamOutlined, GlobalOutlined, RightOutlined, CodeOutlined } from "@ant-design/icons";
-import { IJob } from "@/types/backend";
-import { callFetchPublicJob } from "@/config/api";
+import { Col, Row, Skeleton, Card, Divider, Rate, Input, Button, message, Form, Tabs, Progress, Modal } from "antd";
+import { EnvironmentOutlined, ThunderboltOutlined, TeamOutlined, GlobalOutlined, RightOutlined, CodeOutlined, UserOutlined, StarFilled, LikeOutlined, DislikeOutlined, FormOutlined } from "@ant-design/icons";
+import { IJob, IReview } from "@/types/backend";
+import { callFetchPublicJob, callFetchCompanyReviews, callCreateReview } from "@/config/api";
 import { getLocationName, convertSlug } from '@/config/utils';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -22,7 +22,14 @@ const ClientCompanyDetailPage = (props: any) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [companyJobs, setCompanyJobs] = useState<IJob[]>([]);
     const [isLoadingJobs, setIsLoadingJobs] = useState<boolean>(false);
-    
+
+    // Reviews state
+    const [reviews, setReviews] = useState<IReview[]>([]);
+    const [isLoadingReviews, setIsLoadingReviews] = useState<boolean>(false);
+    const [isSubmittingReview, setIsSubmittingReview] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [form] = Form.useForm();
+
     let location = useLocation();
     let params = new URLSearchParams(location.search);
     const id = params?.get("id"); // job id, actually company id
@@ -58,6 +65,56 @@ const ClientCompanyDetailPage = (props: any) => {
         fetchJobs();
     }, [id]);
 
+    const fetchReviews = async () => {
+        if (id) {
+            setIsLoadingReviews(true);
+            const res = await callFetchCompanyReviews(id, 1, 10);
+            if (res?.data?.result) {
+                setReviews(res.data.result);
+            }
+            setIsLoadingReviews(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchReviews();
+    }, [id]);
+
+    const handlePostReview = async (values: any) => {
+        if (!id) return;
+        setIsSubmittingReview(true);
+        try {
+            const res = await callCreateReview(values.rating, values.content, values.title, values.pros, values.cons, id);
+            if (res?.data) {
+                message.success('Đánh giá công ty thành công!');
+                form.resetFields();
+                setIsModalOpen(false); // Close modal
+                fetchReviews(); // reload reviews
+            } else {
+                message.error('Có lỗi xảy ra khi gửi đánh giá');
+            }
+        } catch (error: any) {
+            message.error(error?.response?.data || 'Có lỗi xảy ra khi gửi đánh giá (Vui lòng đăng nhập)');
+        }
+        setIsSubmittingReview(false);
+    };
+
+    // Calculate star breakdown
+    const getStarBreakdown = () => {
+        const counts = [0, 0, 0, 0, 0, 0]; // 0 to 5
+        reviews.forEach(r => {
+            if (r.rating >= 1 && r.rating <= 5) counts[r.rating]++;
+        });
+        const total = reviews.length || 1;
+        return counts.map(c => Math.round((c / total) * 100));
+    };
+    const starBreakdown = getStarBreakdown();
+
+    // Calculate average rating
+    const averageRating = reviews.length > 0
+        ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1)
+        : 0;
+
     return (
         <div className={s.page}>
             <section className={s.hero}>
@@ -82,6 +139,14 @@ const ClientCompanyDetailPage = (props: any) => {
                         <div className={s.jobCountBadge}>
                             {companyJobs.length} Việc làm đang tuyển
                         </div>
+                        <Button
+                            danger
+                            icon={<FormOutlined />}
+                            style={{ marginLeft: 12, borderRadius: 999, fontWeight: 700 }}
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            Viết đánh giá
+                        </Button>
                     </div>
                 </div>
             </section>
@@ -90,20 +155,163 @@ const ClientCompanyDetailPage = (props: any) => {
                 <div className={`${styles["container"]}`}>
                     <Row gutter={[24, 24]}>
                         <Col span={24} md={16}>
-                            <div className={s.contentCard}>
-                                {isLoading ? (
-                                    <Skeleton active />
-                                ) : (
-                                    <>
-                                        <div className={s.contentHeader}>
-                                            <h2>Giới thiệu công ty</h2>
+                            <Tabs defaultActiveKey="overview" items={[
+                                {
+                                    key: 'overview',
+                                    label: 'Tổng quan',
+                                    children: (
+                                        <div className={s.contentCard}>
+                                            {isLoading ? (
+                                                <Skeleton active />
+                                            ) : (
+                                                <>
+                                                    <div className={s.contentHeader}>
+                                                        <h2>Giới thiệu công ty</h2>
+                                                    </div>
+                                                    <div className={s.description}>
+                                                        {parse(companyDetail?.description ?? "Chưa có mô tả.")}
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
-                                        <div className={s.description}>
-                                            {parse(companyDetail?.description ?? "Chưa có mô tả.")}
+                                    )
+                                },
+                                {
+                                    key: 'reviews',
+                                    label: (
+                                        <span>
+                                            Đánh giá
+                                            <span className={s.reviewBadge}>{reviews.length}</span>
+                                        </span>
+                                    ),
+                                    children: (
+                                        <div className={s.reviewSection}>
+                                            <div className={s.reviewHeader}>
+                                                <div className={s.summaryLeft}>
+                                                    <div className={s.averageBox}>
+                                                        <span className={s.bigScore}>{averageRating}</span>
+                                                        <Rate disabled allowHalf defaultValue={Number(averageRating)} />
+                                                        <span className={s.totalReviews}>{reviews.length} đánh giá</span>
+                                                    </div>
+                                                    <div className={s.starStats}>
+                                                        {[5, 4, 3, 2, 1].map(star => (
+                                                            <div key={star} className={s.statRow}>
+                                                                <span className={s.statLabel}>{star} sao</span>
+                                                                <Progress
+                                                                    percent={starBreakdown[star]}
+                                                                    showInfo={false}
+                                                                    strokeColor="#f5a623"
+                                                                    trailColor="#e5e7eb"
+                                                                />
+                                                                <span className={s.statPercent}>{starBreakdown[star]}%</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className={s.summaryRight}>
+                                                    <div className={s.recommendBox}>
+                                                        <Progress
+                                                            type="circle"
+                                                            percent={85}
+                                                            width={80}
+                                                            strokeColor="#4caf50"
+                                                            format={percent => `${percent}%`}
+                                                        />
+                                                        <p>Khuyên bạn bè làm việc tại đây</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <Divider style={{ margin: '8px 0' }} />
+
+                                            <div className={s.reviewGrid}>
+                                                {/* Review List */}
+                                                <div className={s.reviewListSide} style={{ gridColumn: 'span 2' }}>
+                                                    {isLoadingReviews ? (
+                                                        <Skeleton active />
+                                                    ) : reviews.length > 0 ? (
+                                                        reviews.map((rv, idx) => (
+                                                            <div key={idx} className={s.reviewCard}>
+                                                                <div className={s.rvTop}>
+                                                                    <div className={s.rvUser}>
+                                                                        <UserOutlined />
+                                                                        <span className={s.rvName}>{rv?.user?.name || "Người dùng ẩn danh"}</span>
+                                                                        <span className={s.rvDate}>{rv.createdAt ? dayjs(rv.createdAt).locale('vi').fromNow() : ''}</span>
+                                                                    </div>
+                                                                    <Rate disabled defaultValue={rv.rating} style={{ fontSize: 14 }} />
+                                                                </div>
+                                                                <h4 className={s.rvTitle}>{rv.title || "Môi trường làm việc tốt"}</h4>
+
+                                                                <div className={s.rvContent}>
+                                                                    <div className={s.rvSection}>
+                                                                        <span className={s.rvLabel}><LikeOutlined /> Điều tôi thích</span>
+                                                                        <p>{rv.pros || rv.content}</p>
+                                                                    </div>
+                                                                    {(rv.cons || rv.content) && (
+                                                                        <div className={s.rvSection}>
+                                                                            <span className={s.rvLabel}><DislikeOutlined /> Đề xuất cải thiện</span>
+                                                                            <p>{rv.cons || "Không có đề xuất."}</p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <p style={{ color: '#64748b', textAlign: 'center', padding: '40px 0' }}>Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </>
-                                )}
-                            </div>
+                                    )
+                                }
+                            ]} />
+
+                            {/* REVIEW MODAL */}
+                            <Modal
+                                title="Viết đánh giá của bạn"
+                                open={isModalOpen}
+                                onCancel={() => setIsModalOpen(false)}
+                                footer={null}
+                                width={600}
+                                centered
+                            >
+                                <Form form={form} layout="vertical" onFinish={handlePostReview}>
+                                    <Form.Item
+                                        name="rating"
+                                        label="Đánh giá tổng quát"
+                                        rules={[{ required: true, message: 'Vui lòng chọn số sao!' }]}
+                                    >
+                                        <Rate />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="title"
+                                        label="Tiêu đề đánh giá"
+                                        rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
+                                    >
+                                        <Input placeholder="Ví dụ: Công ty tuyệt vời, Sếp vui tính..." />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="pros"
+                                        label="Điều bạn thích nhất"
+                                        rules={[{ required: true, message: 'Vui lòng nhập điều bạn thích!' }]}
+                                    >
+                                        <Input.TextArea rows={3} placeholder="Môi trường, đồng nghiệp, lương bổng..." />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="cons"
+                                        label="Điều cần cải thiện"
+                                        rules={[{ required: true, message: 'Vui lòng nhập đề xuất!' }]}
+                                    >
+                                        <Input.TextArea rows={3} placeholder="Quy trình, dự án, văn phòng..." />
+                                    </Form.Item>
+                                    <Form.Item name="content" hidden initialValue="Review content">
+                                        <Input />
+                                    </Form.Item>
+                                    <Button type="primary" danger htmlType="submit" loading={isSubmittingReview} block size="large">
+                                        Gửi đánh giá
+                                    </Button>
+                                </Form>
+                            </Modal>
                         </Col>
 
                         <Col span={24} md={8}>
@@ -115,8 +323,8 @@ const ClientCompanyDetailPage = (props: any) => {
                                 ) : companyJobs.length > 0 ? (
                                     <div className={s.jobList}>
                                         {companyJobs.map(job => (
-                                            <div 
-                                                key={job.id} 
+                                            <div
+                                                key={job.id}
                                                 className={s.sidebarJobCard}
                                                 onClick={() => navigate(`/job/${convertSlug(job.name)}?id=${job.id}`)}
                                             >
@@ -131,7 +339,7 @@ const ClientCompanyDetailPage = (props: any) => {
                                                 </div>
                                                 <div className={s.jobCardFooter}>
                                                     <span>{job.updatedAt ? dayjs(job.updatedAt).locale('en').fromNow() : dayjs(job.createdAt).locale('en').fromNow()}</span>
-                                                    <span className={s.viewDetailBtn}>Xem chi tiết <RightOutlined style={{ fontSize: '10px' }}/></span>
+                                                    <span className={s.viewDetailBtn}>Xem chi tiết <RightOutlined style={{ fontSize: '10px' }} /></span>
                                                 </div>
                                             </div>
                                         ))}
