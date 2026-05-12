@@ -1,7 +1,6 @@
 .page {
     min-height: 100vh;
     background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 50%, #f8fafc 100%);
-    padding-bottom: 60px;
 }
 
 .hero {
@@ -54,32 +53,39 @@
     min-width: 220px;
 }
 
-.heroInfo h1 {
-    margin: 0 0 8px;
-    font-size: clamp(28px, 3vw, 40px);
+.companyName {
+    margin: 0 0 12px;
+    font-size: clamp(28px, 3vw, 36px);
     font-weight: 800;
+    color: #ffffff;
 }
 
-.heroInfo p {
-    margin: 0;
-    color: rgba(226, 232, 240, 0.8);
+.companyMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    color: rgba(226, 232, 240, 0.9);
     font-size: 14px;
 }
 
-.badge {
+.companyMeta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.jobCountBadge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 12px;
-    padding: 6px 14px;
+    padding: 8px 16px;
     border-radius: 999px;
-    background: rgba(45, 212, 191, 0.16);
-    border: 1px solid rgba(45, 212, 191, 0.32);
-    color: #99f6e4;
-    font-size: 11px;
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    font-size: 14px;
     font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .contentWrap {
@@ -139,8 +145,240 @@
     margin: 0 0 12px;
 }
 
+.reviewSection {
+    margin-top: 28px;
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 18px 32px rgba(15, 23, 42, 0.08);
+    padding: 24px;
+}
+
+.reviewHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.reviewHeader h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.reviewHeader p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.ratingSummary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    color: #0f172a;
+}
+
+.ratingScore {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #f59e0b;
+}
+
+.ratingCount {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.reviewGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 20px;
+}
+
+.reviewFormCard,
+.reviewListCard {
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    padding: 18px;
+    background: #f8fafc;
+}
+
+.reviewFormCard h3,
+.reviewListCard h3 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.reviewItem {
+    padding: 12px 0;
+}
+
+.reviewTitleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.reviewerName {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.reviewMeta {
+    display: grid;
+    gap: 6px;
+}
+
+.reviewMeta strong {
+    font-size: 13px;
+    color: #0f172a;
+}
+
+.reviewMeta p {
+    margin: 0;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.reviewDate {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
 @media (max-width: 720px) {
     .contentCard {
         padding: 20px;
     }
+
+    .reviewSection {
+        padding: 18px;
+    }
+
+    .reviewGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .ratingSummary {
+        align-items: flex-start;
+    }
+}
+
+.jobsSidebar {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 24px 40px rgba(15, 23, 42, 0.05);
+    padding: 24px;
+    position: sticky;
+    top: 24px;
+}
+
+.sidebarTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.jobList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.sidebarJobCard {
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sidebarJobCard:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+}
+
+.jobCardTitle {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 15px;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.jobCardMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.jobCardSalary {
+    color: #ea580c;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.jobCardLocation {
+    color: #64748b;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.jobCardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #94a3b8;
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+    padding-top: 12px;
+}
+
+.viewDetailBtn {
+    color: #3b82f6;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sidebarJobCard:hover .viewDetailBtn {
+    color: #2563eb;
+}
+
+.noJobs {
+    color: #64748b;
+    font-size: 14px;
+    text-align: center;
+    padding: 32px 0;
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 1px dashed rgba(15, 23, 42, 0.1);
 }

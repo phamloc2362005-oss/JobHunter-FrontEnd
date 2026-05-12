@@ -235,4 +235,4 @@ export interface IInterviewEvaluation {
     feedback: string;
     suggestion: string;
     rating: 'Xuất sắc' | 'Tốt' | 'Khá' | 'Cần cải thiện' | 'Chưa đạt';
-}
+}
