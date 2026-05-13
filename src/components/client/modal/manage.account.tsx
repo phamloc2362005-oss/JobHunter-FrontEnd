@@ -126,7 +126,7 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
         }
         return result;
     };
-    
+
     const fetchExpertiseList = async (name: string): Promise<any[]> => {
         if (name === "" && allExpertises.length > 0) {
             return allExpertises;
@@ -165,23 +165,48 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
 
             if (profileRes.data) {
                 const profile = profileRes.data;
-                const skillDetails = (profile.skillDetails ?? []).map((item: any) => ({
-                    label: item.label,
-                    value: item.value
-                }));
-                formData.skillIds = skillDetails;
 
+                // 1. Handle Skills
+                let skillsData = [];
+                if (profile.skillDetails && profile.skillDetails.length > 0) {
+                    skillsData = profile.skillDetails.map((item: any) => ({
+                        label: item.label,
+                        value: String(item.value)
+                    }));
+                } else if (profile.skillIds && profile.skillIds.length > 0) {
+                    // Fallback to IDs if details are missing
+                    skillsData = profile.skillIds.map((id: any) => ({
+                        label: `Skill ID: ${id}`,
+                        value: String(id)
+                    }));
+                }
+                formData.skillIds = skillsData;
+
+                // 2. Handle Level
                 formData.level = profile.level;
 
-                const expertiseDetail = profile.expertiseDetail ? { 
-                    label: profile.expertiseDetail.label, 
-                    value: profile.expertiseDetail.value 
-                } : undefined;
-                formData.expertiseId = expertiseDetail;
+                // 3. Handle Expertise
+                let expertiseData = undefined;
+                if (profile.expertiseDetail) {
+                    expertiseData = {
+                        label: profile.expertiseDetail.label,
+                        value: String(profile.expertiseDetail.value)
+                    };
+                } else if (profile.expertiseId) {
+                    // Fallback to ID
+                    expertiseData = {
+                        label: `Expertise ID: ${profile.expertiseId}`,
+                        value: String(profile.expertiseId)
+                    };
+                }
+                formData.expertiseId = expertiseData;
             }
 
             if (Object.keys(formData).length > 0) {
-                form.setFieldsValue(formData);
+                // Use setTimeout to ensure form is ready and prevent rendering race conditions
+                setTimeout(() => {
+                    form.setFieldsValue(formData);
+                }, 0);
             }
         } catch (error) {
             console.error(error);

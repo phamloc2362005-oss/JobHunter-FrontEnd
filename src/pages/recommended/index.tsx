@@ -1,22 +1,99 @@
-import { EnvironmentOutlined } from '@ant-design/icons';
+import { ArrowRightOutlined, EnvironmentOutlined, ThunderboltOutlined, FireOutlined, StarOutlined } from '@ant-design/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import { callFetchRecommendedJobs } from '@/config/api';
-import { useLocation, useNavigate } from 'react-router-dom';
-import styles from 'styles/client.module.scss';
-import homeStyles from '../home/index.module.scss';
-import { Card, Col, Empty, Row, Spin, Tag, Typography } from 'antd';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import type { IJobRecommendation } from '@/types/backend';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { convertSlug, getLocationName } from '@/config/utils';
+import styles from './index.module.scss';
 
 dayjs.extend(relativeTime);
 
+/* ---------- Skeleton Card ---------- */
+const SkeletonCard = () => (
+    <div className={styles.skeletonCard}>
+        <div className={styles.skeletonHeader}>
+            <div className={styles.skeletonLogo} />
+            <div className={styles.skeletonLines}>
+                <div className={`${styles.skeletonLine} ${styles.w80} ${styles.h20}`} />
+                <div className={`${styles.skeletonLine} ${styles.w50}`} />
+            </div>
+        </div>
+        <div className={styles.skeletonLine} style={{ marginBottom: 8 }} />
+        <div className={`${styles.skeletonLine} ${styles.w90}`} style={{ marginBottom: 8 }} />
+        <div className={`${styles.skeletonLine} ${styles.w60}`} style={{ marginBottom: 20 }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div className={`${styles.skeletonLine} ${styles.w40}`} />
+            <div className={`${styles.skeletonLine} ${styles.w40}`} />
+        </div>
+    </div>
+);
+
+/* ---------- Job Card ---------- */
+const JobCard = ({ item, onClick }: { item: IJobRecommendation; onClick: () => void }) => {
+    const job = item?.job;
+    const jobName = job?.name ?? 'Công việc phù hợp';
+    const score = item.score ?? 0;
+    const scoreClass = score >= 80 ? styles.high : score >= 60 ? styles.medium : styles.low;
+    const skills = job?.skills?.slice(0, 3) ?? [];
+    const logoSrc = job?.company?.logo
+        ? `${import.meta.env.VITE_BACKEND_URL}/storage/company/${job.company.logo}`
+        : '';
+    const timeLabel = job?.updatedAt
+        ? dayjs(job.updatedAt).fromNow()
+        : job?.createdAt ? dayjs(job.createdAt).fromNow() : '';
+
+    return (
+        <div className={styles.jobCard} onClick={onClick} role="button" tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onClick()}>
+            <div className={styles.cardHeader}>
+                <div className={styles.logoWrap}>
+                    {logoSrc
+                        ? <img src={logoSrc} alt={job?.company?.name ?? jobName} />
+                        : <div className={styles.logoPlaceholder}>{jobName.charAt(0)}</div>
+                    }
+                </div>
+                <div className={styles.cardTitleBlock}>
+                    <div className={styles.jobTitle}>{jobName}</div>
+                    <div className={styles.companyName}>{job?.company?.name ?? '—'}</div>
+                </div>
+                <span className={`${styles.scoreBadge} ${scoreClass}`}>
+                    ⚡ {score}
+                </span>
+            </div>
+
+            {skills.length > 0 && (
+                <div className={styles.skillTags}>
+                    {skills.map((s: any) => (
+                        <span key={s.id} className={styles.skillTag}>{s.name}</span>
+                    ))}
+                </div>
+            )}
+
+            <div className={styles.matchSummary}>
+                {item.matchSummary ?? 'Job phù hợp với hồ sơ của bạn.'}
+            </div>
+
+            <div className={styles.cardFooter}>
+                <span className={styles.footerMeta}>
+                    <EnvironmentOutlined />
+                    {getLocationName(job?.location ?? '')}
+                </span>
+                <span className={styles.timeAgo}>{timeLabel}</span>
+                <span className={styles.cardArrow}><ArrowRightOutlined /></span>
+            </div>
+        </div>
+    );
+};
+
+/* ---------- Page ---------- */
 const RecommendedPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+    const user = useAppSelector(state => state.account.user);
     const [isLoading, setIsLoading] = useState(false);
     const [jobs, setJobs] = useState<IJobRecommendation[]>([]);
 
@@ -25,11 +102,7 @@ const RecommendedPage = () => {
 
     useEffect(() => {
         const init = async () => {
-            if (!isAuthenticated) {
-                setJobs([]);
-                setIsLoading(false);
-                return;
-            }
+            if (!isAuthenticated) { setJobs([]); setIsLoading(false); return; }
             setIsLoading(true);
             try {
                 const res = await callFetchRecommendedJobs(100);
@@ -39,8 +112,7 @@ const RecommendedPage = () => {
                         ? (res as any).data.data
                         : [];
                 setJobs(result);
-            } catch (error) {
-                console.error('Failed to load recommended jobs:', error);
+            } catch {
                 setJobs([]);
             } finally {
                 setIsLoading(false);
@@ -49,67 +121,106 @@ const RecommendedPage = () => {
         init();
     }, [isAuthenticated, filter]);
 
+    const highScore = jobs.filter(j => (j.score ?? 0) >= 80).length;
+
     return (
-        <div className={homeStyles.pageShell}>
-            <section className={`${styles['container']} ${homeStyles.contentSection}`}>
-                <div className={homeStyles.sectionHeader}>
-                    <div>
-                        <span className={homeStyles.sectionKicker}>Việc làm phù hợp</span>
-                        <h2>Việc làm phù hợp</h2>
+        <div className={styles.pageWrapper}>
+            {/* ---- Hero ---- */}
+            <div className={styles.container}>
+                <div className={styles.hero}>
+                    <div className={styles.heroBadge}>
+                        <ThunderboltOutlined /> AI-Powered Matching
                     </div>
-                    <p>Những công việc phù hợp nhất với bạn dựa trên mong muốn, kỹ năng và kinh nghiệm.</p>
+                    <h1 className={styles.heroTitle}>
+                        Việc làm dành riêng cho bạn
+                    </h1>
+                    <p className={styles.heroSubtitle}>
+                        Hệ thống AI phân tích hồ sơ, kỹ năng và kinh nghiệm của bạn để gợi ý những cơ hội việc làm phù hợp nhất.
+                    </p>
+
+                    {isAuthenticated && !isLoading && jobs.length > 0 && (
+                        <div className={styles.heroStats}>
+                            <div className={styles.statItem}>
+                                <span className={styles.statNumber}>{jobs.length}</span>
+                                <span className={styles.statLabel}>Việc làm phù hợp</span>
+                            </div>
+                            <div className={styles.statItem}>
+                                <span className={styles.statNumber}>{highScore}</span>
+                                <span className={styles.statLabel}>Điểm cao ≥80</span>
+                            </div>
+                            <div className={styles.statItem}>
+                                <span className={styles.statNumber}>{jobs[0]?.score ?? 0}</span>
+                                <span className={styles.statLabel}>Điểm cao nhất</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                <Spin spinning={isLoading}>
-                    {!isAuthenticated ? (
-                        <Card>
-                            <Empty description="Cần đăng nhập để xem job phù hợp" />
-                        </Card>
-                    ) : jobs.length === 0 ? (
-                        <Card>
-                            <Empty description="Chưa có job phù hợp." />
-                        </Card>
-                    ) : (
+                {/* ---- Content ---- */}
+                <div className={styles.contentSection}>
+                    {/* Loading */}
+                    {isLoading && (
+                        <div className={styles.skeletonGrid}>
+                            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+                        </div>
+                    )}
+
+                    {/* Not authenticated */}
+                    {!isLoading && !isAuthenticated && (
+                        <div className={styles.emptyState}>
+                            <span className={styles.emptyIcon}>🔐</span>
+                            <h2 className={styles.emptyTitle}>Đăng nhập để xem gợi ý</h2>
+                            <p className={styles.emptyDesc}>
+                                Tạo tài khoản hoặc đăng nhập để AI phân tích hồ sơ và gợi ý những việc làm phù hợp nhất với bạn.
+                            </p>
+                            <Link to="/login" className={styles.emptyBtn}>
+                                Đăng nhập ngay <ArrowRightOutlined />
+                            </Link>
+                        </div>
+                    )}
+
+                    {/* No jobs */}
+                    {!isLoading && isAuthenticated && jobs.length === 0 && (
+                        <div className={styles.emptyState}>
+                            <span className={styles.emptyIcon}>🎯</span>
+                            <h2 className={styles.emptyTitle}>Chưa có gợi ý việc làm</h2>
+                            <p className={styles.emptyDesc}>
+                                Hãy cập nhật kỹ năng, level và chuyên môn trong hồ sơ để AI có thể tìm kiếm và gợi ý việc làm phù hợp với bạn.
+                            </p>
+                            <Link to="/" className={styles.emptyBtn}>
+                                Cập nhật hồ sơ <ArrowRightOutlined />
+                            </Link>
+                        </div>
+                    )}
+
+                    {/* Job list */}
+                    {!isLoading && jobs.length > 0 && (
                         <>
-                            <div style={{ marginBottom: 12, color: '#334155' }}>
-                                Tìm thấy {jobs.length} việc làm phù hợp với yêu cầu của bạn.
+                            <div className={styles.toolbar}>
+                                <div className={styles.resultCount}>
+                                    <strong>{jobs.length}</strong>
+                                    <span>việc làm phù hợp với hồ sơ của bạn</span>
+                                    <span className={styles.countBadge}><FireOutlined /> Hot</span>
+                                </div>
                             </div>
-                            <Row gutter={[18, 18]}>
+                            <div className={styles.jobGrid}>
                                 {jobs.map((item) => {
                                     const job = item?.job;
                                     const jobName = job?.name ?? 'Công việc phù hợp';
                                     const slug = convertSlug(jobName);
                                     return (
-                                        <Col xs={24} md={12} xl={8} key={String(job?.id ?? slug)}>
-                                            <Card hoverable onClick={() => job?.id ? navigate(`/job/${slug}?id=${job.id}`) : undefined}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                                        <div style={{ width: 56, height: 56 }}>
-                                                            <img alt={job?.company?.name ?? jobName} src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${job?.company?.logo ?? ''}`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                                        </div>
-                                                        <div>
-                                                            <Typography.Title level={5}>{jobName}</Typography.Title>
-                                                            <div style={{ color: '#64748b' }}>{job?.company?.name ?? ''}</div>
-                                                        </div>
-                                                    </div>
-                                                    <Tag color={item.score >= 80 ? 'green' : item.score >= 60 ? 'blue' : 'gold'}>{item.score} điểm</Tag>
-                                                </div>
-
-                                                <div style={{ marginTop: 12, color: '#334155' }}>{item.matchSummary ?? 'Đang cập nhật thông tin phù hợp.'}</div>
-
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, color: '#64748b' }}>
-                                                    <span><EnvironmentOutlined /> {getLocationName(job?.location ?? '')}</span>
-                                                    <span>{job?.updatedAt ? dayjs(job.updatedAt).fromNow() : job?.createdAt ? dayjs(job.createdAt).fromNow() : ''}</span>
-                                                </div>
-                                            </Card>
-                                        </Col>
+                                        <JobCard
+                                            key={String(job?.id ?? slug)}
+                                            item={item}
+                                            onClick={() => job?.id ? navigate(`/job/${slug}?id=${job.id}`) : undefined}
+                                        />
                                     );
                                 })}
-                            </Row>
+                            </div>
                         </>
                     )}
-                </Spin>
-            </section>
+                </div>
+            </div>
         </div>
     );
 };

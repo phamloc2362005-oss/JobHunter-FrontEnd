@@ -81,7 +81,7 @@ const CompanyCard = (props: IProps) => {
                                         <p className={isCatalog ? cardStyles.catalogSubtitle : styles["section-subtitle"]}>Các công ty IT đang nổi bật và được quan tâm nhất trên hệ thống.</p>
                                     </div>
                                 </div>
-                                <Link to="company" className={isCatalog ? cardStyles.catalogAction : styles["section-link"]}>Xem tất cả</Link>
+                                {!isCatalog && <Link to="company" className={styles["section-link"]}>Xem tất cả</Link>}
                             </div>
                         </Col>}
 
