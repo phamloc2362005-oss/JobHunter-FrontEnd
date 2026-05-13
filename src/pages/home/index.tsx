@@ -15,6 +15,7 @@ import JobCard from '@/components/client/card/job.card';
 import CompanyCard from '@/components/client/card/company.card';
 import ExpertiseSummary from '@/components/client/expertise-summary';
 import { Link } from 'react-router-dom';
+import Footer from '@/components/client/footer.client';
 import styles from 'styles/client.module.scss';
 import s from './index.module.scss';
 import { useEffect, useRef, useState } from 'react';
@@ -241,50 +242,7 @@ const HomePage = () => {
                     </div>
                 </div>
             </section>
-            {/* ══════════════════ FOOTER ══════════════════ */}
-            <footer className={s.footer}>
-                <div className={`${styles['container']} ${s.footerInner}`}>
-                    <div className={s.footerBrand}>
-                        <div className={s.footerLogo}>
-                            <CodeOutlined />
-                        </div>
-                        <strong>JobHunter</strong>
-                        <p>Leading IT recruitment platform in Vietnam. Built for developers, by developers.</p>
-                    </div>
-
-                    <div className={s.footerLinks}>
-                        <div className={s.footerCol}>
-                            <h4>Platform</h4>
-                            <a href="/">Home</a>
-                            <a href="/job">Jobs</a>
-                            <a href="/company">Companies</a>
-                            <a href="/skills">Skills</a>
-                        </div>
-                        <div className={s.footerCol}>
-                            <h4>For Employers</h4>
-                            <a href="#">Post a Job</a>
-                            <a href="#">Find Candidates</a>
-                            <a href="#">Employer Dashboard</a>
-                            <a href="#">Pricing</a>
-                        </div>
-                        <div className={s.footerCol}>
-                            <h4>Contact</h4>
-                            <a href="mailto:support@jobhunter.com">support@jobhunter.com</a>
-                            <a href="tel:+84123456789">+84 123 456 789</a>
-                            <span>Ho Chi Minh City, Vietnam</span>
-                        </div>
-                    </div>
-                </div>
-                <div className={s.footerBottom}>
-                    <div className={styles['container']}>
-                        <span>© 2024 JobHunter. All rights reserved.</span>
-                        <div className={s.footerBottomLinks}>
-                            <a href="#">Privacy Policy</a>
-                            <a href="#">Terms of Service</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
 
         </div>
     );

@@ -1,92 +1,76 @@
-import { ArrowRightOutlined, EnvironmentOutlined, ThunderboltOutlined, FireOutlined, StarOutlined } from '@ant-design/icons';
+import { Row, Col, Spin, Empty } from 'antd';
+import { ThunderboltOutlined, EnvironmentOutlined, FireOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import { callFetchRecommendedJobs } from '@/config/api';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import type { IJobRecommendation } from '@/types/backend';
+import type { IJob, IJobRecommendation } from '@/types/backend';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { convertSlug, getLocationName } from '@/config/utils';
+import Footer from '@/components/client/footer.client';
+import JobDetailPanel from '@/components/client/card/job-detail-panel';
 import styles from './index.module.scss';
+import compactStyles from '@/components/client/card/job-list-compact.module.scss';
 
 dayjs.extend(relativeTime);
 
-/* ---------- Skeleton Card ---------- */
-const SkeletonCard = () => (
-    <div className={styles.skeletonCard}>
-        <div className={styles.skeletonHeader}>
-            <div className={styles.skeletonLogo} />
-            <div className={styles.skeletonLines}>
-                <div className={`${styles.skeletonLine} ${styles.w80} ${styles.h20}`} />
-                <div className={`${styles.skeletonLine} ${styles.w50}`} />
-            </div>
-        </div>
-        <div className={styles.skeletonLine} style={{ marginBottom: 8 }} />
-        <div className={`${styles.skeletonLine} ${styles.w90}`} style={{ marginBottom: 8 }} />
-        <div className={`${styles.skeletonLine} ${styles.w60}`} style={{ marginBottom: 20 }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div className={`${styles.skeletonLine} ${styles.w40}`} />
-            <div className={`${styles.skeletonLine} ${styles.w40}`} />
-        </div>
-    </div>
-);
-
-/* ---------- Job Card ---------- */
-const JobCard = ({ item, onClick }: { item: IJobRecommendation; onClick: () => void }) => {
+/* ---------- Compact AI Job Card ---------- */
+const CompactAIJobCard = ({
+    item,
+    isActive,
+    onClick
+}: {
+    item: IJobRecommendation;
+    isActive: boolean;
+    onClick: () => void;
+}) => {
     const job = item?.job;
-    const jobName = job?.name ?? 'Recommended Job';
+    if (!job) return null;
+
     const score = item.score ?? 0;
     const scoreClass = score >= 80 ? styles.high : score >= 60 ? styles.medium : styles.low;
-    const skills = job?.skills?.slice(0, 3) ?? [];
-    const logoSrc = job?.company?.logo
-        ? `${import.meta.env.VITE_BACKEND_URL}/storage/company/${job.company.logo}`
-        : '';
-    const timeLabel = job?.updatedAt
-        ? dayjs(job.updatedAt).fromNow()
-        : job?.createdAt ? dayjs(job.createdAt).fromNow() : '';
+    const timeLabel = dayjs(job.updatedAt || job.createdAt).fromNow();
 
     return (
-        <div className={styles.jobCard} onClick={onClick} role="button" tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onClick()}>
-            <div className={styles.cardHeader}>
-                <div className={styles.logoWrap}>
-                    {logoSrc
-                        ? <img src={logoSrc} alt={job?.company?.name ?? jobName} />
-                        : <div className={styles.logoPlaceholder}>{jobName.charAt(0)}</div>
-                    }
-                </div>
-                <div className={styles.cardTitleBlock}>
-                    <div className={styles.jobTitle}>{jobName}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div className={styles.companyName}>{job?.company?.name ?? '—'}</div>
-                        <span className={styles.aiTag}>AI Ranking</span>
-                    </div>
-                </div>
-                <span className={`${styles.scoreBadge} ${scoreClass}`}>
-                    ⚡ {score}
+        <div
+            className={`${compactStyles.jobCard} ${isActive ? compactStyles.active : ''} ${styles.aiCardExtra}`}
+            onClick={onClick}
+        >
+            {/* AI Score Badge */}
+            <div className={`${styles.aiScoreBadge} ${scoreClass}`}>
+                AI Matching: {score}%
+            </div>
+
+            <div className={compactStyles.postedTime}>Đăng {timeLabel}</div>
+            <div className={compactStyles.jobTitle}>{job.name}</div>
+
+            <div className={compactStyles.companyRow}>
+                <img
+                    alt={job.company?.name}
+                    src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${job.company?.logo}`}
+                    className={compactStyles.companyLogo}
+                />
+                <span className={compactStyles.companyName}>{job.company?.name}</span>
+            </div>
+
+            <div className={compactStyles.metaRow}>
+                <span className={compactStyles.metaItem}>
+                    <ThunderboltOutlined /> {job.level}
+                </span>
+                <span className={compactStyles.dot}>·</span>
+                <span className={compactStyles.metaItem}>
+                    <EnvironmentOutlined /> {getLocationName(job.location)}
                 </span>
             </div>
 
-            {skills.length > 0 && (
-                <div className={styles.skillTags}>
-                    {skills.map((s: any) => (
-                        <span key={s.id} className={styles.skillTag}>{s.name}</span>
+            {job.skills && (
+                <div className={compactStyles.skillsRow}>
+                    {job.skills.slice(0, 3).map(s => (
+                        <span key={s.id} className={compactStyles.skillTag}>{s.name}</span>
                     ))}
                 </div>
             )}
-
-            <div className={styles.matchSummary}>
-                {item.matchSummary ?? 'Matching job based on your profile.'}
-            </div>
-
-            <div className={styles.cardFooter}>
-                <span className={styles.footerMeta}>
-                    <EnvironmentOutlined />
-                    {getLocationName(job?.location ?? '')}
-                </span>
-                <span className={styles.timeAgo}>{timeLabel}</span>
-                <span className={styles.cardArrow}><ArrowRightOutlined /></span>
-            </div>
         </div>
     );
 };
@@ -99,6 +83,7 @@ const RecommendedPage = () => {
     const user = useAppSelector(state => state.account.user);
     const [isLoading, setIsLoading] = useState(false);
     const [jobs, setJobs] = useState<IJobRecommendation[]>([]);
+    const [selectedJob, setSelectedJob] = useState<IJob | undefined>();
 
     const params = useMemo(() => new URLSearchParams(location.search), [location.search]);
     const filter = params.get('filter') || 'all';
@@ -115,6 +100,9 @@ const RecommendedPage = () => {
                         ? (res as any).data.data
                         : [];
                 setJobs(result);
+                if (result.length > 0) {
+                    setSelectedJob(result[0].job);
+                }
             } catch {
                 setJobs([]);
             } finally {
@@ -128,102 +116,99 @@ const RecommendedPage = () => {
 
     return (
         <div className={styles.pageWrapper}>
-            {/* ---- Hero ---- */}
-            <div className={styles.container}>
-                <div className={styles.hero}>
-                    <div className={styles.heroBadge}>
-                        <ThunderboltOutlined /> AI-Powered Matching
-                    </div>
-                    <h1 className={styles.heroTitle}>
-                        Jobs Recommended for You
-                    </h1>
-                    <p className={styles.heroSubtitle}>
-                        Our AI system analyzes your profile, skills, and experience to suggest the most relevant job opportunities.
-                    </p>
-
-                    {isAuthenticated && !isLoading && jobs.length > 0 && (
-                        <div className={styles.heroStats}>
-                            <div className={styles.statItem}>
-                                <span className={styles.statNumber}>{jobs.length}</span>
-                                <span className={styles.statLabel}>Matching Jobs</span>
-                            </div>
-                            <div className={styles.statItem}>
-                                <span className={styles.statNumber}>{highScore}</span>
-                                <span className={styles.statLabel}>High Score ≥80</span>
-                            </div>
-                            <div className={styles.statItem}>
-                                <span className={styles.statNumber}>{jobs[0]?.score ?? 0}</span>
-                                <span className={styles.statLabel}>Highest Score</span>
-                            </div>
+            {/* Dashboard Header (Dark) */}
+            <header className={styles.dashboardHeader}>
+                <div className={styles.container}>
+                    <div className={styles.hero}>
+                        <div className={styles.heroBadge}>
+                            <ThunderboltOutlined /> AI-Powered Intelligence
                         </div>
-                    )}
-                </div>
+                        <h1 className={styles.heroTitle}>
+                            Smart Career Matching
+                        </h1>
+                        <p className={styles.heroSubtitle}>
+                            We've analyzed your professional profile against our database to find your next perfect role.
+                        </p>
 
-                {/* ---- Content ---- */}
-                <div className={styles.contentSection}>
-                    {/* Loading */}
-                    {isLoading && (
-                        <div className={styles.skeletonGrid}>
-                            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
-                        </div>
-                    )}
-
-                    {/* Not authenticated */}
-                    {!isLoading && !isAuthenticated && (
-                        <div className={styles.emptyState}>
-                            <span className={styles.emptyIcon}>🔐</span>
-                            <h2 className={styles.emptyTitle}>Sign in to view recommendations</h2>
-                            <p className={styles.emptyDesc}>
-                                Create an account or sign in for AI to analyze your profile and suggest the best matching jobs for you.
-                            </p>
-                            <Link to="/login" className={styles.emptyBtn}>
-                                Sign In Now <ArrowRightOutlined />
-                            </Link>
-                        </div>
-                    )}
-
-                    {/* No jobs */}
-                    {!isLoading && isAuthenticated && jobs.length === 0 && (
-                        <div className={styles.emptyState}>
-                            <span className={styles.emptyIcon}>🎯</span>
-                            <h2 className={styles.emptyTitle}>No job recommendations yet</h2>
-                            <p className={styles.emptyDesc}>
-                                Please update your skills, level, and expertise in your profile so AI can find and suggest matching jobs for you.
-                            </p>
-                            <Link to="/" className={styles.emptyBtn}>
-                                Update Profile <ArrowRightOutlined />
-                            </Link>
-                        </div>
-                    )}
-
-                    {/* Job list */}
-                    {!isLoading && jobs.length > 0 && (
-                        <>
-                            <div className={styles.toolbar}>
-                                <div className={styles.resultCount}>
-                                    <strong>{jobs.length}</strong>
-                                    <span>matching jobs for your profile</span>
-                                    <span className={styles.countBadge}><FireOutlined /> Hot</span>
+                        {isAuthenticated && !isLoading && jobs.length > 0 && (
+                            <div className={styles.heroStats}>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>{jobs.length}</span>
+                                    <span className={styles.statLabel}>Opportunities</span>
+                                </div>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>{highScore}</span>
+                                    <span className={styles.statLabel}>High Matches</span>
+                                </div>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>{jobs[0]?.score ?? 0}%</span>
+                                    <span className={styles.statLabel}>Best Match</span>
                                 </div>
                             </div>
-                            <div className={styles.jobGrid}>
-                                {jobs.map((item) => {
-                                    const job = item?.job;
-                                    const jobName = job?.name ?? 'Recommended Job';
-                                    const slug = convertSlug(jobName);
-                                    return (
-                                        <JobCard
-                                            key={String(job?.id ?? slug)}
-                                            item={item}
-                                            onClick={() => job?.id ? navigate(`/job/${slug}?id=${job.id}`) : undefined}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        </>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </div>
+            </header>
+
+            {/* Dashboard Content (2 Columns like Search Page) */}
+            <main className={styles.dashboardContent}>
+                <div className={styles.container}>
+                    <Spin spinning={isLoading} tip="AI is matching jobs...">
+                        {!isLoading && !isAuthenticated && (
+                            <div className={styles.emptyState}>
+                                <span className={styles.emptyIcon}>🔐</span>
+                                <h2 className={styles.emptyTitle}>Sign in for Recommendations</h2>
+                                <p className={styles.emptyDesc}>
+                                    Join JobHunter to unlock AI career matching tailored to your skills.
+                                </p>
+                                <Link to="/login" className={styles.emptyBtn}>
+                                    Get Started Now <ArrowRightOutlined />
+                                </Link>
+                            </div>
+                        )}
+
+                        {!isLoading && isAuthenticated && jobs.length === 0 && (
+                            <div className={styles.emptyState}>
+                                <span className={styles.emptyIcon}>🎯</span>
+                                <h2 className={styles.emptyTitle}>No Matches Found Yet</h2>
+                                <p className={styles.emptyDesc}>
+                                    Update your profile details to help our AI engine.
+                                </p>
+                                <Link to="/" className={styles.emptyBtn}>
+                                    Complete Profile <ArrowRightOutlined />
+                                </Link>
+                            </div>
+                        )}
+
+                        {isAuthenticated && jobs.length > 0 && (
+                            <Row gutter={[20, 20]} style={{ marginTop: 20 }}>
+                                <Col span={24} lg={10}>
+                                    <div className={styles.compactListHeader}>
+                                        <FireOutlined /> <strong>{jobs.length}</strong> AI Recommendations
+                                    </div>
+                                    <div className={styles.compactListWrapper}>
+                                        {jobs.map((item) => (
+                                            <CompactAIJobCard
+                                                key={item.job?.id}
+                                                item={item}
+                                                isActive={selectedJob?.id === item.job?.id}
+                                                onClick={() => setSelectedJob(item.job)}
+                                            />
+                                        ))}
+                                    </div>
+                                </Col>
+                                <Col span={24} lg={14}>
+                                    <div className={styles.detailSticky}>
+                                        <JobDetailPanel job={selectedJob} />
+                                    </div>
+                                </Col>
+                            </Row>
+                        )}
+                    </Spin>
+                </div>
+            </main>
+
+            <Footer />
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CodeOutlined, ContactsOutlined, FileTextOutlined, FireOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined, TwitterOutlined } from '@ant-design/icons';
+import { CodeOutlined, ContactsOutlined, FileTextOutlined, FireOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined, TwitterOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Avatar, Drawer, Dropdown, MenuProps, Space, message } from 'antd';
 import { Menu } from 'antd';
 import styles from '@/styles/client.module.scss';

@@ -1,0 +1,153 @@
+.footer {
+    margin-top: 72px;
+    background: linear-gradient(180deg, #060d1f 0%, #090f1e 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footerInner {
+    display: flex;
+    align-items: flex-start;
+    gap: 60px;
+    padding: 56px 0 48px;
+    max-width: 1260px;
+    margin: 0 auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.footerBrand {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 260px;
+    flex: 0 0 auto;
+    text-align: left;
+}
+
+.footerLogo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.28), rgba(96, 165, 250, 0.22));
+    border: 1px solid rgba(186, 230, 253, 0.20);
+    color: #7dd3fc;
+    font-size: 20px;
+}
+
+.footerBrand strong {
+    color: #e2e8f0;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.footerBrand p {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.75;
+    margin: 0;
+}
+
+.footerLinks {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+    gap: 40px;
+    flex: 1;
+}
+
+.footerCol {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+}
+
+.footerCol h4 {
+    margin: 0 0 4px;
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.footerCol a,
+.footerCol span {
+    color: #64748b;
+    font-size: 13px;
+    text-decoration: none;
+    line-height: 1.5;
+    transition: color 0.18s;
+}
+
+.footerCol a:hover {
+    color: #94a3b8;
+}
+
+.footerBottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 18px 0;
+}
+
+.footerBottom > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 1260px;
+    margin: 0 auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.footerBottom span {
+    color: #475569;
+    font-size: 13px;
+}
+
+.footerBottomLinks {
+    display: flex;
+    gap: 20px;
+}
+
+.footerBottomLinks a {
+    color: #475569;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.18s;
+}
+
+.footerBottomLinks a:hover {
+    color: #94a3b8;
+}
+
+@media (max-width: 900px) {
+    .footerInner {
+        flex-direction: column;
+        gap: 36px;
+        padding: 40px 15px 36px;
+    }
+
+    .footerBrand {
+        max-width: 100%;
+    }
+
+    .footerLinks {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .footerLinks {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .footerBottom > div {
+        flex-direction: column;
+        text-align: center;
+    }
+}
