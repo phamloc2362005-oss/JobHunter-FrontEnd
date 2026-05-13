@@ -35,7 +35,7 @@ const UserResume = (props: any) => {
 
     const columns: ColumnsType<IResume> = [
         {
-            title: 'STT',
+            title: 'No.',
             key: 'index',
             width: 50,
             align: "center",
@@ -47,7 +47,7 @@ const UserResume = (props: any) => {
             }
         },
         {
-            title: 'Công Ty',
+            title: 'Company',
             dataIndex: "companyName",
 
         },
@@ -57,11 +57,11 @@ const UserResume = (props: any) => {
 
         },
         {
-            title: 'Trạng thái',
+            title: 'Status',
             dataIndex: "status",
         },
         {
-            title: 'Ngày rải CV',
+            title: 'Date Applied',
             dataIndex: "createdAt",
             render(value, record, index) {
                 return (
@@ -77,7 +77,7 @@ const UserResume = (props: any) => {
                     <a
                         href={`${import.meta.env.VITE_BACKEND_URL}/storage/resume/${record?.url}`}
                         target="_blank"
-                    >Chi tiết</a>
+                    >View</a>
                 )
             },
         },
@@ -104,10 +104,10 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
 
 
     const levelOptions = [
-        { label: "Intern - Thực tập", value: "INTERN" },
+        { label: "Intern", value: "INTERN" },
         { label: "Junior - Fresher", value: "JUNIOR" },
-        { label: "Middle - Có kinh nghiệm", value: "MIDDLE" },
-        { label: "Senior - Dày dạn", value: "SENIOR" },
+        { label: "Middle - Experienced", value: "MIDDLE" },
+        { label: "Senior", value: "SENIOR" },
     ];
 
 
@@ -251,14 +251,14 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
         setIsSubmitting(false);
 
         if (userUpdateRes.data && profileRes?.statusCode === 200) {
-            message.success("Cập nhật thông tin thành công.");
+            message.success("Personal information updated successfully.");
             await loadData();
             return;
         }
 
         notification.error({
-            message: "Có lỗi xảy ra",
-            description: "Không thể cập nhật thông tin cá nhân",
+            message: "An error occurred",
+            description: "Could not update personal information",
         });
     };
 
@@ -270,12 +270,12 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
             >
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
                     <div>
-                        <Typography.Title level={4} style={{ margin: 0 }}>Hồ sơ gợi ý việc làm</Typography.Title>
+                        <Typography.Title level={4} style={{ margin: 0 }}>Job Recommendation Profile</Typography.Title>
                         <Typography.Paragraph style={{ margin: "8px 0 0", color: "#64748b" }}>
-                            Cập nhật các tiêu chí này để hệ thống đẩy job phù hợp hơn với bạn.
+                            Update these criteria to help the system suggest jobs that fit you better.
                         </Typography.Paragraph>
                     </div>
-                    <Tag color="geekblue" icon={<ThunderboltOutlined />}>Xin chào {user?.name || "bạn"}</Tag>
+                    <Tag color="geekblue" icon={<ThunderboltOutlined />}>Hello {user?.name || "there"}</Tag>
                 </div>
 
                 <Alert
@@ -284,7 +284,7 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
                     icon={<ExclamationCircleOutlined />}
                     style={{ marginTop: 16, marginBottom: 18 }}
                     message="Tip"
-                    description="Càng chọn đúng kỹ năng, level và chuyên môn, danh sách job phù hợp càng sát với hồ sơ của bạn."
+                    description="Choosing the right skills, level, and expertise helps match jobs closer to your profile."
                 />
 
                 <Form
@@ -309,62 +309,62 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
                         </Col>
                         <Col xs={24} md={12}>
                             <Form.Item
-                                label="Họ tên"
+                                label="Full Name"
                                 name="name"
-                                rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
+                                rules={[{ required: true, message: "Please enter your full name" }]}
                             >
-                                <Input placeholder="Nhập họ tên" />
+                                <Input placeholder="Enter your full name" />
                             </Form.Item>
                         </Col>
                         <Col xs={24} md={8}>
                             <Form.Item
-                                label="Tuổi"
+                                label="Age"
                                 name="age"
-                                rules={[{ required: true, message: "Vui lòng nhập tuổi" }]}
+                                rules={[{ required: true, message: "Please enter your age" }]}
                             >
-                                <Input type="number" placeholder="Nhập tuổi" />
+                                <Input type="number" placeholder="Enter age" />
                             </Form.Item>
                         </Col>
                         <Col xs={24} md={8}>
                             <Form.Item
-                                label="Giới tính"
+                                label="Gender"
                                 name="gender"
-                                rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
+                                rules={[{ required: true, message: "Please select gender" }]}
                             >
                                 <Select
                                     options={[
-                                        { label: "Nam", value: "MALE" },
-                                        { label: "Nữ", value: "FEMALE" },
-                                        { label: "Khác", value: "OTHER" },
+                                        { label: "Male", value: "MALE" },
+                                        { label: "Female", value: "FEMALE" },
+                                        { label: "Other", value: "OTHER" },
                                     ]}
                                 />
                             </Form.Item>
                         </Col>
                         <Col xs={24} md={8}>
                             <Form.Item
-                                label="Địa chỉ"
+                                label="Address"
                                 name="address"
-                                rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+                                rules={[{ required: true, message: "Please enter your address" }]}
                             >
-                                <Input placeholder="Nhập địa chỉ" />
+                                <Input placeholder="Enter address" />
                             </Form.Item>
                         </Col>
 
                         <Col span={24}>
-                            <Divider orientation="left" style={{ margin: "12px 0" }}>Hồ sơ nghề nghiệp</Divider>
+                            <Divider orientation="left" style={{ margin: "12px 0" }}>Professional Profile</Divider>
                         </Col>
 
                         <Col xs={24}>
                             <Form.Item
-                                label="Kỹ năng"
+                                label="Skills"
                                 name="skillIds"
-                                rules={[{ required: true, message: "Vui lòng chọn ít nhất 1 kỹ năng" }]}
+                                rules={[{ required: true, message: "Please select at least 1 skill" }]}
                             >
                                 <DebounceSelect
                                     mode="multiple"
                                     allowClear
                                     showSearch
-                                    placeholder="Chọn kỹ năng bạn đang có"
+                                    placeholder="Select your skills"
                                     fetchOptions={fetchSkillList}
                                 />
                             </Form.Item>
@@ -374,11 +374,11 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
                             <Form.Item
                                 label="Level"
                                 name="level"
-                                rules={[{ required: true, message: "Vui lòng chọn level" }]}
+                                rules={[{ required: true, message: "Please select your level" }]}
                             >
                                 <Select
                                     allowClear
-                                    placeholder="Chọn level kinh nghiệm"
+                                    placeholder="Select experience level"
                                     options={levelOptions}
                                 />
                             </Form.Item>
@@ -386,13 +386,13 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
 
                         <Col xs={24} md={12}>
                             <Form.Item
-                                label="Chuyên môn"
+                                label="Expertise"
                                 name="expertiseId"
                             >
                                 <DebounceSelect
                                     allowClear
                                     showSearch
-                                    placeholder="Chọn chuyên môn chính"
+                                    placeholder="Select primary expertise"
                                     fetchOptions={fetchExpertiseList}
                                 />
                             </Form.Item>
@@ -402,10 +402,10 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
                             <Divider style={{ margin: "4px 0 12px" }} />
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                                 <Typography.Text type="secondary">
-                                    Dữ liệu này chỉ dùng cho recommendation engine.
+                                    This data is used exclusively for our recommendation engine.
                                 </Typography.Text>
                                 <Button type="primary" htmlType="submit" loading={isSubmitting}>
-                                    Cập nhật thông tin
+                                    Update Profile
                                 </Button>
                             </div>
                         </Col>
@@ -467,11 +467,11 @@ const JobByEmail = (props: any) => {
 
             const res = await callCreateSubscriber(data);
             if (res.data) {
-                message.success("Cập nhật thông tin thành công");
+                message.success("Settings updated successfully");
                 setSubscriber(res.data);
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
+                    message: 'An error occurred',
                     description: res.message
                 });
             }
@@ -484,11 +484,11 @@ const JobByEmail = (props: any) => {
                 skills: arr
             });
             if (res.data) {
-                message.success("Cập nhật thông tin thành công");
+                message.success("Settings updated successfully");
                 setSubscriber(res.data);
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
+                    message: 'An error occurred',
                     description: res.message
                 });
             }
@@ -506,16 +506,16 @@ const JobByEmail = (props: any) => {
                 <Row gutter={[20, 20]}>
                     <Col span={24}>
                         <Form.Item
-                            label={"Kỹ năng"}
+                            label={"Skills"}
                             name={"skills"}
-                            rules={[{ required: true, message: 'Vui lòng chọn ít nhất 1 skill!' }]}
+                            rules={[{ required: true, message: 'Please select at least 1 skill!' }]}
 
                         >
                             <DebounceSelect
                                 mode="multiple"
                                 allowClear
                                 showSearch
-                                placeholder="Chọn kỹ năng bạn đang có"
+                                placeholder="Select your skills"
                                 fetchOptions={fetchSkillList}
                                 value={skills}
                                 onChange={(val: any) => setSkills(val)}
@@ -523,7 +523,7 @@ const JobByEmail = (props: any) => {
                         </Form.Item>
                     </Col>
                     <Col span={24}>
-                        <Button onClick={() => form.submit()}>Cập nhật</Button>
+                        <Button onClick={() => form.submit()}>Update</Button>
                     </Col>
                 </Row>
             </Form>
@@ -544,14 +544,14 @@ const ChangePasswordTab = (props: any) => {
         setIsLoading(false);
 
         if (res?.statusCode === 200) {
-            message.success("Đổi mật khẩu thành công!");
+            message.success("Password changed successfully!");
             form.resetFields();
             onClose(false);
             navigate('/');
         } else {
             notification.error({
-                message: "Có lỗi xảy ra",
-                description: res?.message || "Không thể đổi mật khẩu"
+                message: "An error occurred",
+                description: res?.message || "Could not change password"
             });
         }
     };
@@ -559,43 +559,43 @@ const ChangePasswordTab = (props: any) => {
     return (
         <Form form={form} layout="vertical" onFinish={onFinish} style={{ maxWidth: 480 }}>
             <Form.Item
-                label="Mật khẩu hiện tại"
+                label="Current Password"
                 name="currentPassword"
-                rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại" }]}
+                rules={[{ required: true, message: "Please enter your current password" }]}
             >
-                <Input.Password placeholder="Nhập mật khẩu cũ" autoComplete="current-password" />
+                <Input.Password placeholder="Enter old password" autoComplete="current-password" />
             </Form.Item>
             <Form.Item
-                label="Mật khẩu mới"
+                label="New Password"
                 name="newPassword"
                 rules={[
-                    { required: true, message: "Vui lòng nhập mật khẩu mới" },
-                    { min: 6, message: "Mật khẩu tối thiểu 6 ký tự" },
+                    { required: true, message: "Please enter new password" },
+                    { min: 6, message: "Password must be at least 6 characters" },
                 ]}
             >
-                <Input.Password placeholder="Mật khẩu mới" autoComplete="new-password" />
+                <Input.Password placeholder="New password" autoComplete="new-password" />
             </Form.Item>
             <Form.Item
-                label="Nhập lại mật khẩu mới"
+                label="Confirm New Password"
                 name="confirmPassword"
                 dependencies={["newPassword"]}
                 rules={[
-                    { required: true, message: "Vui lòng nhập lại mật khẩu mới" },
+                    { required: true, message: "Please confirm your new password" },
                     ({ getFieldValue }) => ({
                         validator(_, value) {
                             if (!value || getFieldValue("newPassword") === value) {
                                 return Promise.resolve();
                             }
-                            return Promise.reject(new Error("Mật khẩu xác nhận không khớp"));
+                            return Promise.reject(new Error("Passwords do not match"));
                         },
                     }),
                 ]}
             >
-                <Input.Password placeholder="Nhập lại mật khẩu mới" autoComplete="new-password" />
+                <Input.Password placeholder="Confirm new password" autoComplete="new-password" />
             </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit" loading={isLoading}>
-                    Cập nhật mật khẩu
+                    Update Password
                 </Button>
             </Form.Item>
         </Form>
@@ -621,7 +621,7 @@ const FavoriteJobsTab = ({ onClose }: { onClose: (v: boolean) => void }) => {
 
     const columns: ColumnsType<IJob> = [
         {
-            title: 'STT',
+            title: 'No.',
             key: 'index',
             width: 50,
             align: "center",
@@ -637,15 +637,15 @@ const FavoriteJobsTab = ({ onClose }: { onClose: (v: boolean) => void }) => {
             dataIndex: "name",
         },
         {
-            title: 'Công Ty',
+            title: 'Company',
             dataIndex: ["company", "name"],
         },
         {
-            title: 'Địa điểm',
+            title: 'Location',
             dataIndex: "location",
         },
         {
-            title: 'Cập nhật',
+            title: 'Last Updated',
             dataIndex: "updatedAt",
             render(value, record) {
                 const time = record.updatedAt || record.createdAt;
@@ -665,7 +665,7 @@ const FavoriteJobsTab = ({ onClose }: { onClose: (v: boolean) => void }) => {
                             navigate(`/job/${encodeURIComponent(slug)}?id=${record.id}`);
                         }}
                     >
-                        Xem chi tiết
+                        View Details
                     </Button>
                 )
             },
@@ -695,27 +695,27 @@ const ManageAccount = (props: IProps) => {
     const items: TabsProps['items'] = [
         {
             key: 'user-resume',
-            label: `Rải CV`,
+            label: `My Applications`,
             children: <UserResume />,
         },
         {
             key: 'favorite-jobs',
-            label: `Job yêu thích`,
+            label: `Favorite Jobs`,
             children: <FavoriteJobsTab onClose={onClose} />,
         },
         {
             key: 'email-by-skills',
-            label: `Nhận Jobs qua Email`,
+            label: `Job Alerts`,
             children: <JobByEmail />,
         },
         {
             key: 'user-update-info',
-            label: `Cập nhật thông tin`,
+            label: `Update Profile`,
             children: <UserUpdateInfo open={open} />,
         },
         {
             key: 'user-password',
-            label: `Thay đổi mật khẩu`,
+            label: `Change Password`,
             children: <ChangePasswordTab onClose={onClose} />,
         },
     ];
@@ -724,7 +724,7 @@ const ManageAccount = (props: IProps) => {
     return (
         <>
             <Modal
-                title="Quản lý tài khoản"
+                title="Account Management"
                 open={open}
                 onCancel={() => onClose(false)}
                 maskClosable={false}

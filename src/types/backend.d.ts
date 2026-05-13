@@ -256,5 +256,5 @@ export interface IInterviewEvaluation {
     score: number;
     feedback: string;
     suggestion: string;
-    rating: 'Xuất sắc' | 'Tốt' | 'Khá' | 'Cần cải thiện' | 'Chưa đạt';
+    rating: 'Excellent' | 'Good' | 'Fair' | 'Needs Improvement' | 'Failed';
 }

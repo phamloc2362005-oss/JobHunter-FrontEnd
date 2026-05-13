@@ -86,7 +86,7 @@ const ExpertiseSummary = () => {
                     <div>
                         <h4 className={styles.categoryName}>{category.name}</h4>
                         <div className={styles.categoryMeta}>
-                            {categoryExpertises.length} chuyên môn
+                            {categoryExpertises.length} expertise(s)
                         </div>
                     </div>
                     <span className={styles.toggleIcon}>
@@ -145,7 +145,7 @@ const ExpertiseSummary = () => {
                     <span className={styles.kicker}>Career maps</span>
                     <h2 className={styles.title}>IT Expertise Summary</h2>
                     <p className={styles.subtitle}>
-                        Khám phá các nhóm chuyên môn để đi thẳng đến những job phù hợp nhất.
+                        Explore expertise categories to jump straight to the most relevant jobs.
                     </p>
                 </div>
             </div>

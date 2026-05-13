@@ -16,28 +16,28 @@ const ClientCompanyPage = (props: any) => {
                             🏆 &nbsp;VIETNAM BEST IT COMPANIES 2024
                         </div>
                         <h1 className={s.heroTitle}>
-                            Cộng đồng nhà tuyển dụng<br />
-                            <span className={s.heroHighlight}>IT chất lượng</span> hàng đầu
+                            The leading community for<br />
+                            <span className={s.heroHighlight}>Quality IT Employers</span>
                         </h1>
                         <p className={s.heroSubtitle}>
-                            Khám phá hơn 1,200 công ty công nghệ đang tăng trưởng — từ startup đến enterprise, tất cả đang tuyển dụng.
+                            Discover 1,200+ growing tech companies — from startups to enterprises, all recruiting now.
                         </p>
 
                         {/* Stats row */}
                         <div className={s.heroStats}>
                             <div className={s.heroStat}>
                                 <strong>1,200+</strong>
-                                <span>Công ty đối tác</span>
+                               <span>Partner Companies</span>
                             </div>
                             <div className={s.heroDivider} />
                             <div className={s.heroStat}>
                                 <strong>15,000+</strong>
-                                <span>Việc làm IT</span>
+                                <span>IT Jobs</span>
                             </div>
                             <div className={s.heroDivider} />
                             <div className={s.heroStat}>
                                 <strong>500K+</strong>
-                                <span>Ứng viên đăng ký</span>
+                                <span>Registered Candidates</span>
                             </div>
                         </div>
                     </div>
@@ -63,29 +63,29 @@ const ClientCompanyPage = (props: any) => {
                             <CodeOutlined />
                         </div>
                         <strong>JobHunter</strong>
-                        <p>Platform tuyển dụng IT hàng đầu Việt Nam. Built for developers, by developers.</p>
+                        <p>Leading IT recruitment platform in Vietnam. Built for developers, by developers.</p>
                     </div>
 
                     <div className={homeStyles.footerLinks}>
                         <div className={homeStyles.footerCol}>
                             <h4>Platform</h4>
-                            <a href="/">Trang Chủ</a>
-                            <a href="/job">Việc Làm</a>
-                            <a href="/company">Công Ty</a>
-                            <a href="/skills">Kỹ Năng</a>
+                            <a href="/">Home</a>
+                            <a href="/job">Jobs</a>
+                            <a href="/company">Companies</a>
+                            <a href="/skills">Skills</a>
                         </div>
                         <div className={homeStyles.footerCol}>
-                            <h4>Nhà Tuyển Dụng</h4>
-                            <a href="#">Đăng tin tuyển dụng</a>
-                            <a href="#">Tìm ứng viên</a>
-                            <a href="#">Dashboard công ty</a>
-                            <a href="#">Bảng giá</a>
+                            <h4>For Employers</h4>
+                            <a href="#">Post a Job</a>
+                            <a href="#">Find Candidates</a>
+                            <a href="#">Employer Dashboard</a>
+                            <a href="#">Pricing</a>
                         </div>
                         <div className={homeStyles.footerCol}>
-                            <h4>Liên Hệ</h4>
+                            <h4>Contact</h4>
                             <a href="mailto:support@jobhunter.com">support@jobhunter.com</a>
                             <a href="tel:+84123456789">+84 123 456 789</a>
-                            <span>TP. Hồ Chí Minh, Việt Nam</span>
+                            <span>Ho Chi Minh City, Vietnam</span>
                         </div>
                     </div>
                 </div>

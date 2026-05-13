@@ -86,15 +86,15 @@ const ClientCompanyDetailPage = (props: any) => {
         try {
             const res = await callCreateReview(values.rating, values.isRecommend || false, values.content, values.title, values.pros, values.cons, id);
             if (res?.data) {
-                message.success('Đánh giá công ty thành công!');
+                message.success('Company review posted successfully!');
                 form.resetFields();
                 setIsModalOpen(false); // Close modal
                 fetchReviews(); // reload reviews
             } else {
-                message.error('Có lỗi xảy ra khi gửi đánh giá');
+                message.error('An error occurred while submitting the review');
             }
         } catch (error: any) {
-            message.error(error?.response?.data || 'Có lỗi xảy ra khi gửi đánh giá (Vui lòng đăng nhập)');
+            message.error(error?.response?.data || 'An error occurred (Please login to review)');
         }
         setIsSubmittingReview(false);
     };
@@ -136,16 +136,16 @@ const ClientCompanyDetailPage = (props: any) => {
                         </div>
                     )}
                     <div className={s.heroInfo}>
-                        <h1 className={s.companyName}>{companyDetail?.name || 'Công ty'}</h1>
+                        <h1 className={s.companyName}>{companyDetail?.name || 'Company'}</h1>
                         {companyDetail?.address && (
                             <div className={s.companyMeta}>
                                 <span><EnvironmentOutlined /> {companyDetail?.address}</span>
-                                <span><TeamOutlined /> 50-150 nhân viên</span>
+                                <span><TeamOutlined /> 50-150 employees</span>
                                 <span><GlobalOutlined /> {companyDetail?.name?.toLowerCase().replace(/\s/g, '')}.com</span>
                             </div>
                         )}
                         <div className={s.jobCountBadge}>
-                            {companyJobs.length} Việc làm đang tuyển
+                            {companyJobs.length} Jobs recruiting
                         </div>
                         <Button
                             danger
@@ -153,7 +153,7 @@ const ClientCompanyDetailPage = (props: any) => {
                             style={{ marginLeft: 12, borderRadius: 999, fontWeight: 700 }}
                             onClick={() => setIsModalOpen(true)}
                         >
-                            Viết đánh giá
+                            Write a review
                         </Button>
                     </div>
                 </div>
@@ -166,7 +166,7 @@ const ClientCompanyDetailPage = (props: any) => {
                             <Tabs defaultActiveKey="overview" items={[
                                 {
                                     key: 'overview',
-                                    label: 'Tổng quan',
+                                    label: 'Overview',
                                     children: (
                                         <div className={s.contentCard}>
                                             {isLoading ? (
@@ -174,10 +174,10 @@ const ClientCompanyDetailPage = (props: any) => {
                                             ) : (
                                                 <>
                                                     <div className={s.contentHeader}>
-                                                        <h2>Giới thiệu công ty</h2>
+                                                        <h2>About Company</h2>
                                                     </div>
                                                     <div className={s.description}>
-                                                        {parse(companyDetail?.description ?? "Chưa có mô tả.")}
+                                                        {parse(companyDetail?.description ?? "No description available.")}
                                                     </div>
                                                 </>
                                             )}
@@ -188,7 +188,7 @@ const ClientCompanyDetailPage = (props: any) => {
                                     key: 'reviews',
                                     label: (
                                         <span>
-                                            Đánh giá
+                                            Reviews
                                             <span className={s.reviewBadge}>{reviews.length}</span>
                                         </span>
                                     ),
@@ -199,12 +199,12 @@ const ClientCompanyDetailPage = (props: any) => {
                                                     <div className={s.averageBox}>
                                                         <span className={s.bigScore}>{averageRating}</span>
                                                         <Rate disabled allowHalf defaultValue={Number(averageRating)} />
-                                                        <span className={s.totalReviews}>{reviews.length} đánh giá</span>
+                                                        <span className={s.totalReviews}>{reviews.length} reviews</span>
                                                     </div>
                                                     <div className={s.starStats}>
                                                         {[5, 4, 3, 2, 1].map(star => (
                                                             <div key={star} className={s.statRow}>
-                                                                <span className={s.statLabel}>{star} sao</span>
+                                                                <span className={s.statLabel}>{star} stars</span>
                                                                 <Progress
                                                                     percent={starBreakdown[star]}
                                                                     showInfo={false}
@@ -225,7 +225,7 @@ const ClientCompanyDetailPage = (props: any) => {
                                                             strokeColor="#4caf50"
                                                             format={percent => `${percent}%`}
                                                         />
-                                                        <p>Khuyên bạn bè làm việc tại đây</p>
+                                                        <p>Recommend working here</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -243,29 +243,29 @@ const ClientCompanyDetailPage = (props: any) => {
                                                                 <div className={s.rvTop}>
                                                                     <div className={s.rvUser}>
                                                                         <UserOutlined />
-                                                                        <span className={s.rvName}>{rv?.user?.name || "Người dùng ẩn danh"}</span>
-                                                                        <span className={s.rvDate}>{rv.createdAt ? dayjs(rv.createdAt).locale('vi').fromNow() : ''}</span>
+                                                                        <span className={s.rvName}>{rv?.user?.name || "Anonymous User"}</span>
+                                                                        <span className={s.rvDate}>{rv.createdAt ? dayjs(rv.createdAt).locale('en').fromNow() : ''}</span>
                                                                     </div>
                                                                     <Rate disabled defaultValue={rv.rating} style={{ fontSize: 14 }} />
                                                                 </div>
-                                                                <h4 className={s.rvTitle}>{rv.title || "Môi trường làm việc tốt"}</h4>
+                                                                <h4 className={s.rvTitle}>{rv.title || "Good working environment"}</h4>
 
                                                                 <div className={s.rvContent}>
                                                                     <div className={s.rvSection}>
-                                                                        <span className={s.rvLabel}><LikeOutlined /> Điều tôi thích</span>
+                                                                        <span className={s.rvLabel}><LikeOutlined /> What I like</span>
                                                                         <p>{rv.pros || rv.content}</p>
                                                                     </div>
                                                                     {(rv.cons || rv.content) && (
                                                                         <div className={s.rvSection}>
-                                                                            <span className={s.rvLabel}><DislikeOutlined /> Đề xuất cải thiện</span>
-                                                                            <p>{rv.cons || "Không có đề xuất."}</p>
+                                                                            <span className={s.rvLabel}><DislikeOutlined /> Suggestions for improvement</span>
+                                                                            <p>{rv.cons || "No suggestions."}</p>
                                                                         </div>
                                                                     )}
                                                                 </div>
                                                             </div>
                                                         ))
                                                     ) : (
-                                                        <p style={{ color: '#64748b', textAlign: 'center', padding: '40px 0' }}>Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
+                                                        <p style={{ color: '#64748b', textAlign: 'center', padding: '40px 0' }}>No reviews yet. Be the first one!</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -276,7 +276,7 @@ const ClientCompanyDetailPage = (props: any) => {
 
                             {/* REVIEW MODAL */}
                             <Modal
-                                title="Viết đánh giá của bạn"
+                                title="Write your review"
                                 open={isModalOpen}
                                 onCancel={() => setIsModalOpen(false)}
                                 footer={null}
@@ -286,44 +286,44 @@ const ClientCompanyDetailPage = (props: any) => {
                                 <Form form={form} layout="vertical" onFinish={handlePostReview}>
                                     <Form.Item
                                         name="rating"
-                                        label="Đánh giá tổng quát"
-                                        rules={[{ required: true, message: 'Vui lòng chọn số sao!' }]}
+                                        label="General Rating"
+                                        rules={[{ required: true, message: 'Please select star rating!' }]}
                                     >
                                         <Rate />
                                     </Form.Item>
                                     <Form.Item
                                         name="title"
-                                        label="Tiêu đề đánh giá"
-                                        rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
+                                        label="Review Title"
+                                        rules={[{ required: true, message: 'Please enter a title!' }]}
                                     >
-                                        <Input placeholder="Ví dụ: Công ty tuyệt vời, Sếp vui tính..." />
+                                        <Input placeholder="Example: Great company, fun boss..." />
                                     </Form.Item>
                                     <Form.Item
                                         name="pros"
-                                        label="Điều bạn thích nhất"
-                                        rules={[{ required: true, message: 'Vui lòng nhập điều bạn thích!' }]}
+                                        label="What you like most"
+                                        rules={[{ required: true, message: 'Please enter what you like!' }]}
                                     >
-                                        <Input.TextArea rows={3} placeholder="Môi trường, đồng nghiệp, lương bổng..." />
+                                        <Input.TextArea rows={3} placeholder="Environment, colleagues, benefits..." />
                                     </Form.Item>
                                     <Form.Item
                                         name="cons"
-                                        label="Điều cần cải thiện"
-                                        rules={[{ required: true, message: 'Vui lòng nhập đề xuất!' }]}
+                                        label="Things to improve"
+                                        rules={[{ required: true, message: 'Please enter suggestions!' }]}
                                     >
-                                        <Input.TextArea rows={3} placeholder="Quy trình, dự án, văn phòng..." />
+                                        <Input.TextArea rows={3} placeholder="Process, projects, office..." />
                                     </Form.Item>
                                     <Form.Item
                                         name="isRecommend"
                                         valuePropName="checked"
                                         initialValue={true}
                                     >
-                                        <Checkbox>Tôi giới thiệu công ty này cho bạn bè</Checkbox>
+                                        <Checkbox>I recommend working here</Checkbox>
                                     </Form.Item>
                                     <Form.Item name="content" hidden initialValue="Review content">
                                         <Input />
                                     </Form.Item>
                                     <Button type="primary" danger htmlType="submit" loading={isSubmittingReview} block size="large">
-                                        Gửi đánh giá
+                                        Submit Review
                                     </Button>
                                 </Form>
                             </Modal>
@@ -331,7 +331,7 @@ const ClientCompanyDetailPage = (props: any) => {
 
                         <Col span={24} md={8}>
                             <div className={s.jobsSidebar}>
-                                <h3 className={s.sidebarTitle}>Tuyển dụng hiện tại</h3>
+                                <h3 className={s.sidebarTitle}>Current Openings</h3>
                                 <Divider style={{ margin: '12px 0' }} />
                                 {isLoadingJobs ? (
                                     <Skeleton active paragraph={{ rows: 4 }} />
@@ -346,7 +346,7 @@ const ClientCompanyDetailPage = (props: any) => {
                                                 <div className={s.jobCardTitle}>{job.name}</div>
                                                 <div className={s.jobCardMeta}>
                                                     <span className={s.jobCardSalary}>
-                                                        <ThunderboltOutlined /> {(job.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ
+                                                        <ThunderboltOutlined /> {(job.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} VND
                                                     </span>
                                                     <span className={s.jobCardLocation}>
                                                         <EnvironmentOutlined /> {getLocationName(job.location)}
@@ -354,14 +354,14 @@ const ClientCompanyDetailPage = (props: any) => {
                                                 </div>
                                                 <div className={s.jobCardFooter}>
                                                     <span>{job.updatedAt ? dayjs(job.updatedAt).locale('en').fromNow() : dayjs(job.createdAt).locale('en').fromNow()}</span>
-                                                    <span className={s.viewDetailBtn}>Xem chi tiết <RightOutlined style={{ fontSize: '10px' }} /></span>
+                                                    <span className={s.viewDetailBtn}>View details <RightOutlined style={{ fontSize: '10px' }} /></span>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
                                     <div className={s.noJobs}>
-                                        Hiện công ty chưa có tin tuyển dụng nào.
+                                        No current openings at this company.
                                     </div>
                                 )}
                             </div>
@@ -378,29 +378,29 @@ const ClientCompanyDetailPage = (props: any) => {
                             <CodeOutlined />
                         </div>
                         <strong>JobHunter</strong>
-                        <p>Platform tuyển dụng IT hàng đầu Việt Nam. Built for developers, by developers.</p>
+                        <p>Leading IT recruitment platform in Vietnam. Built for developers, by developers.</p>
                     </div>
 
                     <div className={homeStyles.footerLinks}>
                         <div className={homeStyles.footerCol}>
                             <h4>Platform</h4>
-                            <a href="/">Trang Chủ</a>
-                            <a href="/job">Việc Làm</a>
-                            <a href="/company">Công Ty</a>
-                            <a href="/skills">Kỹ Năng</a>
+                            <a href="/">Home</a>
+                            <a href="/job">Jobs</a>
+                            <a href="/company">Companies</a>
+                            <a href="/skills">Skills</a>
                         </div>
                         <div className={homeStyles.footerCol}>
-                            <h4>Nhà Tuyển Dụng</h4>
-                            <a href="#">Đăng tin tuyển dụng</a>
-                            <a href="#">Tìm ứng viên</a>
-                            <a href="#">Dashboard công ty</a>
-                            <a href="#">Bảng giá</a>
+                            <h4>For Employers</h4>
+                            <a href="#">Post a Job</a>
+                            <a href="#">Find Candidates</a>
+                            <a href="#">Employer Dashboard</a>
+                            <a href="#">Pricing</a>
                         </div>
                         <div className={homeStyles.footerCol}>
-                            <h4>Liên Hệ</h4>
+                            <h4>Contact</h4>
                             <a href="mailto:support@jobhunter.com">support@jobhunter.com</a>
                             <a href="tel:+84123456789">+84 123 456 789</a>
-                            <span>TP. Hồ Chí Minh, Việt Nam</span>
+                            <span>Ho Chi Minh City, Vietnam</span>
                         </div>
                     </div>
                 </div>

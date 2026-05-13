@@ -40,16 +40,16 @@ const SkillsPage = () => {
                     <div className={styles.heroCopy}>
                         <span className={styles.kicker}>SKILLS LIBRARY</span>
                         <Typography.Title level={2} className={styles.title}>
-                            Tìm việc làm IT theo kỹ năng
+                            Find IT jobs by skills
                         </Typography.Title>
                         <p className={styles.description}>
-                            Duyệt toàn bộ kỹ năng đang có trên hệ thống và đi thẳng đến các job phù hợp với chỉ một cú click.
+                            Browse all available skills in our system and find matching jobs with a single click.
                         </p>
                     </div>
 
                     <div className={styles.heroStat}>
                         <span className={styles.statNumber}>{skills.length}</span>
-                        <span className={styles.statLabel}>kỹ năng</span>
+                        <span className={styles.statLabel}>skills</span>
                     </div>
                 </section>
 
@@ -57,17 +57,17 @@ const SkillsPage = () => {
                     <div className={styles.contentHeader}>
                         <div>
                             <Typography.Title level={4} className={styles.sectionTitle}>
-                                Danh sách kỹ năng
+                                Skills List
                             </Typography.Title>
                             <p className={styles.sectionNote}>
-                                Chọn một kỹ năng để xem ngay các job liên quan.
+                                Select a skill to view related jobs.
                             </p>
                         </div>
                     </div>
 
                     {!isLoading && skills.length === 0 ? (
                         <div className={styles.emptyState}>
-                            <Empty description="Chưa có dữ liệu skills" />
+                            <Empty description="No skills data found" />
                         </div>
                     ) : (
                         <Row gutter={[18, 18]}>

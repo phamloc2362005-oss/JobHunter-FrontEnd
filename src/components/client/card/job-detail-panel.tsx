@@ -45,7 +45,7 @@ const JobDetailPanel = (props: IProps) => {
     if (!job) {
         return (
             <div className={styles.jobDetailPanel}>
-                <Empty description="Chọn một job để xem chi tiết" />
+                <Empty description="Select a job to view details" />
             </div>
         );
     }
@@ -58,7 +58,7 @@ const JobDetailPanel = (props: IProps) => {
     const handleToggleFavorite = async () => {
         if (!job?.id) return;
         if (!isAuthenticated) {
-            notification.warning({ message: 'Vui lòng đăng nhập để lưu job yêu thích' });
+            notification.warning({ message: 'Please login to save favorite jobs' });
             navigate('/login');
             return;
         }
@@ -72,7 +72,7 @@ const JobDetailPanel = (props: IProps) => {
             }
         } catch (err) {
             setIsLiked(!nextState);
-            notification.error({ message: 'Không thể cập nhật job yêu thích' });
+            notification.error({ message: 'Could not update favorite job' });
         }
     };
 
@@ -99,7 +99,7 @@ const JobDetailPanel = (props: IProps) => {
                 {/* Salary */}
                 <div className={styles.salarySection}>
                     <div className={styles.salaryValue}>
-                        {job.salary ? `${(job.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ` : "Thương lượng"}
+                        {job.salary ? `${(job.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} VND` : "Negotiable"}
                     </div>
                 </div>
 
@@ -112,7 +112,7 @@ const JobDetailPanel = (props: IProps) => {
                         className={styles.applyBtn}
                         onClick={handleApplyJob}
                     >
-                        Ứng tuyển ngay
+                        Apply Now
                     </Button>
                     <button
                         className={`${styles.likeBtn} ${isLiked ? styles.likeBtnActive : ''}`}
@@ -130,7 +130,7 @@ const JobDetailPanel = (props: IProps) => {
                     onClick={() => navigate(`/interview/${job.id}`)}
                     style={{ marginBottom: 16 }}
                 >
-                    Luyện phỏng vấn với AI
+                    Mock Interview with AI
                 </Button>
 
                 <Divider className={styles.divider} />
@@ -140,19 +140,19 @@ const JobDetailPanel = (props: IProps) => {
                     <div className={styles.metaRow}>
                         <div className={styles.metaItem}>
                             <EnvironmentOutlined className={styles.metaIcon} />
-                            <span className={styles.metaLabel}>Địa điểm</span>
+                            <span className={styles.metaLabel}>Location</span>
                         </div>
                         <span className={styles.metaValue}>{job.location}</span>
                     </div>
                     <div className={styles.metaRow}>
                         <div className={styles.metaItem}>
                             <ThunderboltOutlined className={styles.metaIcon} />
-                            <span className={styles.metaLabel}>Cấp bậc</span>
+                            <span className={styles.metaLabel}>Level</span>
                         </div>
                         <span className={styles.metaValue}>{job.level}</span>
                     </div>
                     <div className={styles.postDate}>
-                        Đăng {job.updatedAt ? dayjs(job.updatedAt).locale('en').fromNow() : dayjs(job.createdAt).locale('en').fromNow()}
+                        Posted {job.updatedAt ? dayjs(job.updatedAt).locale('en').fromNow() : dayjs(job.createdAt).locale('en').fromNow()}
                     </div>
                 </div>
 
@@ -190,7 +190,7 @@ const JobDetailPanel = (props: IProps) => {
 
                 {/* Description */}
                 <div className={styles.detailSection}>
-                    <div className={styles.sectionTitle}>Mô tả công việc</div>
+                    <div className={styles.sectionTitle}>Job Description</div>
                     <div
                         className={styles.description}
                         dangerouslySetInnerHTML={{ __html: job.description || '' }}
@@ -202,7 +202,7 @@ const JobDetailPanel = (props: IProps) => {
                     <>
                         <Divider className={styles.divider} />
                         <div className={styles.detailSection}>
-                            <div className={styles.sectionTitle}>Yêu cầu</div>
+                            <div className={styles.sectionTitle}>Requirements</div>
                             <div
                                 className={styles.description}
                                 dangerouslySetInnerHTML={{ __html: job.description || '' }}

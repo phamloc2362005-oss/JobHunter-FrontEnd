@@ -79,17 +79,17 @@ const HomePage = () => {
                     {/* badge */}
                     <div className={s.heroBadge}>
                         <span className={s.badgeDot} />
-                        <FireOutlined /> Platform #1 cho IT professionals tại Việt Nam
+                        <FireOutlined /> #1 Platform for IT professionals in Vietnam
                     </div>
 
                     <h1 className={s.heroTitle}>
-                        Tìm việc IT <span className={s.gradientText}>đúng stack</span>,<br />
-                        đúng team, đúng mức lương.
+                        Find IT jobs <span className={s.gradientText}>with your stack</span>,<br />
+                        right team, right salary.
                     </h1>
 
                     <p className={s.heroSub}>
-                        Kết nối với hàng trăm công ty công nghệ hàng đầu. Filter theo kỹ năng,
-                        level, địa điểm và salary range — chỉ trong một cú click.
+                        Connect with hundreds of top tech companies. Filter by skills,
+                        level, location, and salary range — in just one click.
                     </p>
 
                     {/* search box */}
@@ -112,13 +112,13 @@ const HomePage = () => {
             <section className={s.statsBar} ref={statsRef}>
                 <div className={styles['container']}>
                     <div className={s.statsGrid}>
-                        <StatItem value={5000} suffix="+" label="Việc làm IT đang tuyển" icon={<BulbOutlined />} start={statsVisible} />
+                        <StatItem value={5000} suffix="+" label="Active IT Jobs" icon={<BulbOutlined />} start={statsVisible} />
                         <div className={s.statDivider} />
-                        <StatItem value={1200} suffix="+" label="Công ty đối tác" icon={<TeamOutlined />} start={statsVisible} />
+                        <StatItem value={1200} suffix="+" label="Partner Companies" icon={<TeamOutlined />} start={statsVisible} />
                         <div className={s.statDivider} />
-                        <StatItem value={98} suffix="%" label="Ứng viên hài lòng" icon={<SafetyCertificateOutlined />} start={statsVisible} />
+                        <StatItem value={98} suffix="%" label="Happy Candidates" icon={<SafetyCertificateOutlined />} start={statsVisible} />
                         <div className={s.statDivider} />
-                        <StatItem value={48} suffix="h" label="Phản hồi trung bình" icon={<ThunderboltOutlined />} start={statsVisible} />
+                        <StatItem value={48} suffix="h" label="Avg Response Time" icon={<ThunderboltOutlined />} start={statsVisible} />
                     </div>
                 </div>
             </section>
@@ -128,10 +128,10 @@ const HomePage = () => {
                 <div className={s.sectionHead}>
                     <div>
                         <span className={s.chip}>🚀 Quick paths</span>
-                        <h2 className={s.sectionTitle}>Khám phá ngay theo mục tiêu</h2>
+                        <h2 className={s.sectionTitle}>Explore by your goals</h2>
                     </div>
                     <p className={s.sectionDesc}>
-                        Dù bạn muốn tìm kỹ năng, chuyên môn hay công ty — chúng mình đều có.
+                        Whether you are looking for skills, expertise, or companies — we have it all.
                     </p>
                 </div>
 
@@ -140,8 +140,8 @@ const HomePage = () => {
                         <div className={s.pathCardBg} aria-hidden="true" />
                         <span className={s.pathIcon}><ThunderboltOutlined /></span>
                         <div className={s.pathInfo}>
-                            <strong>Việc làm IT</strong>
-                            <span>Tìm job phù hợp với stack của bạn</span>
+                            <strong>IT Jobs</strong>
+                            <span>Find jobs matching your stack</span>
                         </div>
                         <ArrowRightOutlined className={s.pathArrow} />
                     </Link>
@@ -149,8 +149,8 @@ const HomePage = () => {
                         <div className={s.pathCardBg} aria-hidden="true" />
                         <span className={s.pathIcon}><CodeOutlined /></span>
                         <div className={s.pathInfo}>
-                            <strong>Kỹ năng</strong>
-                            <span>Duyệt toàn bộ danh mục kỹ năng</span>
+                            <strong>Skills</strong>
+                            <span>Browse full skill categories</span>
                         </div>
                         <ArrowRightOutlined className={s.pathArrow} />
                     </Link>
@@ -158,8 +158,8 @@ const HomePage = () => {
                         <div className={s.pathCardBg} aria-hidden="true" />
                         <span className={s.pathIcon}><RocketOutlined /></span>
                         <div className={s.pathInfo}>
-                            <strong>Chuyên môn</strong>
-                            <span>Khám phá mọi lộ trình chuyên môn</span>
+                            <strong>Expertise</strong>
+                            <span>Explore expertise roadmaps</span>
                         </div>
                         <ArrowRightOutlined className={s.pathArrow} />
                     </Link>
@@ -167,8 +167,8 @@ const HomePage = () => {
                         <div className={s.pathCardBg} aria-hidden="true" />
                         <span className={s.pathIcon}><RiseOutlined /></span>
                         <div className={s.pathInfo}>
-                            <strong>Top Công ty</strong>
-                            <span>Nhà tuyển dụng IT hàng đầu</span>
+                            <strong>Top Companies</strong>
+                            <span>Leading IT employers</span>
                         </div>
                         <ArrowRightOutlined className={s.pathArrow} />
                     </Link>
@@ -181,11 +181,11 @@ const HomePage = () => {
                     <div className={s.marketCardHeader}>
                         <div className={s.marketCardLeft}>
                             <span className={s.chipBlue}>🏢 Companies</span>
-                            <h2 className={s.marketTitle}>Top tuyển dụng nổi bật</h2>
-                            <p className={s.marketDesc}>Các nhà tuyển dụng IT đang hoạt động tích cực trên hệ thống.</p>
+                            <h2 className={s.marketTitle}>Featured Employers</h2>
+                            <p className={s.marketDesc}>Leading IT recruiters active on the platform.</p>
                         </div>
                         <Link to="/company" className={s.viewAllBtn}>
-                            Xem tất cả <ArrowRightOutlined />
+                            View all <ArrowRightOutlined />
                         </Link>
                     </div>
                     <div className={s.marketBody}>
@@ -200,11 +200,11 @@ const HomePage = () => {
                     <div className={s.marketCardHeader}>
                         <div className={s.marketCardLeft}>
                             <span className={s.chipGreen}>⚡ Jobs</span>
-                            <h2 className={s.marketTitle}>Việc làm mới nhất</h2>
-                            <p className={s.marketDesc}>Các job vừa cập nhật được đẩy lên đầu để bạn scan nhanh hơn.</p>
+                            <h2 className={s.marketTitle}>Latest Jobs</h2>
+                            <p className={s.marketDesc}>Freshly updated jobs pushed to the top for quick scanning.</p>
                         </div>
                         <Link to="/job" className={s.viewAllBtn}>
-                            Xem tất cả <ArrowRightOutlined />
+                            View all <ArrowRightOutlined />
                         </Link>
                     </div>
                     <div className={s.marketBody}>
@@ -226,16 +226,16 @@ const HomePage = () => {
                     <div className={s.ctaBannerBg} aria-hidden="true" />
                     <div className={s.ctaContent}>
                         <span className={s.ctaEmoji}>🎯</span>
-                        <h2 className={s.ctaTitle}>Bạn đã sẵn sàng bứt phá sự nghiệp IT?</h2>
+                        <h2 className={s.ctaTitle}>Ready to boost your IT career?</h2>
                         <p className={s.ctaDesc}>
-                            Tham gia cùng hơn <strong>50,000+</strong> IT professionals đang dùng JobHunter mỗi ngày.
+                            Join over <strong>50,000+</strong> IT professionals using JobHunter every day.
                         </p>
                         <div className={s.ctaActions}>
                             <Link to="/job" className={s.ctaPrimary}>
-                                <ThunderboltOutlined /> Tìm việc ngay
+                                <ThunderboltOutlined /> Find jobs now
                             </Link>
                             <Link to="/login" className={s.ctaSecondary}>
-                                Đăng ký miễn phí <ArrowRightOutlined />
+                                Join for free <ArrowRightOutlined />
                             </Link>
                         </div>
                     </div>
@@ -249,29 +249,29 @@ const HomePage = () => {
                             <CodeOutlined />
                         </div>
                         <strong>JobHunter</strong>
-                        <p>Platform tuyển dụng IT hàng đầu Việt Nam. Built for developers, by developers.</p>
+                        <p>Leading IT recruitment platform in Vietnam. Built for developers, by developers.</p>
                     </div>
 
                     <div className={s.footerLinks}>
                         <div className={s.footerCol}>
                             <h4>Platform</h4>
-                            <a href="/">Trang Chủ</a>
-                            <a href="/job">Việc Làm</a>
-                            <a href="/company">Công Ty</a>
-                            <a href="/skills">Kỹ Năng</a>
+                            <a href="/">Home</a>
+                            <a href="/job">Jobs</a>
+                            <a href="/company">Companies</a>
+                            <a href="/skills">Skills</a>
                         </div>
                         <div className={s.footerCol}>
-                            <h4>Nhà Tuyển Dụng</h4>
-                            <a href="#">Đăng tin tuyển dụng</a>
-                            <a href="#">Tìm ứng viên</a>
-                            <a href="#">Dashboard công ty</a>
-                            <a href="#">Bảng giá</a>
+                            <h4>For Employers</h4>
+                            <a href="#">Post a Job</a>
+                            <a href="#">Find Candidates</a>
+                            <a href="#">Employer Dashboard</a>
+                            <a href="#">Pricing</a>
                         </div>
                         <div className={s.footerCol}>
-                            <h4>Liên Hệ</h4>
+                            <h4>Contact</h4>
                             <a href="mailto:support@jobhunter.com">support@jobhunter.com</a>
                             <a href="tel:+84123456789">+84 123 456 789</a>
-                            <span>TP. Hồ Chí Minh, Việt Nam</span>
+                            <span>Ho Chi Minh City, Vietnam</span>
                         </div>
                     </div>
                 </div>

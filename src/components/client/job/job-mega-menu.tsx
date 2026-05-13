@@ -45,12 +45,12 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
     }, []);
 
     const leftItems: { key: MenuKey; label: string }[] = [
-        { key: "skills", label: "Việc làm IT theo kỹ năng" },
-        { key: "expertise", label: "Việc làm IT theo chuyên môn" },
-        { key: "level", label: "Việc làm IT theo cấp bậc" },
-        { key: "company", label: "Việc làm IT theo công ty" },
-        { key: "city", label: "Việc làm IT theo thành phố" },
-        { key: "recommended", label: "Việc làm phù hợp" },
+        { key: "skills", label: "IT Jobs by Skill" },
+        { key: "expertise", label: "IT Jobs by Expertise" },
+        { key: "level", label: "IT Jobs by Level" },
+        { key: "company", label: "IT Jobs by Company" },
+        { key: "city", label: "IT Jobs by City" },
+        { key: "recommended", label: "Recommended Jobs" },
     ];
 
     const skillLinks = useMemo(() => skills.slice(0, 40), [skills]);
@@ -103,7 +103,7 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
                             </div>
                             <div className={styles.footer}>
                                 <Link to="/skills" className={styles.link} onClick={() => onNavigate?.()}>
-                                    Xem tất cả »
+                                    View all »
                                 </Link>
                             </div>
                         </Spin>
@@ -126,7 +126,7 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
                             </div>
                             <div className={styles.footer}>
                                 <Link to="/expertise" className={styles.link} onClick={() => onNavigate?.()}>
-                                    Xem tất cả »
+                                    View all »
                                 </Link>
                             </div>
                         </Spin>
@@ -164,7 +164,7 @@ const JobMegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
                             </div>
                             <div className={styles.footer}>
                                 <Link to="/company" className={styles.link} onClick={() => onNavigate?.()}>
-                                    Xem tất cả công ty »
+                                    View all companies »
                                 </Link>
                             </div>
                         </Spin>

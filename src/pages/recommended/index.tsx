@@ -34,7 +34,7 @@ const SkeletonCard = () => (
 /* ---------- Job Card ---------- */
 const JobCard = ({ item, onClick }: { item: IJobRecommendation; onClick: () => void }) => {
     const job = item?.job;
-    const jobName = job?.name ?? 'Công việc phù hợp';
+    const jobName = job?.name ?? 'Recommended Job';
     const score = item.score ?? 0;
     const scoreClass = score >= 80 ? styles.high : score >= 60 ? styles.medium : styles.low;
     const skills = job?.skills?.slice(0, 3) ?? [];
@@ -73,7 +73,7 @@ const JobCard = ({ item, onClick }: { item: IJobRecommendation; onClick: () => v
             )}
 
             <div className={styles.matchSummary}>
-                {item.matchSummary ?? 'Job phù hợp với hồ sơ của bạn.'}
+                {item.matchSummary ?? 'Matching job based on your profile.'}
             </div>
 
             <div className={styles.cardFooter}>
@@ -132,25 +132,25 @@ const RecommendedPage = () => {
                         <ThunderboltOutlined /> AI-Powered Matching
                     </div>
                     <h1 className={styles.heroTitle}>
-                        Việc làm dành riêng cho bạn
+                        Jobs Recommended for You
                     </h1>
                     <p className={styles.heroSubtitle}>
-                        Hệ thống AI phân tích hồ sơ, kỹ năng và kinh nghiệm của bạn để gợi ý những cơ hội việc làm phù hợp nhất.
+                        Our AI system analyzes your profile, skills, and experience to suggest the most relevant job opportunities.
                     </p>
 
                     {isAuthenticated && !isLoading && jobs.length > 0 && (
                         <div className={styles.heroStats}>
                             <div className={styles.statItem}>
                                 <span className={styles.statNumber}>{jobs.length}</span>
-                                <span className={styles.statLabel}>Việc làm phù hợp</span>
+                                <span className={styles.statLabel}>Matching Jobs</span>
                             </div>
                             <div className={styles.statItem}>
                                 <span className={styles.statNumber}>{highScore}</span>
-                                <span className={styles.statLabel}>Điểm cao ≥80</span>
+                                <span className={styles.statLabel}>High Score ≥80</span>
                             </div>
                             <div className={styles.statItem}>
                                 <span className={styles.statNumber}>{jobs[0]?.score ?? 0}</span>
-                                <span className={styles.statLabel}>Điểm cao nhất</span>
+                                <span className={styles.statLabel}>Highest Score</span>
                             </div>
                         </div>
                     )}
@@ -169,12 +169,12 @@ const RecommendedPage = () => {
                     {!isLoading && !isAuthenticated && (
                         <div className={styles.emptyState}>
                             <span className={styles.emptyIcon}>🔐</span>
-                            <h2 className={styles.emptyTitle}>Đăng nhập để xem gợi ý</h2>
+                            <h2 className={styles.emptyTitle}>Sign in to view recommendations</h2>
                             <p className={styles.emptyDesc}>
-                                Tạo tài khoản hoặc đăng nhập để AI phân tích hồ sơ và gợi ý những việc làm phù hợp nhất với bạn.
+                                Create an account or sign in for AI to analyze your profile and suggest the best matching jobs for you.
                             </p>
                             <Link to="/login" className={styles.emptyBtn}>
-                                Đăng nhập ngay <ArrowRightOutlined />
+                                Sign In Now <ArrowRightOutlined />
                             </Link>
                         </div>
                     )}
@@ -183,12 +183,12 @@ const RecommendedPage = () => {
                     {!isLoading && isAuthenticated && jobs.length === 0 && (
                         <div className={styles.emptyState}>
                             <span className={styles.emptyIcon}>🎯</span>
-                            <h2 className={styles.emptyTitle}>Chưa có gợi ý việc làm</h2>
+                            <h2 className={styles.emptyTitle}>No job recommendations yet</h2>
                             <p className={styles.emptyDesc}>
-                                Hãy cập nhật kỹ năng, level và chuyên môn trong hồ sơ để AI có thể tìm kiếm và gợi ý việc làm phù hợp với bạn.
+                                Please update your skills, level, and expertise in your profile so AI can find and suggest matching jobs for you.
                             </p>
                             <Link to="/" className={styles.emptyBtn}>
-                                Cập nhật hồ sơ <ArrowRightOutlined />
+                                Update Profile <ArrowRightOutlined />
                             </Link>
                         </div>
                     )}
@@ -199,14 +199,14 @@ const RecommendedPage = () => {
                             <div className={styles.toolbar}>
                                 <div className={styles.resultCount}>
                                     <strong>{jobs.length}</strong>
-                                    <span>việc làm phù hợp với hồ sơ của bạn</span>
+                                    <span>matching jobs for your profile</span>
                                     <span className={styles.countBadge}><FireOutlined /> Hot</span>
                                 </div>
                             </div>
                             <div className={styles.jobGrid}>
                                 {jobs.map((item) => {
                                     const job = item?.job;
-                                    const jobName = job?.name ?? 'Công việc phù hợp';
+                                    const jobName = job?.name ?? 'Recommended Job';
                                     const slug = convertSlug(jobName);
                                     return (
                                         <JobCard

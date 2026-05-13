@@ -87,7 +87,7 @@ const ClientJobPage = () => {
     const handleTotalChange = useCallback((n: number) => setTotal(n), []);
 
     const buildHeading = () => {
-        if (total === null) return 'Đang tải...';
+        if (total === null) return 'Loading...';
 
         const urlSkills = searchParams.get('skills');
 
@@ -107,15 +107,15 @@ const ClientJobPage = () => {
 
         // Build human-readable heading
         if (skillLabels && locLabels) {
-            return `${total.toLocaleString()} việc làm ${skillLabels} tại ${locLabels}${lvl}`;
+            return `${total.toLocaleString()} ${skillLabels} jobs in ${locLabels}${lvl}`;
         }
         if (skillLabels) {
-            return `${total.toLocaleString()} việc làm ${skillLabels}${lvl}`;
+            return `${total.toLocaleString()} ${skillLabels} jobs${lvl}`;
         }
         if (locLabels) {
-            return `${total.toLocaleString()} việc làm tại ${locLabels}${lvl}`;
+            return `${total.toLocaleString()} jobs in ${locLabels}${lvl}`;
         }
-        return `${total.toLocaleString()} việc làm IT${lvl}`;
+        return `${total.toLocaleString()} IT jobs${lvl}`;
     };
 
 
@@ -133,25 +133,25 @@ const ClientJobPage = () => {
                                 <ApartmentOutlined /> IT JOB BOARD
                             </div>
                             <h1 className={styles.heroTitle}>
-                                Khám phá việc làm<br />IT phù hợp với bạn
+                                Find the perfect<br />IT job for you
                             </h1>
                             <p className={styles.heroSub}>
-                                Hàng trăm cơ hội từ các công ty công nghệ hàng đầu Việt Nam.
+                                Hundreds of opportunities from leading tech companies in Vietnam.
                             </p>
                             <div className={styles.statsRow}>
                                 <div className={styles.statChip}>
                                     <span className={styles.statN}>500+</span>
-                                    <span className={styles.statL}>Việc làm</span>
+                                    <span className={styles.statL}>Jobs</span>
                                 </div>
                                 <div className={styles.statDot} />
                                 <div className={styles.statChip}>
                                     <span className={styles.statN}>150+</span>
-                                    <span className={styles.statL}>Công ty IT</span>
+                                    <span className={styles.statL}>IT Companies</span>
                                 </div>
                                 <div className={styles.statDot} />
                                 <div className={styles.statChip}>
-                                    <span className={styles.statN}>Mỗi ngày</span>
-                                    <span className={styles.statL}>Cập nhật mới</span>
+                                    <span className={styles.statN}>Daily</span>
+                                    <span className={styles.statL}>New updates</span>
                                 </div>
                             </div>
                         </div>
@@ -159,14 +159,14 @@ const ClientJobPage = () => {
                         {/* Right search card — collect all, then search */}
                         <div className={styles.searchCard}>
                             <div className={styles.searchCardTitle}>
-                                <SearchOutlined /> Tìm việc ngay
+                                <SearchOutlined /> Search jobs now
                             </div>
 
                             {/* Location */}
                             <Select
                                 mode="multiple"
                                 allowClear
-                                placeholder={<><EnvironmentOutlined /> Địa điểm...</>}
+                                placeholder={<><EnvironmentOutlined /> Location...</>}
                                 options={LOCATION_LIST}
                                 value={localLocation}
                                 onChange={setLocalLocation}
@@ -180,7 +180,7 @@ const ClientJobPage = () => {
                                 mode="multiple"
                                 allowClear
                                 showSearch
-                                placeholder={<><SearchOutlined /> Kỹ năng (Java, React...)</>}
+                                placeholder={<><SearchOutlined /> Skills (Java, React...)</>}
                                 options={skillOptions}
                                 value={localSkills}
                                 onChange={setLocalSkills}
@@ -195,7 +195,7 @@ const ClientJobPage = () => {
                             {/* Level pills */}
                             <div className={styles.levelRow}>
                                 <span className={styles.levelLabel}>
-                                    <ThunderboltOutlined /> Cấp bậc
+                                    <ThunderboltOutlined /> Level
                                 </span>
                                 <div className={styles.pills}>
                                     {LEVEL_OPTIONS.map(lv => (
@@ -225,7 +225,7 @@ const ClientJobPage = () => {
                                 </Button>
                                 {(localLocation.length || localSkills.length || localLevel) && (
                                     <button className={styles.clearBtn} onClick={clearAll} type="button">
-                                        <CloseOutlined /> Xóa
+                                        <CloseOutlined /> Clear
                                     </button>
                                 )}
                             </div>
@@ -241,7 +241,7 @@ const ClientJobPage = () => {
                     <h2 className={styles.resultHeading}>{buildHeading()}</h2>
                     {hasFilters && (
                         <button className={styles.resetLink} onClick={clearAll} type="button">
-                            Xem tất cả →
+                            View all →
                         </button>
                     )}
                 </div>
@@ -270,29 +270,29 @@ const ClientJobPage = () => {
                             <CodeOutlined />
                         </div>
                         <strong>JobHunter</strong>
-                        <p>Platform tuyển dụng IT hàng đầu Việt Nam. Built for developers, by developers.</p>
+                        <p>Leading IT recruitment platform in Vietnam. Built for developers, by developers.</p>
                     </div>
 
                     <div className={homeStyles.footerLinks}>
                         <div className={homeStyles.footerCol}>
                             <h4>Platform</h4>
-                            <a href="/">Trang Chủ</a>
-                            <a href="/job">Việc Làm</a>
-                            <a href="/company">Công Ty</a>
-                            <a href="/skills">Kỹ Năng</a>
+                            <a href="/">Home</a>
+                            <a href="/job">Jobs</a>
+                            <a href="/company">Companies</a>
+                            <a href="/skills">Skills</a>
                         </div>
                         <div className={homeStyles.footerCol}>
-                            <h4>Nhà Tuyển Dụng</h4>
-                            <a href="#">Đăng tin tuyển dụng</a>
-                            <a href="#">Tìm ứng viên</a>
-                            <a href="#">Dashboard công ty</a>
-                            <a href="#">Bảng giá</a>
+                            <h4>For Employers</h4>
+                            <a href="#">Post a Job</a>
+                            <a href="#">Find Candidates</a>
+                            <a href="#">Employer Dashboard</a>
+                            <a href="#">Pricing</a>
                         </div>
                         <div className={homeStyles.footerCol}>
-                            <h4>Liên Hệ</h4>
+                            <h4>Contact</h4>
                             <a href="mailto:support@jobhunter.com">support@jobhunter.com</a>
                             <a href="tel:+84123456789">+84 123 456 789</a>
-                            <span>TP. Hồ Chí Minh, Việt Nam</span>
+                            <span>Ho Chi Minh City, Vietnam</span>
                         </div>
                     </div>
                 </div>

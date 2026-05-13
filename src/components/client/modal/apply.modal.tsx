@@ -25,7 +25,7 @@ const ApplyModal = (props: IProps) => {
 
     const handleOkButton = async () => {
         if (!urlCV && isAuthenticated) {
-            message.error("Vui lòng upload CV!");
+            message.error("Please upload your CV!");
             return;
         }
 
@@ -38,11 +38,11 @@ const ApplyModal = (props: IProps) => {
             if (jobDetail) {
                 const res = await callCreateResume(urlCV, jobDetail?.id, user.email, user.id);
                 if (res.data) {
-                    message.success("Rải CV thành công!");
+                    message.success("CV submitted successfully!");
                     setIsModalOpen(false);
                 } else {
                     notification.error({
-                        message: 'Có lỗi xảy ra',
+                        message: 'An error occurred',
                         description: res.message
                     });
                 }
@@ -74,7 +74,7 @@ const ApplyModal = (props: IProps) => {
             if (info.file.status === 'done') {
                 message.success(`${info.file.name} file uploaded successfully`);
             } else if (info.file.status === 'error') {
-                message.error(info?.file?.error?.event?.message ?? "Đã có lỗi xảy ra khi upload file.")
+                message.error(info?.file?.error?.event?.message ?? "An error occurred while uploading file.")
             }
         },
     };
@@ -82,12 +82,12 @@ const ApplyModal = (props: IProps) => {
 
     return (
         <>
-            <Modal title="Ứng Tuyển Job"
+            <Modal title="Apply for Job"
                 open={isModalOpen}
                 onOk={() => handleOkButton()}
                 onCancel={() => setIsModalOpen(false)}
                 maskClosable={false}
-                okText={isAuthenticated ? "Rải CV Nào " : "Đăng Nhập Nhanh"}
+                okText={isAuthenticated ? "Submit CV" : "Login Now"}
                 cancelButtonProps={
                     { style: { display: "none" } }
                 }
@@ -105,7 +105,7 @@ const ApplyModal = (props: IProps) => {
                                 <Row gutter={[10, 10]}>
                                     <Col span={24}>
                                         <div>
-                                            Bạn đang ứng tuyển công việc <b>{jobDetail?.name} </b>tại  <b>{jobDetail?.company?.name}</b>
+                                            You are applying for <b>{jobDetail?.name} </b>at <b>{jobDetail?.company?.name}</b>
                                         </div>
                                     </Col>
                                     <Col span={24}>
@@ -122,12 +122,12 @@ const ApplyModal = (props: IProps) => {
                                     </Col>
                                     <Col span={24}>
                                         <ProForm.Item
-                                            label={"Upload file CV"}
-                                            rules={[{ required: true, message: 'Vui lòng upload file!' }]}
+                                            label={"Upload CV"}
+                                            rules={[{ required: true, message: 'Please upload your CV!' }]}
                                         >
 
                                             <Upload {...propsUpload}>
-                                                <Button icon={<UploadOutlined />}>Tải lên CV của bạn ( Hỗ trợ *.doc, *.docx, *.pdf, and &lt; 5MB )</Button>
+                                                <Button icon={<UploadOutlined />}>Upload your CV (Supports *.doc, *.docx, *.pdf, and &lt; 5MB)</Button>
                                             </Upload>
                                         </ProForm.Item>
                                     </Col>
@@ -138,7 +138,7 @@ const ApplyModal = (props: IProps) => {
                     </div>
                     :
                     <div>
-                        Bạn chưa đăng nhập hệ thống. Vui lòng đăng nhập để có thể "Rải CV" bạn nhé -.-
+                        You are not logged in. Please login to submit your CV.
                     </div>
                 }
                 <Divider />

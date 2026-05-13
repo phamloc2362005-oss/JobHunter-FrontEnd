@@ -120,11 +120,11 @@ const JobCard = (props: IProps) => {
                                 <div>
                                     <span className={styles["section-badge"]}>Latest jobs</span>
                                     <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
-                                        <span className={styles["title"]}>Công Việc Mới Nhất</span>
-                                        <p className={styles["section-subtitle"]}>Những job vừa cập nhật được đẩy lên đầu để scan nhanh hơn.</p>
+                                        <span className={styles["title"]}>Latest Jobs</span>
+                                        <p className={styles["section-subtitle"]}>Freshly updated jobs pushed to the top for quick scanning.</p>
                                     </div>
                                 </div>
-                                <Link to="job" className={styles["section-link"]}>Xem tất cả</Link>
+                                <Link to="job" className={styles["section-link"]}>View all</Link>
                             </div>
                         </Col>}
 
@@ -147,7 +147,7 @@ const JobCard = (props: IProps) => {
                                                 <div className={styles["job-title"]}>{item.name}</div>
                                                 <div className={styles["job-meta-row"]}>
                                                     <span className={styles["job-location"]}><EnvironmentOutlined style={{ color: '#0f766e' }} />&nbsp;{getLocationName(item.location)}</span>
-                                                    <span className={styles["job-salary"]}><ThunderboltOutlined style={{ color: '#f59e0b' }} />&nbsp;{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</span>
+                                                    <span className={styles["job-salary"]}><ThunderboltOutlined style={{ color: '#f59e0b' }} />&nbsp;{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} VND</span>
                                                 </div>
                                                 <div className={styles["job-updatedAt"]}>{item.updatedAt ? dayjs(item.updatedAt).locale('en').fromNow() : dayjs(item.createdAt).locale('en').fromNow()}</div>
                                             </div>
@@ -162,7 +162,7 @@ const JobCard = (props: IProps) => {
                         {(!displayJob || displayJob && displayJob.length === 0)
                             && !isLoading &&
                             <div className={styles["empty"]}>
-                                <Empty description="Không có dữ liệu" />
+                                <Empty description="No jobs found" />
                             </div>
                         }
                     </Row>

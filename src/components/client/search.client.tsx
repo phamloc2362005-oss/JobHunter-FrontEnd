@@ -106,9 +106,9 @@ const SearchClient = ({ compact = false }: SearchClientProps) => {
         <div className="search-client">
             {!compact && (
                 <>
-                    <h1 style={{ color: '#fff', textAlign: 'center', marginBottom: '8px' }}>Tìm job IT đúng stack, đúng level</h1>
+                    <h1 style={{ color: '#fff', textAlign: 'center', marginBottom: '8px' }}>Find IT jobs by stack and level</h1>
                     <p className="search-client-description" style={{ color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center', marginBottom: '32px' }}>
-                        Chọn kỹ năng, công ty và địa điểm để lọc ra danh sách việc làm sát với profile của bạn.
+                        Select skills, companies, and locations to filter the jobs that match your profile.
                     </p>
                 </>
             )}
@@ -127,7 +127,7 @@ const SearchClient = ({ compact = false }: SearchClientProps) => {
                                 style={{ width: '100%' }}
                                 placeholder={
                                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <EnvironmentOutlined style={{ color: '#555' }} /> Địa điểm...
+                                        <EnvironmentOutlined style={{ color: '#555' }} /> Location...
                                     </span>
                                 }
                                 optionLabelProp="label"
@@ -143,7 +143,7 @@ const SearchClient = ({ compact = false }: SearchClientProps) => {
                                 allowClear
                                 showArrow={false}
                                 style={{ width: '100%' }}
-                                placeholder="Nhập kỹ năng, kỹ thuật (Java, React, Node.js...)"
+                                placeholder="Enter skills, techs (Java, React, Node.js...)"
                                 optionLabelProp="label"
                                 options={optionsSkills}
                                 className="itviec-select"
@@ -157,7 +157,7 @@ const SearchClient = ({ compact = false }: SearchClientProps) => {
                             onClick={() => form.submit()}
                             className="itviec-button"
                         >
-                            Tìm kiếm
+                            Search
                         </Button>
                     </Col>
                 </Row>

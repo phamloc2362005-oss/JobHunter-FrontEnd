@@ -17,11 +17,11 @@ const RegisterPage = () => {
         const res = await callRegister(name, email, password as string, +age, gender, address);
         setIsSubmit(false);
         if (res?.data?.id) {
-            message.success('Đăng ký tài khoản thành công!');
+            message.success('Account registered successfully!');
             navigate('/login')
         } else {
             notification.error({
-                message: "Có lỗi xảy ra",
+                message: "An error occurred",
                 description:
                     res.message && Array.isArray(res.message) ? res.message[0] : res.message,
                 duration: 5
@@ -37,7 +37,7 @@ const RegisterPage = () => {
                 <div className={styles.container} >
                     <section className={styles.wrapper} >
                         <div className={styles.heading} >
-                            <h2 className={`${styles.text} ${styles["text-large"]}`}> Đăng Ký Tài Khoản </h2>
+                            <h2 className={`${styles.text} ${styles["text-large"]}`}> Create an Account </h2>
                             < Divider />
                         </div>
                         < Form<IUser>
@@ -48,9 +48,9 @@ const RegisterPage = () => {
                         >
                             <Form.Item
                                 labelCol={{ span: 24 }} //whole column
-                                label="Họ tên"
+                                label="Full Name"
                                 name="name"
-                                rules={[{ required: true, message: 'Họ tên không được để trống!' }]}
+                                rules={[{ required: true, message: 'Full Name is required!' }]}
                             >
                                 <Input />
                             </Form.Item>
@@ -61,24 +61,24 @@ const RegisterPage = () => {
                                 } //whole column
                                 label="Email"
                                 name="email"
-                                rules={[{ required: true, message: 'Email không được để trống!' }]}
+                                rules={[{ required: true, message: 'Email is required!' }]}
                             >
                                 <Input type='email' />
                             </Form.Item>
 
                             <Form.Item
                                 labelCol={{ span: 24 }} //whole column
-                                label="Mật khẩu"
+                                label="Password"
                                 name="password"
-                                rules={[{ required: true, message: 'Mật khẩu không được để trống!' }]}
+                                rules={[{ required: true, message: 'Password is required!' }]}
                             >
                                 <Input.Password />
                             </Form.Item>
                             <Form.Item
                                 labelCol={{ span: 24 }} //whole column
-                                label="Tuổi"
+                                label="Age"
                                 name="age"
-                                rules={[{ required: true, message: 'Tuổi không được để trống!' }]}
+                                rules={[{ required: true, message: 'Age is required!' }]}
                             >
                                 <Input type='number' />
                             </Form.Item>
@@ -87,26 +87,26 @@ const RegisterPage = () => {
                             <Form.Item
                                 labelCol={{ span: 24 }} //whole column
                                 name="gender"
-                                label="Giới tính"
-                                rules={[{ required: true, message: 'Giới tính không được để trống!' }]}
+                                label="Gender"
+                                rules={[{ required: true, message: 'Gender is required!' }]}
                             >
                                 <Select
                                     // placeholder="Select a option and change input text above"
                                     // onChange={onGenderChange}
                                     allowClear
                                 >
-                                    <Option value="MALE">Nam</Option>
-                                    <Option value="FEMALE">Nữ</Option>
-                                    <Option value="OTHER">Khác</Option>
+                                    <Option value="MALE">Male</Option>
+                                    <Option value="FEMALE">Female</Option>
+                                    <Option value="OTHER">Other</Option>
                                 </Select>
                             </Form.Item>
 
 
                             <Form.Item
                                 labelCol={{ span: 24 }} //whole column
-                                label="Địa chỉ"
+                                label="Address"
                                 name="address"
-                                rules={[{ required: true, message: 'Địa chỉ không được để trống!' }]}
+                                rules={[{ required: true, message: 'Address is required!' }]}
                             >
                                 <Input />
                             </Form.Item>
@@ -115,13 +115,13 @@ const RegisterPage = () => {
                             // wrapperCol={{ offset: 6, span: 16 }}
                             >
                                 <Button type="primary" htmlType="submit" loading={isSubmit} >
-                                    Đăng ký
+                                    Register
                                 </Button>
                             </Form.Item>
                             <Divider> Or </Divider>
-                            <p className="text text-normal" > Đã có tài khoản ?
+                            <p className="text text-normal" > Already have an account?
                                 <span>
-                                    <Link to='/login' > Đăng Nhập </Link>
+                                    <Link to='/login' > Login </Link>
                                 </span>
                             </p>
                         </Form>

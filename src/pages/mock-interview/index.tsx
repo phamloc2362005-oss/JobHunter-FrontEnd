@@ -21,10 +21,10 @@ type Phase = 'intro' | 'loading-questions' | 'interview' | 'evaluating' | 'resul
 // ========================
 const getRatingInfo = (rating: string) => {
     switch (rating) {
-        case 'Xuất sắc': return { icon: '🌟', color: '#10b981', className: styles.excellent };
-        case 'Tốt': return { icon: '✅', color: '#6366f1', className: styles.good };
-        case 'Khá': return { icon: '👍', color: '#f59e0b', className: styles.fair };
-        case 'Cần cải thiện': return { icon: '📈', color: '#f97316', className: styles.poor };
+        case 'Excellent': return { icon: '🌟', color: '#10b981', className: styles.excellent };
+        case 'Good': return { icon: '✅', color: '#6366f1', className: styles.good };
+        case 'Fair': return { icon: '👍', color: '#f59e0b', className: styles.fair };
+        case 'Needs Improvement': return { icon: '📈', color: '#f97316', className: styles.poor };
         default: return { icon: '❌', color: '#ef4444', className: styles.poor };
     }
 };
@@ -44,9 +44,9 @@ const getResultEmoji = (avg: number) => {
 
 const getTypeLabel = (type: string) => {
     switch (type) {
-        case 'technical': return 'Kỹ thuật';
-        case 'behavioral': return 'Hành vi';
-        case 'situational': return 'Tình huống';
+        case 'technical': return 'Technical';
+        case 'behavioral': return 'Behavioral';
+        case 'situational': return 'Situational';
         default: return type;
     }
 };
@@ -104,11 +104,11 @@ const MockInterviewPage = () => {
                 setAnswer('');
                 setPhase('interview');
             } else {
-                alert('Không thể tải câu hỏi. Vui lòng thử lại.');
+                alert('Could not load questions. Please try again.');
                 setPhase('intro');
             }
         } catch (e) {
-            alert('Lỗi kết nối AI. Vui lòng thử lại.');
+            alert('AI connection error. Please try again.');
             setPhase('intro');
         }
     };
@@ -118,7 +118,7 @@ const MockInterviewPage = () => {
         setPhase('evaluating');
 
         const currentQ = questions[currentIdx];
-        const jobContext = `Vị trí: ${job?.name} | Cấp bậc: ${job?.level} | Kỹ năng: ${job?.skills?.map(s => s.name).join(', ')}`;
+        const jobContext = `Position: ${job?.name} | Level: ${job?.level} | Skills: ${job?.skills?.map(s => s.name).join(', ')}`;
 
         try {
             const res = await callEvaluateInterviewAnswer(
@@ -202,9 +202,9 @@ const MockInterviewPage = () => {
                 <div className={styles.container}>
                     <div className={styles.loadingScreen}>
                         <div style={{ fontSize: 48 }}>😕</div>
-                        <div className={styles.loadingText}>Không tìm thấy thông tin job</div>
+                        <div className={styles.loadingText}>Job information not found</div>
                         <button className={styles.retryBtn} onClick={() => navigate('/job')}>
-                            ← Quay lại danh sách việc làm
+                            ← Back to Job List
                         </button>
                     </div>
                 </div>
@@ -222,7 +222,7 @@ const MockInterviewPage = () => {
                     <div className={styles.loadingScreen}>
                         <div className={styles.loadingSpinner} />
                         <div className={styles.loadingText}>
-                            🤖 AI đang phân tích JD và tạo câu hỏi phù hợp...
+                            🤖 AI is analyzing JD and generating matching questions...
                         </div>
                         <div className={styles.loadingDots}>
                             <span /><span /><span />
@@ -248,7 +248,7 @@ const MockInterviewPage = () => {
                                 <span className={styles.aiChip}>AI</span>
                                 Mock Interview
                             </h1>
-                            <p>Luyện tập phỏng vấn với trợ lý AI thông minh</p>
+                            <p>Practice interviewing with your smart AI assistant</p>
                         </div>
                     </div>
 
@@ -256,11 +256,11 @@ const MockInterviewPage = () => {
                     <div className={styles.introCard}>
                         <span className={styles.introIcon}>🎤</span>
                         <h2 className={styles.introTitle}>
-                            Sẵn sàng để <span>luyện phỏng vấn</span>?
+                            Ready to <span>practice interviewing</span>?
                         </h2>
                         <p className={styles.introSubtitle}>
-                            AI sẽ đặt 5 câu hỏi phỏng vấn được tùy chỉnh riêng cho vị trí này.<br />
-                            Trả lời thật thành thật — AI sẽ nhận xét và cho điểm từng câu ngay lập tức.
+                            AI will ask 5 interview questions tailored for this position.<br />
+                            Answer honestly — AI will provide feedback and scores for each answer instantly.
                         </p>
 
                         {/* Job Info */}
@@ -287,15 +287,15 @@ const MockInterviewPage = () => {
                         <div className={styles.infoGrid}>
                             <div className={styles.infoItem}>
                                 <span className={styles.infoNum}>5</span>
-                                <div className={styles.infoLabel}>Câu hỏi</div>
+                                <div className={styles.infoLabel}>Questions</div>
                             </div>
                             <div className={styles.infoItem}>
                                 <span className={styles.infoNum}>AI</span>
-                                <div className={styles.infoLabel}>Chấm điểm tức thì</div>
+                                <div className={styles.infoLabel}>Instant Scoring</div>
                             </div>
                             <div className={styles.infoItem}>
                                 <span className={styles.infoNum}>10</span>
-                                <div className={styles.infoLabel}>Điểm tối đa</div>
+                                <div className={styles.infoLabel}>Max Score</div>
                             </div>
                         </div>
 
@@ -304,7 +304,7 @@ const MockInterviewPage = () => {
                             onClick={handleStart}
                             disabled={!job}
                         >
-                            🚀 Bắt đầu phỏng vấn
+                            🚀 Start Interview
                         </button>
                     </div>
                 </div>
@@ -328,7 +328,7 @@ const MockInterviewPage = () => {
                         <div className={styles.headerTitle}>
                             <h1>
                                 <span className={styles.aiChip}>AI</span>
-                                Kết quả phỏng vấn
+                                Interview Results
                             </h1>
                             <p>{job?.name} • {job?.company?.name}</p>
                         </div>
@@ -339,13 +339,13 @@ const MockInterviewPage = () => {
                         <div className={styles.resultHeader}>
                             <span className={styles.resultEmoji}>{getResultEmoji(avgScore)}</span>
                             <h2 className={styles.resultTitle}>
-                                {avgScore >= 8.5 ? 'Xuất sắc! Bạn đã sẵn sàng!' :
-                                    avgScore >= 7 ? 'Kết quả tốt! Tiếp tục luyện tập!' :
-                                        avgScore >= 5 ? 'Khá ổn! Cần cải thiện thêm.' :
-                                            'Hãy ôn luyện thêm nhé!'}
+                                {avgScore >= 8.5 ? 'Excellent! You are ready!' :
+                                    avgScore >= 7 ? 'Good result! Keep practicing!' :
+                                        avgScore >= 5 ? 'Not bad! Needs more improvement.' :
+                                            'Keep studying and practice more!'}
                             </h2>
                             <p className={styles.resultSubtitle}>
-                                Đây là báo cáo chi tiết buổi luyện phỏng vấn của bạn
+                                Here is your detailed mock interview report
                             </p>
                         </div>
 
@@ -358,24 +358,24 @@ const MockInterviewPage = () => {
                             <div className={styles.scoreStats}>
                                 <div className={styles.statItem}>
                                     <span className={`${styles.statDot} ${styles.dotGreen}`} />
-                                    Câu trả lời tốt (≥5đ)
+                                    Good Answers (≥5 pts)
                                     <span className={styles.statVal}>{passed}/{questions.length}</span>
                                 </div>
                                 <div className={styles.statItem}>
                                     <span className={`${styles.statDot} ${styles.dotBlue}`} />
-                                    Đã trả lời
+                                    Answered
                                     <span className={styles.statVal}>{results.length - skipped}/{questions.length}</span>
                                 </div>
                                 <div className={styles.statItem}>
                                     <span className={`${styles.statDot} ${styles.dotYellow}`} />
-                                    Bỏ qua
+                                    Skipped
                                     <span className={styles.statVal}>{skipped}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Breakdown */}
-                        <div className={styles.breakdownTitle}>Chi tiết từng câu</div>
+                        <div className={styles.breakdownTitle}>Question Breakdown</div>
                         <div className={styles.breakdownList}>
                             {results.map((r, idx) => (
                                 <div key={idx} className={styles.breakdownItem}>
@@ -384,13 +384,13 @@ const MockInterviewPage = () => {
                                         <div className={styles.bdQuestion}>{r.question.question}</div>
                                         {r.skipped ? (
                                             <div className={styles.bdFeedback} style={{ color: '#64748b' }}>
-                                                — Đã bỏ qua
+                                                — Skipped
                                             </div>
                                         ) : r.evaluation ? (
                                             <div className={styles.bdFeedback}>{r.evaluation.feedback}</div>
                                         ) : (
                                             <div className={styles.bdFeedback} style={{ color: '#64748b' }}>
-                                                Không thể đánh giá
+                                                Could not evaluate
                                             </div>
                                         )}
                                     </div>
@@ -406,10 +406,10 @@ const MockInterviewPage = () => {
                         {/* Actions */}
                         <div className={styles.resultActions}>
                             <button className={styles.retryBtn} onClick={handleRetry}>
-                                🔄 Thử lại
+                                🔄 Retry
                             </button>
                             <button className={styles.backJobBtn} onClick={() => navigate(`/job/${encodeURIComponent(job?.name || '')}?id=${jobId}`)}>
-                                ← Về trang job
+                                ← Back to Job
                             </button>
                         </div>
                     </div>
@@ -427,7 +427,7 @@ const MockInterviewPage = () => {
                 {/* Header */}
                 <div className={styles.header}>
                     <button className={styles.backBtn} onClick={() => {
-                        if (window.confirm('Bạn có chắc muốn thoát? Tiến trình sẽ mất.')) {
+                        if (window.confirm('Are you sure you want to quit? Progress will be lost.')) {
                             setPhase('intro');
                             setResults([]);
                             setCurrentIdx(0);
@@ -448,7 +448,7 @@ const MockInterviewPage = () => {
                 <div className={styles.progressWrapper}>
                     <div className={styles.progressHeader}>
                         <span className={styles.progressLabel}>
-                            Câu {currentIdx + 1} / {questions.length}
+                            Question {currentIdx + 1} / {questions.length}
                         </span>
                         <span className={styles.progressPercent}>
                             {Math.round(progress)}%
@@ -475,7 +475,7 @@ const MockInterviewPage = () => {
                         {currentQuestion.hint && (
                             <div className={styles.hintBox}>
                                 <span className={styles.hintIcon}>💡</span>
-                                <span className={styles.hintText}>Gợi ý: {currentQuestion.hint}</span>
+                                <span className={styles.hintText}>Hint: {currentQuestion.hint}</span>
                             </div>
                         )}
                     </div>
@@ -484,18 +484,18 @@ const MockInterviewPage = () => {
                 {/* Answer Area (only show if no eval yet) */}
                 {!hasEval && (
                     <div className={styles.answerCard}>
-                        <div className={styles.answerLabel}>Câu trả lời của bạn</div>
+                        <div className={styles.answerLabel}>Your Answer</div>
                         <textarea
                             id={`answer-${currentIdx}`}
                             className={styles.answerTextarea}
                             value={answer}
                             onChange={e => setAnswer(e.target.value)}
-                            placeholder="Hãy trả lời thật chi tiết và cụ thể. Ví dụ: nêu tên công nghệ, số liệu thực tế, tình huống đã gặp..."
+                            placeholder="Please provide a detailed and specific answer. For example: mention specific technologies, real metrics, situations you've encountered..."
                             disabled={isEvaluating}
                         />
                         <div className={styles.answerActions}>
                             <button className={styles.skipBtn} onClick={handleSkip} disabled={isEvaluating}>
-                                Bỏ qua
+                                Skip
                             </button>
                             <button
                                 id={`submit-answer-${currentIdx}`}
@@ -506,10 +506,10 @@ const MockInterviewPage = () => {
                                 {isEvaluating ? (
                                     <>
                                         <div className={styles.spinner} />
-                                        AI đang chấm...
+                                        AI is scoring...
                                     </>
                                 ) : (
-                                    <>Gửi câu trả lời →</>
+                                    <>Submit Answer →</>
                                 )}
                             </button>
                         </div>
@@ -556,7 +556,7 @@ const MockInterviewPage = () => {
                             className={styles.nextBtn}
                             onClick={goNext}
                         >
-                            {currentIdx + 1 >= questions.length ? '📊 Xem kết quả tổng kết →' : 'Câu tiếp theo →'}
+                            {currentIdx + 1 >= questions.length ? '📊 See Summary Results →' : 'Next Question →'}
                         </button>
                     </>
                 )}

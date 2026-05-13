@@ -37,12 +37,12 @@ const LoginPage = () => {
         if (res?.data) {
             localStorage.setItem('access_token', res.data.access_token);
             dispatch(setUserLoginInfo(res.data.user))
-            message.success('Đăng nhập tài khoản thành công!');
+            message.success('Login successful!');
             window.location.href = callback ? callback : '/';
         } else {
             console.log("Login Error - res:", res);
             notification.error({
-                message: "Có lỗi xảy ra",
+                message: "An error occurred",
                 description:
                     res.message && Array.isArray(res.message) ? res.message[0] : res.message,
                 duration: 5
@@ -58,7 +58,7 @@ const LoginPage = () => {
         children: (
             <>
                 <GoogleOutlined className={styles['google-icon']} />
-                Đăng nhập bằng Google
+                Login with Google
             </>
         ),
     };
@@ -68,7 +68,7 @@ const LoginPage = () => {
             <main className={styles['auth-main']}>
                 <div className={styles['auth-center']}>
                     <section className={styles.wrapper}>
-                        <h1 className={styles['login-title']}>Đăng Nhập</h1>
+                        <h1 className={styles['login-title']}>Login</h1>
 
                         <Form
                             name="basic"
@@ -80,7 +80,7 @@ const LoginPage = () => {
                             <Form.Item
                                 label="Email"
                                 name="username"
-                                rules={[{ required: true, message: 'Email không được để trống!' }]}
+                                rules={[{ required: true, message: 'Email is required!' }]}
                             >
                                 <Input placeholder="username@example.com" size="large" />
                             </Form.Item>
@@ -88,26 +88,26 @@ const LoginPage = () => {
                             <Form.Item
                                 label={
                                     <div className={styles['password-label-row']}>
-                                        <span>Mật khẩu</span>
+                                        <span>Password</span>
                                         <Link to="/forgot-password" className={styles['forgot-link']}>
-                                            Quên mật khẩu?
+                                            Forgot password?
                                         </Link>
                                     </div>
                                 }
                                 name="password"
-                                rules={[{ required: true, message: 'Mật khẩu không được để trống!' }]}
+                                rules={[{ required: true, message: 'Password is required!' }]}
                             >
                                 <Input.Password size="large" />
                             </Form.Item>
 
                             <Form.Item className={styles['submit-wrap']}>
                                 <Button type="primary" htmlType="submit" loading={isSubmit} block size="large" className={styles['login-submit']}>
-                                    Đăng nhập
+                                    Login
                                 </Button>
                             </Form.Item>
 
                             <Divider plain className={styles['divider-or']}>
-                                HOẶC
+                                OR
                             </Divider>
 
                             <Form.Item className={styles['google-wrap']}>
@@ -115,9 +115,9 @@ const LoginPage = () => {
                             </Form.Item>
 
                             <p className={styles['card-footer-text']}>
-                                Chưa có tài khoản?{' '}
+                                Don't have an account?{' '}
                                 <Link to="/register" className={styles['card-footer-link']}>
-                                    Đăng Ký
+                                    Register
                                 </Link>
                             </p>
                         </Form>

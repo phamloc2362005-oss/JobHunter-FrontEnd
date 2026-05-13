@@ -42,22 +42,22 @@ const Header = (props: any) => {
 
     const items: MenuProps['items'] = [
         {
-            label: <Link to={'/'}>Trang Chủ</Link>,
+            label: <Link to={'/'}>Home</Link>,
             key: '/',
             icon: <TwitterOutlined />,
         },
         {
-            label: <Link to={'/job'}>Việc Làm IT</Link>,
+            label: <Link to={'/job'}>IT Jobs</Link>,
             key: '/job',
             icon: <CodeOutlined />,
         },
         {
-            label: <Link to={'/company'}>Top Công ty IT</Link>,
+            label: <Link to={'/company'}>Top IT Companies</Link>,
             key: '/company',
             icon: <RiseOutlined />,
         },
         {
-            label: <Link to={'/cv-builder'}>CV Builder AI</Link>,
+            label: <Link to={'/cv-builder'}>AI CV Builder</Link>,
             key: '/cv-builder',
             icon: <FileTextOutlined />,
         }
@@ -73,7 +73,7 @@ const Header = (props: any) => {
         const res = await callLogout();
         if (res && res && +res.statusCode === 200) {
             dispatch(setLogoutAction({}));
-            message.success('Đăng xuất thành công');
+            message.success('Logged out successfully');
             navigate('/')
         }
     }
@@ -83,14 +83,14 @@ const Header = (props: any) => {
             label: <label
                 style={{ cursor: 'pointer' }}
                 onClick={() => setOpenManageAccount(true)}
-            >Quản lí tài khoản</label>,
+            >Manage Account</label>,
             key: 'manage-account',
             icon: <ContactsOutlined />
         },
         ...(user.role?.permissions?.length ? [{
             label: <Link
                 to={"/admin"}
-            >Trang Quản Trị</Link>,
+            >Admin Dashboard</Link>,
             key: 'admin',
             icon: <FireOutlined />
         },] : []),
@@ -99,7 +99,7 @@ const Header = (props: any) => {
             label: <label
                 style={{ cursor: 'pointer' }}
                 onClick={() => handleLogout()}
-            >Đăng xuất</label>,
+            >Logout</label>,
             key: 'logout',
             icon: <LogoutOutlined />
         },
@@ -125,7 +125,7 @@ const Header = (props: any) => {
                                 <div className={styles["nav-shell"]}>
                                     <div className={styles["desktop-nav"]}>
                                         <Link className={current === '/' ? styles["nav-active"] : styles["nav-link"]} to={'/'}>
-                                            Trang Chủ
+                                            Home
                                         </Link>
                                         <Dropdown
                                             trigger={['hover']}
@@ -137,11 +137,11 @@ const Header = (props: any) => {
                                                 onClick={() => navigate('/job')}
                                                 style={{ cursor: 'pointer' }}
                                             >
-                                                Việc Làm IT
+                                                IT Jobs
                                             </span>
                                         </Dropdown>
                                         <Link className={current === '/company' ? styles["nav-active"] : styles["nav-link"]} to={'/company'}>
-                                            Top Công ty IT
+                                            Top IT Companies
                                         </Link>
                                         <Link className={current === '/cv-builder' ? styles["nav-active"] : styles["nav-link"]} to={'/cv-builder'}>
                                             ✨ CV Builder
@@ -151,7 +151,7 @@ const Header = (props: any) => {
                                 <div className={styles['extra']}>
                                     {isAuthenticated === false ?
                                         <div className={styles["guest-actions"]}>
-                                            <span className={styles["employer-link"]}>Nhà tuyển dụng</span>
+                                            <span className={styles["employer-link"]}>For Employers</span>
                                             <Link to={'/login'} className={styles["signin-btn"]}>Sign In</Link>
                                         </div>
                                         :
@@ -175,7 +175,7 @@ const Header = (props: any) => {
                     }
                 </div>
             </div>
-            <Drawer title="Chức năng"
+            <Drawer title="Menu"
                 placement="right"
                 onClose={() => setOpenMobileMenu(false)}
                 open={openMobileMenu}

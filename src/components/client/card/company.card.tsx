@@ -86,13 +86,13 @@ const CompanyCard = (props: IProps) => {
                             <div>
                                 <span className={styles['section-badge']}>Top employers</span>
                                 <div className={isMobile ? styles['dflex-mobile'] : styles['dflex-pc']}>
-                                    <span className={styles['title']}>Nhà Tuyển Dụng Hàng Đầu</span>
+                                    <span className={styles['title']}>Top Employers</span>
                                     <p className={styles['section-subtitle']}>
-                                        Các công ty IT đang nổi bật và được quan tâm nhất trên hệ thống.
+                                        The most prominent and trending IT companies on the platform.
                                     </p>
                                 </div>
                             </div>
-                            <Link to="company" className={styles['section-link']}>Xem tất cả</Link>
+                            <Link to="company" className={styles['section-link']}>View all</Link>
                         </div>
                     )}
 
@@ -101,7 +101,7 @@ const CompanyCard = (props: IProps) => {
                         <div className={cardStyles.catalogToolbar}>
                             <div className={cardStyles.catalogToolbarLeft}>
                                 <span className={cardStyles.totalCount}>
-                                    {total} công ty IT đang hiển thị
+                                    {total} IT companies displaying
                                 </span>
                             </div>
                         </div>
@@ -133,7 +133,7 @@ const CompanyCard = (props: IProps) => {
                                                         <h3 className={cardStyles.companyName}>{item.name}</h3>
                                                         <div className={cardStyles.locationBadge}>
                                                             <EnvironmentOutlined />
-                                                            {item.address || 'Việt Nam'}
+                                                            {item.address || 'Vietnam'}
                                                         </div>
                                                     </div>
                                                     {rank <= 10 && (
@@ -147,7 +147,7 @@ const CompanyCard = (props: IProps) => {
                                                 {item.latestReview && (
                                                     <div className={cardStyles.highlightReview}>
                                                         <span className={cardStyles.reviewTitle}>
-                                                            {item.latestReview.title || 'Đánh giá nổi bật'}
+                                                            {item.latestReview.title || 'Featured Review'}
                                                         </span>
                                                         <p className={cardStyles.reviewSnippet}>
                                                             {item.latestReview.content}
@@ -159,20 +159,20 @@ const CompanyCard = (props: IProps) => {
                                             <div className={cardStyles.statsSection}>
                                                 <div className={cardStyles.statsRow}>
                                                     <div className={cardStyles.statItem}>
-                                                        <span className={cardStyles.statLabel}>Đánh giá</span>
+                                                        <span className={cardStyles.statLabel}>Reviews</span>
                                                         <div className={cardStyles.statValue}>
                                                             <span>{item.averageRating?.toFixed(1) || '0.0'}</span>
                                                             <div className={cardStyles.ratingStars}>
                                                                 <StarFilled />
                                                             </div>
                                                             <span style={{ fontSize: 13, color: '#64748b', fontWeight: 400 }}>
-                                                                ({item.totalReviews || 0})
+                                                                ({item.totalReviews || 0} reviews)
                                                             </span>
                                                         </div>
                                                     </div>
 
                                                     <div className={cardStyles.statItem}>
-                                                        <span className={cardStyles.statLabel}>Khuyên bạn bè</span>
+                                                        <span className={cardStyles.statLabel}>Recommend working here</span>
                                                         <div className={cardStyles.statValue}>
                                                             <ThunderboltOutlined style={{ color: '#059669' }} />
                                                             <span className={cardStyles.recommendPercent}>
@@ -215,18 +215,18 @@ const CompanyCard = (props: IProps) => {
                                         <div className={cardStyles.cardBody}>
                                             <h3 className={cardStyles.companyName}>{item.name}</h3>
                                             <p className={cardStyles.companyDesc}>
-                                                {item.address || 'Chưa cập nhật địa chỉ'}
+                                                {item.address || 'Address not updated'}
                                             </p>
                                             <div className={cardStyles.cardFooter}>
                                                 <span className={cardStyles.footerLocation}>
                                                     <EnvironmentOutlined />
                                                     {item.address
                                                         ? item.address.split(',').pop()?.trim() || item.address
-                                                        : 'Việt Nam'}
+                                                        : 'Vietnam'}
                                                 </span>
                                                 <span className={cardStyles.footerJobs}>
                                                     <ThunderboltOutlined />
-                                                    Xem việc làm
+                                                    View Jobs
                                                 </span>
                                             </div>
                                         </div>
@@ -238,7 +238,7 @@ const CompanyCard = (props: IProps) => {
                         {(!displayCompany || displayCompany.length === 0) && !isLoading && (
                             <Col span={24}>
                                 <div className={styles['empty']}>
-                                    <Empty description="Không có dữ liệu" />
+                                    <Empty description="No data found" />
                                 </div>
                             </Col>
                         )}

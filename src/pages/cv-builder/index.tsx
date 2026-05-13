@@ -112,14 +112,14 @@ const CvBuilderPage = () => {
                 // Use relative path which will be proxied or relative to the same origin
                 const url = `/storage/avatar/${fileName}`;
                 setAvatarUrl(url);
-                message.success('Upload ảnh thành công!');
+                message.success('Avatar uploaded successfully!');
             } else {
                 console.error('No filename in response:', res);
-                message.error('Không tìm thấy tên file trong phản hồi!');
+                message.error('File name not found in response!');
             }
         } catch (err) {
             console.error('Upload error details:', err);
-            message.error('Lỗi khi upload ảnh, vui lòng thử lại!');
+            message.error('Error uploading image, please try again!');
         }
         return false; // prevent default upload
     };
@@ -175,14 +175,14 @@ const CvBuilderPage = () => {
 
     // ===== STEP 2 → STEP 3: Validate & Generate =====
     const validateAndGenerate = async () => {
-        if (!formData.name.trim()) return message.error('Vui lòng nhập họ tên!');
-        if (!formData.jobTitle.trim()) return message.error('Vui lòng nhập vị trí ứng tuyển!');
-        if (!formData.phone.trim()) return message.error('Vui lòng nhập số điện thoại!');
-        if (!formData.email.trim()) return message.error('Vui lòng nhập email!');
+        if (!formData.name.trim()) return message.error('Please enter your full name!');
+        if (!formData.jobTitle.trim()) return message.error('Please enter your target job title!');
+        if (!formData.phone.trim()) return message.error('Please enter your phone number!');
+        if (!formData.email.trim()) return message.error('Please enter your email!');
         const validSkills = formData.skills.filter(s => s.trim());
-        if (validSkills.length < 3) return message.error('Vui lòng nhập ít nhất 3 kỹ năng!');
+        if (validSkills.length < 3) return message.error('Please enter at least 3 skills!');
         const validExps = formData.experiences.filter(e => e.company.trim() && e.title.trim());
-        if (validExps.length === 0) return message.error('Vui lòng nhập ít nhất 1 kinh nghiệm!');
+        if (validExps.length === 0) return message.error('Please enter at least 1 work experience!');
 
         // Serialize form data to text for AI
         const rawInput = `
@@ -213,13 +213,13 @@ Sở thích: ${formData.interests}
                 const cvData = res.data.data ? res.data.data : res.data;
                 setResult(cvData as ICvResult);
                 setCurrentStep(2);
-                message.success('AI đã tạo CV thành công!');
+                message.success('AI generated your CV successfully!');
             } else {
-                message.error('AI không thể tạo CV. Vui lòng thử lại!');
+                message.error('AI could not generate CV. Please try again!');
             }
         } catch (err) {
             console.error('Lỗi gọi AI:', err);
-            message.error('Có lỗi xảy ra, vui lòng thử lại!');
+            message.error('An error occurred, please try again!');
         } finally {
             setLoading(false);
         }
@@ -242,11 +242,11 @@ Sở thích: ${formData.interests}
                     </div>
                     <span className={styles.kicker}>AI CV GENERATOR</span>
                     <h1 className={styles.heroTitle}>
-                        Tạo CV chuyên nghiệp{' '}
-                        <span className={styles.heroHighlight}>bằng trí tuệ nhân tạo</span>
+                        Build your professional CV{' '}
+                        <span className={styles.heroHighlight}>with AI Intelligence</span>
                     </h1>
                     <p className={styles.heroDesc}>
-                        Chọn mẫu → Nhập thông tin → AI tự động tạo CV chuẩn TopCV trong vài giây.
+                        Choose template → Enter details → AI instantly generates a high-quality CV.
                     </p>
                 </div>
             </section>
@@ -257,16 +257,16 @@ Sở thích: ${formData.interests}
                     current={currentStep}
                     className={styles.stepsBar}
                     items={[
-                        { title: 'Chọn mẫu CV' },
-                        { title: 'Nhập thông tin' },
-                        { title: 'Xem & Tải PDF' },
+                        { title: 'Choose Template' },
+                        { title: 'Enter Info' },
+                        { title: 'Preview & Download' },
                     ]}
                 />
 
                 {/* ========== STEP 1: Template Gallery ========== */}
                 {currentStep === 0 && (
                     <div className={styles.gallerySection}>
-                        <h2 className={styles.stepTitle}>Chọn một mẫu CV bạn thích ({CV_TEMPLATES.length} mẫu)</h2>
+                        <h2 className={styles.stepTitle}>Choose a template you like ({CV_TEMPLATES.length} designs)</h2>
                         <div className={styles.templateGrid}>
                             {CV_TEMPLATES.slice((templatePage - 1) * TEMPLATES_PER_PAGE, templatePage * TEMPLATES_PER_PAGE).map(t => (
                                 <div
@@ -277,7 +277,7 @@ Sở thích: ${formData.interests}
                                     <div className={styles.templatePreview}>
                                         <img src={t.previewImage} alt={t.name} />
                                         <span className={styles.layoutBadge}>
-                                            {t.layout === 'left-sidebar' ? '◧ Sidebar trái' : t.layout === 'right-sidebar' ? '◨ Sidebar phải' : t.layout === 'top-header' ? '▬ Header ngang' : t.layout === 'split-header' ? '⊞ Chia đôi' : '☰ Tối giản'}
+                                            {t.layout === 'left-sidebar' ? '◧ Left Sidebar' : t.layout === 'right-sidebar' ? '◨ Right Sidebar' : t.layout === 'top-header' ? '▬ Horizontal Header' : t.layout === 'split-header' ? '⊞ Split Header' : '☰ Clean'}
                                         </span>
                                     </div>
                                     <div className={styles.templateName}>{t.name}</div>
@@ -308,7 +308,7 @@ Sở thích: ${formData.interests}
                                 onClick={() => setCurrentStep(1)}
                                 className={styles.generateBtn}
                             >
-                                Tiếp tục
+                                Continue
                             </Button>
                         </div>
                     </div>
@@ -317,11 +317,11 @@ Sở thích: ${formData.interests}
                 {/* ========== STEP 2: Structured Form ========== */}
                 {currentStep === 1 && (
                     <div className={styles.formSection}>
-                        <h2 className={styles.stepTitle}>Nhập thông tin của bạn</h2>
+                        <h2 className={styles.stepTitle}>Enter your Information</h2>
 
                         {/* Avatar Upload */}
                         <div className={styles.formGroup}>
-                            <h3 className={styles.formGroupTitle}><CameraOutlined /> Ảnh đại diện</h3>
+                            <h3 className={styles.formGroupTitle}><CameraOutlined /> Avatar</h3>
                             <div className={styles.avatarUploadArea}>
                                 <Upload
                                     showUploadList={false}
@@ -331,143 +331,143 @@ Sở thích: ${formData.interests}
                                     {avatarUrl ? (
                                         <div className={styles.avatarPreview}>
                                             <img src={avatarUrl} alt="avatar" />
-                                            <span>Đổi ảnh</span>
+                                            <span>Change Photo</span>
                                         </div>
                                     ) : (
                                         <div className={styles.avatarUploadBtn}>
                                             <CameraOutlined style={{ fontSize: 28 }} />
-                                            <span>Tải ảnh lên</span>
+                                            <span>Upload Photo</span>
                                         </div>
                                     )}
                                 </Upload>
                             </div>
                         </div>
 
-                        {/* Thông tin cá nhân */}
+                        {/* Personal Info */}
                         <div className={styles.formGroup}>
-                            <h3 className={styles.formGroupTitle}><UserOutlined /> Thông tin cá nhân</h3>
+                            <h3 className={styles.formGroupTitle}><UserOutlined /> Personal Information</h3>
                             <div className={styles.formRow}>
                                 <div className={styles.formField}>
-                                    <label>Họ và tên <span className={styles.required}>*</span></label>
-                                    <Input value={formData.name} onChange={e => updateField('name', e.target.value)} placeholder="Nguyễn Văn A" />
+                                    <label>Full Name <span className={styles.required}>*</span></label>
+                                    <Input value={formData.name} onChange={e => updateField('name', e.target.value)} placeholder="John Doe" />
                                 </div>
                                 <div className={styles.formField}>
-                                    <label>Vị trí ứng tuyển <span className={styles.required}>*</span></label>
+                                    <label>Target Job Title <span className={styles.required}>*</span></label>
                                     <Input value={formData.jobTitle} onChange={e => updateField('jobTitle', e.target.value)} placeholder="Backend Developer" />
                                 </div>
                             </div>
                             <div className={styles.formRow}>
                                 <div className={styles.formField}>
-                                    <label>Số điện thoại <span className={styles.required}>*</span></label>
+                                    <label>Phone Number <span className={styles.required}>*</span></label>
                                     <Input value={formData.phone} onChange={e => updateField('phone', e.target.value)} placeholder="0912 345 678" />
                                 </div>
                                 <div className={styles.formField}>
                                     <label>Email <span className={styles.required}>*</span></label>
-                                    <Input value={formData.email} onChange={e => updateField('email', e.target.value)} placeholder="ten@gmail.com" />
+                                    <Input value={formData.email} onChange={e => updateField('email', e.target.value)} placeholder="email@example.com" />
                                 </div>
                             </div>
                             <div className={styles.formRow}>
                                 <div className={styles.formField}>
-                                    <label>Địa chỉ</label>
-                                    <Input value={formData.address} onChange={e => updateField('address', e.target.value)} placeholder="Quận 1, TP.HCM" />
+                                    <label>Address</label>
+                                    <Input value={formData.address} onChange={e => updateField('address', e.target.value)} placeholder="District 1, HCMC" />
                                 </div>
                                 <div className={styles.formField}>
-                                    <label>Ngày sinh</label>
-                                    <Input value={formData.dob} onChange={e => updateField('dob', e.target.value)} placeholder="15/06/1999" />
+                                    <label>Date of Birth</label>
+                                    <Input value={formData.dob} onChange={e => updateField('dob', e.target.value)} placeholder="MM/DD/YYYY" />
                                 </div>
                             </div>
                         </div>
 
-                        {/* Mục tiêu */}
+                        {/* Objective */}
                         <div className={styles.formGroup}>
-                            <h3 className={styles.formGroupTitle}><StarOutlined /> Mục tiêu nghề nghiệp</h3>
+                            <h3 className={styles.formGroupTitle}><StarOutlined /> Career Objective</h3>
                             <TextArea
                                 rows={3}
                                 value={formData.careerObjective}
                                 onChange={e => updateField('careerObjective', e.target.value)}
-                                placeholder="Ví dụ: Với 2 năm kinh nghiệm về Java Spring Boot, tôi mong muốn..."
+                                placeholder="Example: With 2 years of experience in Java Spring Boot, I aim to..."
                             />
                         </div>
 
-                        {/* Kinh nghiệm */}
+                        {/* Experience */}
                         <div className={styles.formGroup}>
-                            <h3 className={styles.formGroupTitle}><ThunderboltOutlined /> Kinh nghiệm làm việc</h3>
+                            <h3 className={styles.formGroupTitle}><ThunderboltOutlined /> Work Experience</h3>
                             {formData.experiences.map((exp, idx) => (
                                 <div key={idx} className={styles.dynamicEntry}>
                                     <div className={styles.formRow}>
                                         <div className={styles.formField}>
-                                            <label>Vị trí <span className={styles.required}>*</span></label>
+                                            <label>Job Title <span className={styles.required}>*</span></label>
                                             <Input value={exp.title} onChange={e => updateExperience(idx, 'title', e.target.value)} placeholder="Java Developer" />
                                         </div>
                                         <div className={styles.formField}>
-                                            <label>Công ty <span className={styles.required}>*</span></label>
+                                            <label>Company <span className={styles.required}>*</span></label>
                                             <Input value={exp.company} onChange={e => updateExperience(idx, 'company', e.target.value)} placeholder="FPT Software" />
                                         </div>
                                         <div className={styles.formField}>
-                                            <label>Thời gian</label>
-                                            <Input value={exp.timeRange} onChange={e => updateExperience(idx, 'timeRange', e.target.value)} placeholder="03/2022 - Hiện tại" />
+                                            <label>Time Range</label>
+                                            <Input value={exp.timeRange} onChange={e => updateExperience(idx, 'timeRange', e.target.value)} placeholder="03/2022 - Present" />
                                         </div>
                                     </div>
                                     <div className={styles.formField}>
-                                        <label>Mô tả công việc</label>
-                                        <TextArea rows={2} value={exp.description} onChange={e => updateExperience(idx, 'description', e.target.value)} placeholder="Phát triển REST API, viết unit test, tối ưu truy vấn SQL..." />
+                                        <label>Job Description</label>
+                                        <TextArea rows={2} value={exp.description} onChange={e => updateExperience(idx, 'description', e.target.value)} placeholder="Developed REST APIs, wrote unit tests, optimized SQL queries..." />
                                     </div>
                                     {formData.experiences.length > 1 && (
-                                        <Button type="text" danger icon={<MinusCircleOutlined />} onClick={() => removeExperience(idx)} className={styles.removeBtn}>Xóa</Button>
+                                        <Button type="text" danger icon={<MinusCircleOutlined />} onClick={() => removeExperience(idx)} className={styles.removeBtn}>Remove</Button>
                                     )}
                                 </div>
                             ))}
-                            <Button type="dashed" icon={<PlusOutlined />} onClick={addExperience} block>Thêm kinh nghiệm</Button>
+                            <Button type="dashed" icon={<PlusOutlined />} onClick={addExperience} block>Add Experience</Button>
                         </div>
 
-                        {/* Kỹ năng */}
+                        {/* Skills */}
                         <div className={styles.formGroup}>
-                            <h3 className={styles.formGroupTitle}><BulbOutlined /> Kỹ năng <span className={styles.required}>(tối thiểu 3)</span></h3>
+                            <h3 className={styles.formGroupTitle}><BulbOutlined /> Skills <span className={styles.required}>(min 3)</span></h3>
                             <div className={styles.skillsGrid}>
                                 {formData.skills.map((skill, idx) => (
                                     <div key={idx} className={styles.skillInputRow}>
-                                        <Input value={skill} onChange={e => updateSkill(idx, e.target.value)} placeholder={`Kỹ năng ${idx + 1}`} />
+                                        <Input value={skill} onChange={e => updateSkill(idx, e.target.value)} placeholder={`Skill ${idx + 1}`} />
                                         {formData.skills.length > 1 && (
                                             <Button type="text" danger icon={<MinusCircleOutlined />} onClick={() => removeSkill(idx)} size="small" />
                                         )}
                                     </div>
                                 ))}
                             </div>
-                            <Button type="dashed" icon={<PlusOutlined />} onClick={addSkill} style={{ marginTop: 8 }}>Thêm kỹ năng</Button>
+                            <Button type="dashed" icon={<PlusOutlined />} onClick={addSkill} style={{ marginTop: 8 }}>Add Skill</Button>
                         </div>
 
-                        {/* Học vấn */}
+                        {/* Education */}
                         <div className={styles.formGroup}>
-                            <h3 className={styles.formGroupTitle}><CheckCircleOutlined /> Học vấn</h3>
+                            <h3 className={styles.formGroupTitle}><CheckCircleOutlined /> Education</h3>
                             <div className={styles.formRow}>
                                 <div className={styles.formField}>
-                                    <label>Trường <span className={styles.required}>*</span></label>
-                                    <Input value={formData.eduSchool} onChange={e => updateField('eduSchool', e.target.value)} placeholder="ĐH Bách Khoa TP.HCM" />
+                                    <label>School <span className={styles.required}>*</span></label>
+                                    <Input value={formData.eduSchool} onChange={e => updateField('eduSchool', e.target.value)} placeholder="University Name" />
                                 </div>
                                 <div className={styles.formField}>
-                                    <label>Ngành <span className={styles.required}>*</span></label>
-                                    <Input value={formData.eduMajor} onChange={e => updateField('eduMajor', e.target.value)} placeholder="Kỹ thuật Phần mềm" />
+                                    <label>Major <span className={styles.required}>*</span></label>
+                                    <Input value={formData.eduMajor} onChange={e => updateField('eduMajor', e.target.value)} placeholder="Software Engineering" />
                                 </div>
                                 <div className={styles.formField}>
-                                    <label>Thời gian</label>
+                                    <label>Time Range</label>
                                     <Input value={formData.eduTime} onChange={e => updateField('eduTime', e.target.value)} placeholder="2017 - 2021" />
                                 </div>
                             </div>
                             <div className={styles.formField}>
-                                <label>Mô tả</label>
-                                <Input value={formData.eduDesc} onChange={e => updateField('eduDesc', e.target.value)} placeholder="Tốt nghiệp loại Giỏi, GPA 3.2/4.0" />
+                                <label>Description</label>
+                                <Input value={formData.eduDesc} onChange={e => updateField('eduDesc', e.target.value)} placeholder="GPA 3.6/4.0, Excellent Graduate" />
                             </div>
                         </div>
 
-                        {/* Sở thích */}
+                        {/* Interests */}
                         <div className={styles.formGroup}>
-                            <h3 className={styles.formGroupTitle}><StarOutlined /> Sở thích</h3>
-                            <Input value={formData.interests} onChange={e => updateField('interests', e.target.value)} placeholder="Đọc sách, chạy bộ, nghiên cứu công nghệ (cách nhau bởi dấu phẩy)" />
+                            <h3 className={styles.formGroupTitle}><StarOutlined /> Interests</h3>
+                            <Input value={formData.interests} onChange={e => updateField('interests', e.target.value)} placeholder="Reading, running, tech research (separated by commas)" />
                         </div>
 
                         {/* Actions */}
                         <div className={styles.stepActions}>
-                            <Button size="large" icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(0)}>Quay lại</Button>
+                            <Button size="large" icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(0)}>Back</Button>
                             <Button
                                 type="primary"
                                 size="large"
@@ -476,7 +476,7 @@ Sở thích: ${formData.interests}
                                 onClick={validateAndGenerate}
                                 className={styles.generateBtn}
                             >
-                                {loading ? 'AI đang tạo CV...' : 'Tạo CV bằng AI'}
+                                {loading ? 'AI generating CV...' : 'Generate CV with AI'}
                             </Button>
                         </div>
                     </div>
@@ -486,8 +486,8 @@ Sở thích: ${formData.interests}
                 {currentStep === 2 && result && (
                     <div className={styles.previewSection}>
                         <div className={styles.previewActions}>
-                            <Button size="large" icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(1)}>Chỉnh sửa lại</Button>
-                            <Button size="large" icon={<PrinterOutlined />} onClick={handlePrint} type="primary" className={styles.generateBtn}>Tải PDF</Button>
+                            <Button size="large" icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(1)}>Edit Again</Button>
+                            <Button size="large" icon={<PrinterOutlined />} onClick={handlePrint} type="primary" className={styles.generateBtn}>Download PDF</Button>
                         </div>
 
                         <div
@@ -507,17 +507,17 @@ Sở thích: ${formData.interests}
                                 </div>
 
                                 <div className={styles.sidebarSection}>
-                                    <div className={styles.sidebarTitle}>Thông tin liên hệ</div>
+                                    <div className={styles.sidebarTitle}>Contact Info</div>
                                     <div className={styles.contactList}>
-                                        {result.personalInfo?.dob && <div className={styles.contactItem}><span>Ngày sinh:</span> {result.personalInfo.dob}</div>}
-                                        {result.personalInfo?.phone && <div className={styles.contactItem}><span>Điện thoại:</span> {result.personalInfo.phone}</div>}
+                                        {result.personalInfo?.dob && <div className={styles.contactItem}><span>Date of Birth:</span> {result.personalInfo.dob}</div>}
+                                        {result.personalInfo?.phone && <div className={styles.contactItem}><span>Phone:</span> {result.personalInfo.phone}</div>}
                                         {result.personalInfo?.email && <div className={styles.contactItem}><span>Email:</span> {result.personalInfo.email}</div>}
-                                        {result.personalInfo?.address && <div className={styles.contactItem}><span>Địa chỉ:</span> {result.personalInfo.address}</div>}
+                                        {result.personalInfo?.address && <div className={styles.contactItem}><span>Address:</span> {result.personalInfo.address}</div>}
                                     </div>
                                 </div>
 
                                 <div className={styles.sidebarSection}>
-                                    <div className={styles.sidebarTitle}>Kỹ năng</div>
+                                    <div className={styles.sidebarTitle}>Skills</div>
                                     <div className={styles.skillList}>
                                         {result.skills?.map((skill, idx) => (
                                             <div key={idx} className={styles.skillItem}>
@@ -532,7 +532,7 @@ Sở thích: ${formData.interests}
 
                                 {result.interests && result.interests.length > 0 && (
                                     <div className={styles.sidebarSection}>
-                                        <div className={styles.sidebarTitle}>Sở thích</div>
+                                        <div className={styles.sidebarTitle}>Interests</div>
                                         <div className={styles.skillTags}>
                                             {result.interests.map((interest, idx) => (
                                                 <Tag key={idx} className={styles.skillTag}>{interest}</Tag>
@@ -550,13 +550,13 @@ Sở thích: ${formData.interests}
                                 </header>
 
                                 <div className={styles.cvSection}>
-                                    <div className={styles.cvSectionTitle}>Mục tiêu nghề nghiệp</div>
+                                    <div className={styles.cvSectionTitle}>Career Objective</div>
                                     <p className={styles.summaryText}>{result.careerObjective}</p>
                                 </div>
 
                                 {result.education && result.education.length > 0 && (
                                     <div className={styles.cvSection}>
-                                        <div className={styles.cvSectionTitle}>Học vấn</div>
+                                        <div className={styles.cvSectionTitle}>Education</div>
                                         {result.education.map((edu, idx) => (
                                             <div key={idx} className={styles.entryBlock}>
                                                 <div className={styles.entryHeader}>
@@ -572,7 +572,7 @@ Sở thích: ${formData.interests}
 
                                 {result.experiences && result.experiences.length > 0 && (
                                     <div className={styles.cvSection}>
-                                        <div className={styles.cvSectionTitle}>Kinh nghiệm làm việc</div>
+                                        <div className={styles.cvSectionTitle}>Work Experience</div>
                                         {result.experiences.map((exp, idx) => (
                                             <div key={idx} className={styles.entryBlock}>
                                                 <div className={styles.entryHeader}>

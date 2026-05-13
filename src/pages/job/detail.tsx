@@ -75,7 +75,7 @@ const ClientJobDetailPage = (props: any) => {
                                             <div className={styles["header"]}>{jobDetail.name}</div>
                                             <div className={styles["jobMeta"]}>
                                                 <span className={styles["jobMetaItem"]}>
-                                                    <DollarOutlined /> {(jobDetail.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ
+                                                    <DollarOutlined /> {(jobDetail.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} VND
                                                 </span>
                                                 <span className={styles["jobMetaItem"]}>
                                                     <EnvironmentOutlined /> {jobDetail.location}
@@ -94,7 +94,7 @@ const ClientJobDetailPage = (props: any) => {
                                                 className={styles["btnInterviewV2"]}
                                                 onClick={() => navigate(`/interview/${jobDetail.id}`)}
                                             >
-                                                Luyện phỏng vấn
+                                                Mock Interview
                                             </Button>
                                         </div>
                                     </div>
@@ -118,7 +118,7 @@ const ClientJobDetailPage = (props: any) => {
                                         Job Description
                                     </Typography.Title>
                                     <div className={styles["jobDescription"]}>
-                                        {jobDetail.description ? parse(jobDetail.description) : <Typography.Text type="secondary">Chưa cập nhật</Typography.Text>}
+                                        {jobDetail.description ? parse(jobDetail.description) : <Typography.Text type="secondary">Not updated</Typography.Text>}
                                     </div>
 
                                     <JobDetailHighlights job={jobDetail} />
@@ -145,7 +145,7 @@ const ClientJobDetailPage = (props: any) => {
 
                                     <Card title="Similar opportunities" bordered={false} className={styles["sidebarCard"]}>
                                         {similarJobs.length === 0 ? (
-                                            <Typography.Text type="secondary">Chưa có job tương tự</Typography.Text>
+                                            <Typography.Text type="secondary">No similar jobs found</Typography.Text>
                                         ) : (
                                             <div className={styles["similarList"]}>
                                                 {similarJobs.map((j) => (
@@ -161,7 +161,7 @@ const ClientJobDetailPage = (props: any) => {
                                                                 {j.company?.name} • {j.location}
                                                             </div>
                                                             <div className={styles["similarMeta2"]}>
-                                                                <DollarOutlined /> {(j.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ
+                                                                <DollarOutlined /> {(j.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} VND
                                                             </div>
                                                         </div>
                                                     </Link>
