@@ -261,51 +261,6 @@ const ClientJobPage = () => {
                     </Col>
                 </Row>
             </div>
-
-            {/* ══════════════════ FOOTER ══════════════════ */}
-            <footer className={homeStyles.footer}>
-                <div className={`${layoutStyles['container']} ${homeStyles.footerInner}`}>
-                    <div className={homeStyles.footerBrand}>
-                        <div className={homeStyles.footerLogo}>
-                            <CodeOutlined />
-                        </div>
-                        <strong>JobHunter</strong>
-                        <p>Leading IT recruitment platform in Vietnam. Built for developers, by developers.</p>
-                    </div>
-
-                    <div className={homeStyles.footerLinks}>
-                        <div className={homeStyles.footerCol}>
-                            <h4>Platform</h4>
-                            <a href="/">Home</a>
-                            <a href="/job">Jobs</a>
-                            <a href="/company">Companies</a>
-                            <a href="/skills">Skills</a>
-                        </div>
-                        <div className={homeStyles.footerCol}>
-                            <h4>For Employers</h4>
-                            <a href="#">Post a Job</a>
-                            <a href="#">Find Candidates</a>
-                            <a href="#">Employer Dashboard</a>
-                            <a href="#">Pricing</a>
-                        </div>
-                        <div className={homeStyles.footerCol}>
-                            <h4>Contact</h4>
-                            <a href="mailto:support@jobhunter.com">support@jobhunter.com</a>
-                            <a href="tel:+84123456789">+84 123 456 789</a>
-                            <span>Ho Chi Minh City, Vietnam</span>
-                        </div>
-                    </div>
-                </div>
-                <div className={homeStyles.footerBottom}>
-                    <div className={layoutStyles['container']}>
-                        <span>© 2024 JobHunter. All rights reserved.</span>
-                        <div className={homeStyles.footerBottomLinks}>
-                            <a href="#">Privacy Policy</a>
-                            <a href="#">Terms of Service</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 };

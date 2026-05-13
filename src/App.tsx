@@ -36,6 +36,7 @@ import ExpertiseCategoryPage from './pages/admin/expertise-category';
 import ExpertisePage from './pages/admin/expertise';
 import CvBuilderPage from './pages/cv-builder';
 import MockInterviewPage from './pages/mock-interview';
+import Footer from 'components/client/footer.client';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,6 +56,7 @@ const LayoutClient = () => {
       <div className={styles['content-app']}>
         <Outlet context={[searchTerm, setSearchTerm]} />
       </div>
+      <Footer />
     </div>
   )
 }

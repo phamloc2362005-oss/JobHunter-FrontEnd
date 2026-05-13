@@ -14,8 +14,9 @@ import SearchClient from '@/components/client/search.client';
 import JobCard from '@/components/client/card/job.card';
 import CompanyCard from '@/components/client/card/company.card';
 import ExpertiseSummary from '@/components/client/expertise-summary';
+import { Divider } from 'antd';
+import { callFetchPublicJob } from '@/config/api';
 import { Link } from 'react-router-dom';
-import Footer from '@/components/client/footer.client';
 import styles from 'styles/client.module.scss';
 import s from './index.module.scss';
 import { useEffect, useRef, useState } from 'react';
@@ -242,7 +243,6 @@ const HomePage = () => {
                     </div>
                 </div>
             </section>
-            <Footer />
 
         </div>
     );

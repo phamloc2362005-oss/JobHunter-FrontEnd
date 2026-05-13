@@ -8,7 +8,6 @@ import type { IJob, IJobRecommendation } from '@/types/backend';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { convertSlug, getLocationName } from '@/config/utils';
-import Footer from '@/components/client/footer.client';
 import JobDetailPanel from '@/components/client/card/job-detail-panel';
 import styles from './index.module.scss';
 import compactStyles from '@/components/client/card/job-list-compact.module.scss';
@@ -207,8 +206,6 @@ const RecommendedPage = () => {
                     </Spin>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 };
