@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse, IReview } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse, IReview, IInterviewQuestion, IInterviewEvaluation } from '@/types/backend';
 import axios from 'config/axios-customize';
 
 /**

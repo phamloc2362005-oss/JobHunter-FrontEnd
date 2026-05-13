@@ -96,8 +96,8 @@ const MockInterviewPage = () => {
                 skillsStr
             );
 
-            if (res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
-                setQuestions(res.data.data);
+            if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+                setQuestions(res.data);
                 setCurrentIdx(0);
                 setResults([]);
                 setCurrentEval(null);
@@ -126,7 +126,7 @@ const MockInterviewPage = () => {
                 answer,
                 jobContext
             );
-            const evalData = res?.data?.data as IInterviewEvaluation | null;
+            const evalData = res?.data as IInterviewEvaluation | null;
             setCurrentEval(evalData);
 
             setResults(prev => [...prev, {

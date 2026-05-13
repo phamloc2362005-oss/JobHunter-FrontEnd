@@ -57,7 +57,10 @@ const JobCard = ({ item, onClick }: { item: IJobRecommendation; onClick: () => v
                 </div>
                 <div className={styles.cardTitleBlock}>
                     <div className={styles.jobTitle}>{jobName}</div>
-                    <div className={styles.companyName}>{job?.company?.name ?? '—'}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div className={styles.companyName}>{job?.company?.name ?? '—'}</div>
+                        <span className={styles.aiTag}>AI Ranking</span>
+                    </div>
                 </div>
                 <span className={`${styles.scoreBadge} ${scoreClass}`}>
                     ⚡ {score}

@@ -151,8 +151,10 @@ export interface IRecommendationProfilePayload {
 
 export interface IRecommendationProfileResponse {
     skillIds: Array<string | number>;
+    skillDetails?: { label: string; value: string | number }[];
     level?: 'INTERN' | 'JUNIOR' | 'MIDDLE' | 'SENIOR' | string;
     expertiseId?: string | number | null;
+    expertiseDetail?: { label: string; value: string | number } | null;
 }
 
 export interface IResume {

@@ -167,7 +167,7 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
                 const profile = profileRes.data;
 
                 // 1. Handle Skills
-                let skillsData = [];
+                let skillsData: any[] = [];
                 if (profile.skillDetails && profile.skillDetails.length > 0) {
                     skillsData = profile.skillDetails.map((item: any) => ({
                         label: item.label,

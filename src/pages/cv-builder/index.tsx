@@ -104,10 +104,10 @@ const CvBuilderPage = () => {
         try {
             const res: any = await callUploadSingleFile(file, 'avatar');
             console.log('Full upload response:', res);
-            
+
             // Check both possible structures depending on axios interceptor
             const fileName = res?.data?.fileName || res?.fileName;
-            
+
             if (fileName) {
                 // Use relative path which will be proxied or relative to the same origin
                 const url = `/storage/avatar/${fileName}`;
