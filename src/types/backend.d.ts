@@ -51,11 +51,16 @@ export interface ICompany {
     deletedAt?: boolean | null;
     createdAt?: string;
     updatedAt?: string;
+    averageRating?: number;
+    recommendPercentage?: number;
+    totalReviews?: number;
+    latestReview?: IReview;
 }
 
 export interface IReview {
     id?: string;
     rating: number;
+    isRecommend?: boolean;
     content: string;
     title?: string;
     pros?: string;

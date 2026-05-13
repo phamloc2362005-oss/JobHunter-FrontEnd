@@ -4,7 +4,7 @@ import { ICompany } from "@/types/backend";
 import { callFetchCompanyById } from "@/config/api";
 import styles from 'styles/client.module.scss';
 import parse from 'html-react-parser';
-import { Col, Row, Skeleton, Card, Divider, Rate, Input, Button, message, Form, Tabs, Progress, Modal } from "antd";
+import { Col, Row, Skeleton, Card, Divider, Rate, Input, Button, message, Form, Tabs, Progress, Modal, Checkbox } from "antd";
 import { EnvironmentOutlined, ThunderboltOutlined, TeamOutlined, GlobalOutlined, RightOutlined, CodeOutlined, UserOutlined, StarFilled, LikeOutlined, DislikeOutlined, FormOutlined } from "@ant-design/icons";
 import { IJob, IReview } from "@/types/backend";
 import { callFetchPublicJob, callFetchCompanyReviews, callCreateReview } from "@/config/api";
@@ -84,7 +84,7 @@ const ClientCompanyDetailPage = (props: any) => {
         if (!id) return;
         setIsSubmittingReview(true);
         try {
-            const res = await callCreateReview(values.rating, values.content, values.title, values.pros, values.cons, id);
+            const res = await callCreateReview(values.rating, values.isRecommend || false, values.content, values.title, values.pros, values.cons, id);
             if (res?.data) {
                 message.success('Đánh giá công ty thành công!');
                 form.resetFields();
@@ -114,6 +114,14 @@ const ClientCompanyDetailPage = (props: any) => {
     const averageRating = reviews.length > 0
         ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1)
         : 0;
+
+    // Tính % khuyên bạn bè: quy đổi điểm trung bình sao sang thang 100
+    // Ví dụ: avg 4.67 sao → 93%, avg 5 sao → 100%, avg 3 sao → 60%
+    // Sử dụng thông số từ backend nếu có
+    const recommendPercent = companyDetail?.recommendPercentage ?? 
+        (reviews.length > 0
+        ? Math.round((reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length / 5) * 100)
+        : 0);
 
     return (
         <div className={s.page}>
@@ -212,7 +220,7 @@ const ClientCompanyDetailPage = (props: any) => {
                                                     <div className={s.recommendBox}>
                                                         <Progress
                                                             type="circle"
-                                                            percent={85}
+                                                            percent={recommendPercent}
                                                             width={80}
                                                             strokeColor="#4caf50"
                                                             format={percent => `${percent}%`}
@@ -303,6 +311,13 @@ const ClientCompanyDetailPage = (props: any) => {
                                         rules={[{ required: true, message: 'Vui lòng nhập đề xuất!' }]}
                                     >
                                         <Input.TextArea rows={3} placeholder="Quy trình, dự án, văn phòng..." />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="isRecommend"
+                                        valuePropName="checked"
+                                        initialValue={true}
+                                    >
+                                        <Checkbox>Tôi giới thiệu công ty này cho bạn bè</Checkbox>
                                     </Form.Item>
                                     <Form.Item name="content" hidden initialValue="Review content">
                                         <Input />

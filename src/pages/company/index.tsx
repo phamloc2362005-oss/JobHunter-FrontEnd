@@ -1,5 +1,5 @@
-import { Col, Row } from 'antd';
-import { CodeOutlined } from '@ant-design/icons';
+import { Col, Row, Input } from 'antd';
+import { CodeOutlined, SearchOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import styles from 'styles/client.module.scss';
 import CompanyCard from '@/components/client/card/company.card';
 import s from './index.module.scss';
@@ -8,43 +8,45 @@ import homeStyles from '@/pages/home/index.module.scss';
 const ClientCompanyPage = (props: any) => {
     return (
         <div className={s.page}>
+            {/* ── HERO ── */}
             <section className={s.hero}>
-                <div className={`${styles["container"]} ${s.heroInner}`}>
-                    <div>
-                        <div className={s.heroKicker}>TOP EMPLOYERS</div>
-                        <h1 className={s.heroTitle}>Cộng đồng nhà tuyển dụng IT chất lượng</h1>
+                <div className={`${styles['container']} ${s.heroInner}`}>
+                    <div className={s.heroText}>
+                        <div className={s.heroKicker}>
+                            🏆 &nbsp;VIETNAM BEST IT COMPANIES 2024
+                        </div>
+                        <h1 className={s.heroTitle}>
+                            Cộng đồng nhà tuyển dụng<br />
+                            <span className={s.heroHighlight}>IT chất lượng</span> hàng đầu
+                        </h1>
                         <p className={s.heroSubtitle}>
-                            Khám phá các công ty công nghệ đang tăng trưởng nhanh, văn hoá tốt và tuyển dụng liên tục.
+                            Khám phá hơn 1,200 công ty công nghệ đang tăng trưởng — từ startup đến enterprise, tất cả đang tuyển dụng.
                         </p>
+
+                        {/* Stats row */}
                         <div className={s.heroStats}>
                             <div className={s.heroStat}>
                                 <strong>1,200+</strong>
-                                <span>Doanh nghiệp đối tác</span>
+                                <span>Công ty đối tác</span>
                             </div>
+                            <div className={s.heroDivider} />
                             <div className={s.heroStat}>
-                                <strong>65%</strong>
-                                <span>Đăng job mỗi tuần</span>
+                                <strong>15,000+</strong>
+                                <span>Việc làm IT</span>
                             </div>
+                            <div className={s.heroDivider} />
                             <div className={s.heroStat}>
-                                <strong>Top 5</strong>
-                                <span>Ngành tuyển mạnh nhất</span>
+                                <strong>500K+</strong>
+                                <span>Ứng viên đăng ký</span>
                             </div>
                         </div>
-                    </div>
-                    <div className={s.heroPanel}>
-                        <h3>Vì sao ứng viên chọn JobHunter?</h3>
-                        <p>Chúng tôi giúp bạn đọc nhanh hồ sơ công ty, lọc đúng stack và nắm job mới nhất.</p>
-                        <ul>
-                            <li>• Thông tin rõ ràng về tech stack</li>
-                            <li>• Tốc độ cập nhật job theo ngày</li>
-                            <li>• Ưu tiên công ty có feedback tốt</li>
-                        </ul>
                     </div>
                 </div>
             </section>
 
+            {/* ── COMPANY LIST ── */}
             <section className={s.listSection}>
-                <div className={`${styles["container"]} ${s.listShell}`}>
+                <div className={`${styles['container']}`}>
                     <Row gutter={[20, 20]}>
                         <Col span={24}>
                             <CompanyCard showPagination={true} variant="catalog" />
@@ -53,7 +55,7 @@ const ClientCompanyPage = (props: any) => {
                 </div>
             </section>
 
-            {/* ══════════════════ FOOTER ══════════════════ */}
+            {/* ── FOOTER ── */}
             <footer className={homeStyles.footer}>
                 <div className={`${styles['container']} ${homeStyles.footerInner}`}>
                     <div className={homeStyles.footerBrand}>
@@ -98,7 +100,7 @@ const ClientCompanyPage = (props: any) => {
                 </div>
             </footer>
         </div>
-    )
-}
+    );
+};
 
 export default ClientCompanyPage;

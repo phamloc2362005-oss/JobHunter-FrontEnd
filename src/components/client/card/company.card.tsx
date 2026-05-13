@@ -1,17 +1,33 @@
 import { callFetchCompany } from '@/config/api';
 import { convertSlug } from '@/config/utils';
 import { ICompany } from '@/types/backend';
-import { Card, Col, Empty, Pagination, Row, Spin } from 'antd';
+import { Col, Empty, Pagination, Row, Spin } from 'antd';
 import { useState, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
 import cardStyles from './company.card.module.scss';
+import {
+    EnvironmentOutlined,
+    ThunderboltOutlined,
+    StarFilled,
+    CrownOutlined,
+} from '@ant-design/icons';
 
 interface IProps {
     showPagination?: boolean;
     variant?: 'home' | 'catalog';
 }
+
+// Cover gradients cycling through ITViec-like brand colors
+const COVER_GRADIENTS = [
+    'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)',
+    'linear-gradient(135deg, #0b3d0b 0%, #1a5c1a 60%, #236e23 100%)',
+    'linear-gradient(135deg, #1a0533 0%, #2d1b69 60%, #4a2f8e 100%)',
+    'linear-gradient(135deg, #1a1200 0%, #3d2b00 60%, #614500 100%)',
+    'linear-gradient(135deg, #0a1628 0%, #1a3a5c 60%, #1e5f8c 100%)',
+    'linear-gradient(135deg, #1a0a0a 0%, #5c1a1a 60%, #8c2e2e 100%)',
+];
 
 const CompanyCard = (props: IProps) => {
     const { showPagination = false, variant = 'home' } = props;
@@ -21,10 +37,10 @@ const CompanyCard = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [current, setCurrent] = useState(1);
-    const [pageSize, setPageSize] = useState(4);
+    const [pageSize, setPageSize] = useState(isCatalog ? 9 : 4);
     const [total, setTotal] = useState(0);
-    const [filter, setFilter] = useState("");
-    const [sortQuery, setSortQuery] = useState("sort=updatedAt,desc");
+    const [filter, setFilter] = useState('');
+    const [sortQuery] = useState('sort=updatedAt,desc');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,118 +48,224 @@ const CompanyCard = (props: IProps) => {
     }, [current, pageSize, filter, sortQuery]);
 
     const fetchCompany = async () => {
-        setIsLoading(true)
+        setIsLoading(true);
         let query = `page=${current}&size=${pageSize}`;
-        if (filter) {
-            query += `&${filter}`;
-        }
-        if (sortQuery) {
-            query += `&${sortQuery}`;
-        }
+        if (filter) query += `&${filter}`;
+        if (sortQuery) query += `&${sortQuery}`;
 
         const res = await callFetchCompany(query);
         if (res && res.data) {
             setDisplayCompany(res.data.result);
-            setTotal(res.data.meta.total)
+            setTotal(res.data.meta.total);
         }
-        setIsLoading(false)
-    }
+        setIsLoading(false);
+    };
 
-
-    const handleOnchangePage = (pagination: { current: number, pageSize: number }) => {
-        if (pagination && pagination.current !== current) {
-            setCurrent(pagination.current)
-        }
+    const handleOnchangePage = (pagination: { current: number; pageSize: number }) => {
+        if (pagination && pagination.current !== current) setCurrent(pagination.current);
         if (pagination && pagination.pageSize !== pageSize) {
-            setPageSize(pagination.pageSize)
+            setPageSize(pagination.pageSize);
             setCurrent(1);
         }
-    }
+    };
 
     const handleViewDetailJob = (item: ICompany) => {
         if (item.name) {
             const slug = convertSlug(item.name);
-            navigate(`/company/${slug}?id=${item.id}`)
+            navigate(`/company/${slug}?id=${item.id}`);
         }
-    }
+    };
 
     return (
-        <div className={`${styles["company-section"]} ${isCatalog ? cardStyles.catalogSection : ''}`}>
-            <div className={isCatalog ? cardStyles.catalogContent : styles["company-content"]}>
+        <div className={`${styles['company-section']} ${isCatalog ? cardStyles.catalogSection : ''}`}>
+            <div className={isCatalog ? cardStyles.catalogContent : styles['company-content']}>
                 <Spin spinning={isLoading} tip="Loading...">
-                    <Row gutter={[20, 20]}>
-                        {showPagination && <Col span={24}>
-                            <div className={isCatalog ? cardStyles.catalogHeader : styles["section-head"]}>
-                                <div>
-                                    <span className={isCatalog ? cardStyles.catalogBadge : styles["section-badge"]}>Top employers</span>
-                                    <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
-                                        <span className={isCatalog ? cardStyles.catalogTitle : styles["title"]}>Nhà Tuyển Dụng Hàng Đầu</span>
-                                        <p className={isCatalog ? cardStyles.catalogSubtitle : styles["section-subtitle"]}>Các công ty IT đang nổi bật và được quan tâm nhất trên hệ thống.</p>
-                                    </div>
+                    {/* Header - chỉ hiện ở home variant */}
+                    {showPagination && !isCatalog && (
+                        <div className={styles['section-head']}>
+                            <div>
+                                <span className={styles['section-badge']}>Top employers</span>
+                                <div className={isMobile ? styles['dflex-mobile'] : styles['dflex-pc']}>
+                                    <span className={styles['title']}>Nhà Tuyển Dụng Hàng Đầu</span>
+                                    <p className={styles['section-subtitle']}>
+                                        Các công ty IT đang nổi bật và được quan tâm nhất trên hệ thống.
+                                    </p>
                                 </div>
-                                {!isCatalog && <Link to="company" className={styles["section-link"]}>Xem tất cả</Link>}
                             </div>
-                        </Col>}
+                            <Link to="company" className={styles['section-link']}>Xem tất cả</Link>
+                        </div>
+                    )}
 
-                        {displayCompany?.map(item => {
-                            return (
-                                <Col span={24} md={6} key={item.id}>
-                                    <Card
-                                        onClick={() => handleViewDetailJob(item)}
-                                        className={`${styles["company-card-v2"]} ${isCatalog ? cardStyles.catalogCard : ''}`}
-                                        hoverable
-                                        cover={
-                                            <div className={isCatalog ? cardStyles.logoWrap : styles["card-customize-v2"]}>
+                    {/* Catalog header */}
+                    {isCatalog && (
+                        <div className={cardStyles.catalogToolbar}>
+                            <div className={cardStyles.catalogToolbarLeft}>
+                                <span className={cardStyles.totalCount}>
+                                    {total} công ty IT đang hiển thị
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Grid cards / Rows */}
+                    <Row gutter={[20, 24]}>
+                        {displayCompany?.map((item, index) => {
+                            const coverGradient = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
+                            const rank = (current - 1) * pageSize + index + 1;
+
+                            if (isCatalog) {
+                                return (
+                                    <Col span={24} key={item.id}>
+                                        <div
+                                            className={cardStyles.companyRow}
+                                            onClick={() => handleViewDetailJob(item)}
+                                        >
+                                            <div className={cardStyles.logoSection}>
                                                 <img
-                                                    style={{ maxWidth: "110px", maxHeight: "74px", objectFit: "contain" }}
-                                                    alt="example"
+                                                    alt={item.name}
                                                     src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${item?.logo}`}
                                                 />
                                             </div>
-                                        }
-                                    >
-                                        {isCatalog ? (
-                                            <div className={cardStyles.cardBody}>
-                                                <h3 className={cardStyles.companyName}>{item.name}</h3>
-                                                <div className={cardStyles.companyMeta}>
-                                                    {item.address || 'Chưa cập nhật địa chỉ'}
+
+                                            <div className={cardStyles.mainInfo}>
+                                                <div className={cardStyles.headerRow}>
+                                                    <div>
+                                                        <h3 className={cardStyles.companyName}>{item.name}</h3>
+                                                        <div className={cardStyles.locationBadge}>
+                                                            <EnvironmentOutlined />
+                                                            {item.address || 'Việt Nam'}
+                                                        </div>
+                                                    </div>
+                                                    {rank <= 10 && (
+                                                        <div className={cardStyles.rankBadge}>
+                                                            <CrownOutlined />
+                                                            <span>Top {rank}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className={cardStyles.cardFooter}>
-                                                    <span>Khám phá profile</span>
-                                                    <span className={cardStyles.cardTag}>Chi tiết</span>
+
+                                                {item.latestReview && (
+                                                    <div className={cardStyles.highlightReview}>
+                                                        <span className={cardStyles.reviewTitle}>
+                                                            {item.latestReview.title || 'Đánh giá nổi bật'}
+                                                        </span>
+                                                        <p className={cardStyles.reviewSnippet}>
+                                                            {item.latestReview.content}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className={cardStyles.statsSection}>
+                                                <div className={cardStyles.statsRow}>
+                                                    <div className={cardStyles.statItem}>
+                                                        <span className={cardStyles.statLabel}>Đánh giá</span>
+                                                        <div className={cardStyles.statValue}>
+                                                            <span>{item.averageRating?.toFixed(1) || '0.0'}</span>
+                                                            <div className={cardStyles.ratingStars}>
+                                                                <StarFilled />
+                                                            </div>
+                                                            <span style={{ fontSize: 13, color: '#64748b', fontWeight: 400 }}>
+                                                                ({item.totalReviews || 0})
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className={cardStyles.statItem}>
+                                                        <span className={cardStyles.statLabel}>Khuyên bạn bè</span>
+                                                        <div className={cardStyles.statValue}>
+                                                            <ThunderboltOutlined style={{ color: '#059669' }} />
+                                                            <span className={cardStyles.recommendPercent}>
+                                                                {item.recommendPercentage?.toFixed(0) || '0'}%
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        ) : (
-                                            <h3 className={styles["company-card-title"]}>{item.name}</h3>
-                                        )}
-                                    </Card>
+                                        </div>
+                                    </Col>
+                                );
+                            }
+
+                            // Home variant grid cards
+                            return (
+                                <Col
+                                    span={24}
+                                    md={6}
+                                    key={item.id}
+                                >
+                                    <div
+                                        className={cardStyles.companyCard}
+                                        onClick={() => handleViewDetailJob(item)}
+                                    >
+                                        <div
+                                            className={cardStyles.coverArea}
+                                            style={{ background: coverGradient }}
+                                        >
+                                            <div className={cardStyles.coverDots} />
+                                        </div>
+
+                                        <div className={cardStyles.logoOverlay}>
+                                            <img
+                                                alt={item.name}
+                                                src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${item?.logo}`}
+                                            />
+                                        </div>
+
+                                        <div className={cardStyles.cardBody}>
+                                            <h3 className={cardStyles.companyName}>{item.name}</h3>
+                                            <p className={cardStyles.companyDesc}>
+                                                {item.address || 'Chưa cập nhật địa chỉ'}
+                                            </p>
+                                            <div className={cardStyles.cardFooter}>
+                                                <span className={cardStyles.footerLocation}>
+                                                    <EnvironmentOutlined />
+                                                    {item.address
+                                                        ? item.address.split(',').pop()?.trim() || item.address
+                                                        : 'Việt Nam'}
+                                                </span>
+                                                <span className={cardStyles.footerJobs}>
+                                                    <ThunderboltOutlined />
+                                                    Xem việc làm
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </Col>
-                            )
+                            );
                         })}
 
-                        {(!displayCompany || displayCompany && displayCompany.length === 0)
-                            && !isLoading &&
-                            <div className={styles["empty"]}>
-                                <Empty description="Không có dữ liệu" />
-                            </div>
-                        }
+                        {(!displayCompany || displayCompany.length === 0) && !isLoading && (
+                            <Col span={24}>
+                                <div className={styles['empty']}>
+                                    <Empty description="Không có dữ liệu" />
+                                </div>
+                            </Col>
+                        )}
                     </Row>
-                    {showPagination && <>
-                        <div style={{ marginTop: 30 }}></div>
-                        <Row style={{ display: "flex", justifyContent: "center" }}>
-                            <Pagination
-                                current={current}
-                                total={total}
-                                pageSize={pageSize}
-                                responsive
-                                onChange={(p: number, s: number) => handleOnchangePage({ current: p, pageSize: s })}
-                            />
-                        </Row>
-                    </>}
+
+                    {/* Pagination */}
+                    {showPagination && (
+                        <>
+                            <div style={{ marginTop: 36 }} />
+                            <Row style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Pagination
+                                    current={current}
+                                    total={total}
+                                    pageSize={pageSize}
+                                    responsive
+                                    showSizeChanger={false}
+                                    onChange={(p: number, s: number) =>
+                                        handleOnchangePage({ current: p, pageSize: s })
+                                    }
+                                />
+                            </Row>
+                        </>
+                    )}
                 </Spin>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default CompanyCard;

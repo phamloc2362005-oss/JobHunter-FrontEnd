@@ -23,11 +23,11 @@ export default defineConfig(({ command, mode }) => {
       port: parseInt(env.PORT),
       proxy: {
         '/api': {
-          target: 'http://localhost:8081',
+          target: 'http://127.0.0.1:8081',
           changeOrigin: true,
         },
         '/storage': {
-          target: 'http://localhost:8081',
+          target: 'http://127.0.0.1:8081',
           changeOrigin: true,
         },
       },

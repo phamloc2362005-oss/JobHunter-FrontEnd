@@ -1,139 +1,391 @@
+/* ─── ITViec-inspired Company Card ─── */
+
+/* ── Catalog wrapper (trang /company) ── */
 .catalogSection {
     padding-top: 0;
 }
 
 .catalogContent {
-    background: #f8fafc;
-    padding: 26px;
-    border-radius: 22px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    padding: 0;
 }
 
-.catalogHeader {
+.catalogToolbar {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    padding: 0 2px;
 }
 
-.catalogTitle {
-    font-size: 22px;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0;
+.catalogToolbarLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.catalogSubtitle {
-    margin: 6px 0 0;
+.totalCount {
+    font-size: 14px;
     color: #64748b;
-    font-size: 13px;
-    max-width: 520px;
-    line-height: 1.6;
+    font-weight: 500;
 }
 
-.catalogBadge {
+/* ── Company Card ── */
+.companyCard {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e8ecf0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.companyCard:hover {
+    transform: translateY(-4px);
+    border-color: #1677ff;
+    box-shadow: 0 12px 32px rgba(22, 119, 255, 0.14);
+}
+
+/* ── Cover image area ── */
+.coverArea {
+    height: 90px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.coverDots {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* ── Rank badge ── */
+.rankBadge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
+    gap: 5px;
+    padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(20, 184, 166, 0.12);
-    color: #0f766e;
+    background: rgba(255, 196, 0, 0.9);
+    color: #1a1200;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.catalogAction {
-    border-radius: 999px;
-    border: 1px solid rgba(15, 118, 110, 0.2);
+/* ── Logo overlay ── */
+.logoOverlay {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
     background: #ffffff;
-    padding: 10px 16px;
-    font-weight: 600;
-    color: #0f172a;
-    text-decoration: none;
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-    transition: transform 0.16s ease, box-shadow 0.16s ease;
-}
-
-.catalogAction:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
-}
-
-.catalogCard {
-    border-radius: 22px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    overflow: hidden;
-    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.catalogCard:hover {
-    transform: translateY(-3px);
-    border-color: rgba(20, 184, 166, 0.35);
-    box-shadow: 0 22px 40px rgba(15, 23, 42, 0.14);
-}
-
-.logoWrap {
-    height: 120px;
+    border: 2px solid #e8ecf0;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.14);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.02));
+    padding: 8px;
+    margin: -36px 0 0 20px;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
+.logoOverlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ── Card body ── */
 .cardBody {
-    padding: 12px 16px 18px;
-    display: grid;
-    gap: 8px;
+    padding: 12px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
 }
 
 .companyName {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #0f172a;
     margin: 0;
-}
-
-.companyMeta {
-    font-size: 12.5px;
-    color: #64748b;
+    line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 34px;
+    transition: color 0.18s ease;
 }
 
+.companyCard:hover .companyName {
+    color: #1677ff;
+}
+
+.companyDesc {
+    font-size: 12.5px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 36px;
+}
+
+/* ── Card Footer ── */
 .cardFooter {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.footerLocation {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     font-size: 12px;
-    color: #0f766e;
+    color: #64748b;
+    max-width: 55%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.footerJobs {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
     font-weight: 600;
-}
-
-.cardTag {
-    padding: 4px 10px;
+    color: #1677ff;
+    white-space: nowrap;
+    padding: 3px 10px;
     border-radius: 999px;
-    background: rgba(20, 184, 166, 0.12);
-    border: 1px solid rgba(20, 184, 166, 0.24);
-    color: #0f766e;
+    border: 1px solid rgba(22, 119, 255, 0.2);
+    background: rgba(22, 119, 255, 0.05);
+    transition: background 0.18s ease;
 }
 
-@media (max-width: 768px) {
-    .catalogContent {
-        padding: 18px;
+.companyCard:hover .footerJobs {
+    background: rgba(22, 119, 255, 0.12);
+}
+
+/* ── ITviec-inspired Row Layout ── */
+.companyRow {
+    display: flex;
+    background: #fff;
+    border: 1px solid #e8ecf0;
+    border-radius: 12px;
+    padding: 24px;
+    gap: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+
+    &:hover {
+        border-color: #1677ff;
+        box-shadow: 0 8px 24px rgba(22, 119, 255, 0.1);
+        transform: translateY(-2px);
+
+        .companyName {
+            color: #1677ff;
+        }
+    }
+}
+
+.logoSection {
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #f1f5f9;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: #fff;
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+}
+
+.mainInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.statsSection {
+    display: flex;
+    align-items: center;
+    border-left: 1px solid #f1f5f9;
+    padding-left: 24px;
+    flex-shrink: 0;
+    min-width: 220px;
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.companyName {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    transition: color 0.2s;
+}
+
+.statsRow {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .statLabel {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 500;
     }
 
-    .catalogHeader {
+    .statValue {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+}
+
+.ratingStars {
+    color: #facc15;
+    font-size: 14px;
+}
+
+.recommendPercent {
+    color: #059669;
+}
+
+.highlightReview {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 8px;
+    position: relative;
+    border-left: 3px solid #e2e8f0;
+
+    .reviewTitle {
+        font-weight: 600;
+        font-size: 14px;
+        color: #1e293b;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .reviewSnippet {
+        font-size: 14px;
+        color: #475569;
+        font-style: italic;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.5;
+    }
+
+    &::before {
+        content: '"';
+        position: absolute;
+        left: 4px;
+        top: 0;
+        font-size: 32px;
+        color: #e2e8f0;
+        line-height: 1;
+        font-family: serif;
+    }
+}
+
+.locationBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .coverArea {
+        height: 72px;
+    }
+
+    .logoOverlay {
+        width: 60px;
+        height: 60px;
+        margin: -30px 0 0 16px;
+    }
+
+    .cardBody {
+        padding: 10px 16px 14px;
+    }
+
+    .companyRow {
         flex-direction: column;
-        align-items: flex-start;
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .logoSection {
+        width: 80px;
+        height: 80px;
+    }
+
+    .statsSection {
+        border-left: none;
+        padding-left: 0;
+        min-width: unset;
+        width: 100%;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 16px;
+    }
+
+    .statsRow {
+        gap: 16px;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-between;
     }
 }

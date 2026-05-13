@@ -75,8 +75,8 @@ export const callFetchCompanyById = (id: string) => {
  * 
 Module Review
  */
-export const callCreateReview = (rating: number, content: string, title: string, pros: string, cons: string, companyId: string) => {
-    return axios.post<IBackendRes<IReview>>('/api/v1/reviews', { rating, content, title, pros, cons, companyId })
+export const callCreateReview = (rating: number, isRecommend: boolean, content: string, title: string, pros: string, cons: string, companyId: string) => {
+    return axios.post<IBackendRes<IReview>>('/api/v1/reviews', { rating, isRecommend, content, title, pros, cons, companyId })
 }
 
 export const callFetchCompanyReviews = (companyId: string, page: number = 1, size: number = 5) => {
