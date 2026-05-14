@@ -19,13 +19,22 @@ type Phase = 'intro' | 'loading-questions' | 'interview' | 'evaluating' | 'resul
 // ========================
 // HELPERS
 // ========================
-const getRatingInfo = (rating: string) => {
+const getRatingInfo = (rating: string, score?: number) => {
     switch (rating) {
         case 'Excellent': return { icon: '🌟', color: '#10b981', className: styles.excellent };
         case 'Good': return { icon: '✅', color: '#6366f1', className: styles.good };
         case 'Fair': return { icon: '👍', color: '#f59e0b', className: styles.fair };
         case 'Needs Improvement': return { icon: '📈', color: '#f97316', className: styles.poor };
-        default: return { icon: '❌', color: '#ef4444', className: styles.poor };
+        case 'Failed': return { icon: '❌', color: '#ef4444', className: styles.poor };
+        default:
+            // Fallback dựa theo score nếu rating không match
+            if (score !== undefined) {
+                if (score >= 8.5) return { icon: '🌟', color: '#10b981', className: styles.excellent };
+                if (score >= 7) return { icon: '✅', color: '#6366f1', className: styles.good };
+                if (score >= 5) return { icon: '👍', color: '#f59e0b', className: styles.fair };
+                if (score >= 3) return { icon: '📈', color: '#f97316', className: styles.poor };
+            }
+            return { icon: '❌', color: '#ef4444', className: styles.poor };
     }
 };
 
@@ -96,18 +105,30 @@ const MockInterviewPage = () => {
                 skillsStr
             );
 
-            if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-                setQuestions(res.data);
+            // res.data là IBackendRes object { statusCode, data: [...] }
+            // Câu hỏi nằm ở res.data.data, KHÔNG phải res.data!
+            let questions: any = res?.data?.data;
+            console.log('DEBUG FE questions:', questions, 'raw res.data:', res?.data);
+
+            // Fallback: nếu BE trả về string thay vì array
+            if (typeof questions === 'string') {
+                try { questions = JSON.parse(questions); } catch (e) { console.error('parse error', e); }
+            }
+
+            if (questions && Array.isArray(questions) && questions.length > 0) {
+                setQuestions(questions);
                 setCurrentIdx(0);
                 setResults([]);
                 setCurrentEval(null);
                 setAnswer('');
                 setPhase('interview');
             } else {
+                console.error('FE: invalid questions data:', questions);
                 alert('Could not load questions. Please try again.');
                 setPhase('intro');
             }
         } catch (e) {
+            console.error('FE: API call error:', e);
             alert('AI connection error. Please try again.');
             setPhase('intro');
         }
@@ -126,7 +147,9 @@ const MockInterviewPage = () => {
                 answer,
                 jobContext
             );
-            const evalData = res?.data as IInterviewEvaluation | null;
+            // res.data là IBackendRes wrapper, đánh giá nằm ở res.data.data
+            const evalData = res?.data?.data as IInterviewEvaluation | null;
+            console.log('DEBUG FE evalData:', evalData, 'raw:', res?.data);
             setCurrentEval(evalData);
 
             setResults(prev => [...prev, {
@@ -519,13 +542,13 @@ const MockInterviewPage = () => {
                 {/* Evaluation Result */}
                 {hasEval && currentEval && (
                     <>
-                        <div className={`${styles.evalCard} ${getRatingInfo(currentEval.rating).className}`}>
+                        <div className={`${styles.evalCard} ${getRatingInfo(currentEval.rating, currentEval.score).className}`}>
                             <div className={styles.evalHeader}>
                                 <div className={styles.evalRating}>
-                                    <span className={styles.ratingIcon}>{getRatingInfo(currentEval.rating).icon}</span>
+                                    <span className={styles.ratingIcon}>{getRatingInfo(currentEval.rating, currentEval.score).icon}</span>
                                     <span
                                         className={styles.ratingLabel}
-                                        style={{ color: getRatingInfo(currentEval.rating).color }}
+                                        style={{ color: getRatingInfo(currentEval.rating, currentEval.score).color }}
                                     >
                                         {currentEval.rating}
                                     </span>
@@ -533,7 +556,7 @@ const MockInterviewPage = () => {
                                 <div className={styles.evalScore}>
                                     <span
                                         className={styles.scoreNum}
-                                        style={{ color: getRatingInfo(currentEval.rating).color }}
+                                        style={{ color: getRatingInfo(currentEval.rating, currentEval.score).color }}
                                     >
                                         {currentEval.score.toFixed(1)}
                                     </span>

@@ -4,10 +4,10 @@ import { IJob } from "@/types/backend";
 import { callFetchPublicJob, callFetchPublicJobById } from "@/config/api";
 import parse from 'html-react-parser';
 import { Button, Col, Divider, Row, Skeleton, Tag, Typography, Breadcrumb, Space } from "antd";
-import { 
-    DollarOutlined, 
-    EnvironmentOutlined, 
-    HistoryOutlined, 
+import {
+    DollarOutlined,
+    EnvironmentOutlined,
+    HistoryOutlined,
     ThunderboltOutlined,
     HomeOutlined,
     GlobalOutlined,
@@ -86,8 +86,8 @@ const ClientJobDetailPage = (props: any) => {
 
     if (!jobDetail) return null;
 
-    const timeLabel = jobDetail.updatedAt 
-        ? dayjs(jobDetail.updatedAt).fromNow() 
+    const timeLabel = jobDetail.updatedAt
+        ? dayjs(jobDetail.updatedAt).fromNow()
         : dayjs(jobDetail.createdAt).fromNow();
 
     return (
@@ -102,23 +102,23 @@ const ClientJobDetailPage = (props: any) => {
                                 src={`${import.meta.env.VITE_BACKEND_URL}/storage/company/${jobDetail.company?.logo}`}
                             />
                         </div>
-                        
+
                         <div className={detailStyles.heroContent}>
                             <h1 className={detailStyles.jobTitle}>{jobDetail.name}</h1>
                             <div className={detailStyles.companyName}>
-                                <GlobalOutlined /> 
+                                <GlobalOutlined />
                                 <Link to={`/company/${convertSlug(jobDetail.company?.name || "company")}?id=${jobDetail.company?.id}`}>
                                     {jobDetail.company?.name}
                                 </Link>
                             </div>
-                            
+
                             {jobDetail.skills && jobDetail.skills.length > 0 && (
                                 <div style={{ marginBottom: 24 }}>
                                     <Space wrap size={[8, 8]}>
                                         {jobDetail.skills.map((s) => (
-                                            <Tag 
-                                                key={s.id} 
-                                                color="blue" 
+                                            <Tag
+                                                key={s.id}
+                                                color="blue"
                                                 style={{ borderRadius: 6, padding: '4px 12px', fontSize: 13, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: '#fff' }}
                                                 onClick={() => s.id && handleSkillClick(String(s.id))}
                                             >
@@ -130,14 +130,14 @@ const ClientJobDetailPage = (props: any) => {
                             )}
 
                             <div className={detailStyles.heroActions}>
-                                <Button 
-                                    type="primary" 
+                                <Button
+                                    type="primary"
                                     className={detailStyles.btnApply}
                                     onClick={() => setIsModalOpen(true)}
                                 >
                                     Apply for this job
                                 </Button>
-                                <Button 
+                                <Button
                                     className={detailStyles.btnInterview}
                                     onClick={() => navigate(`/interview/${jobDetail.id}`)}
                                 >
@@ -152,7 +152,7 @@ const ClientJobDetailPage = (props: any) => {
             {/* ════ MAIN CONTENT ════ */}
             <main className={detailStyles.mainContainer}>
                 <div className={detailStyles.contentRow}>
-                    
+
                     {/* Left Column: Job Info */}
                     <div className={detailStyles.mainColumn}>
                         <section className={detailStyles.contentCard}>
@@ -162,9 +162,9 @@ const ClientJobDetailPage = (props: any) => {
                             <div className={detailStyles.jobDescription}>
                                 {jobDetail.description ? parse(jobDetail.description) : "No description provided."}
                             </div>
-                            
+
                             <Divider style={{ margin: '40px 0' }} />
-                            
+
                             <JobDetailHighlights job={jobDetail} />
                         </section>
                     </div>
@@ -228,7 +228,7 @@ const ClientJobDetailPage = (props: any) => {
                                 />
                                 <div className={detailStyles.smallName}>{jobDetail.company?.name}</div>
                             </div>
-                            <Button 
+                            <Button
                                 className={detailStyles.btnViewCompany}
                                 onClick={() => navigate(`/company/${convertSlug(jobDetail.company?.name || "company")}?id=${jobDetail.company?.id}`)}
                             >
