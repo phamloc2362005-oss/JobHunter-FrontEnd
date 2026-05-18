@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse, IReview, IInterviewQuestion, IInterviewEvaluation } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse, IReview, IInterviewQuestion, IInterviewEvaluation, IDashboardStats } from '@/types/backend';
 import axios from 'config/axios-customize';
 
 /**
@@ -386,3 +386,17 @@ export const callEvaluateInterviewAnswer = (
         question, answer, jobContext
     });
 }
+
+/**
+ * 
+Module Admin Dashboard
+ */
+export const callFetchDashboard = () => {
+    return axios.get<IBackendRes<IDashboardStats>>('/api/v1/admin/dashboard');
+}
+
+export const callAiChat = (message: string, history: { role: string; content: string }[]) => {
+    return axios.post<IBackendRes<string>>('/api/v1/ai/chat', { message, history });
+}
+
+

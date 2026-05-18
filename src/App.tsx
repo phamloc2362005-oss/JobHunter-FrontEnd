@@ -37,6 +37,7 @@ import ExpertisePage from './pages/admin/expertise';
 import CvBuilderPage from './pages/cv-builder';
 import MockInterviewPage from './pages/mock-interview';
 import Footer from 'components/client/footer.client';
+import AiChatbot from 'components/client/chat/AiChatbot';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,6 +58,7 @@ const LayoutClient = () => {
         <Outlet context={[searchTerm, setSearchTerm]} />
       </div>
       <Footer />
+      <AiChatbot />
     </div>
   )
 }

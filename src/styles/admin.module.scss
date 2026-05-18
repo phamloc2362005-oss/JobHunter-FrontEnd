@@ -551,3 +551,92 @@ $admin-text-muted: #5f6368;
         min-height: 160px;
     }
 }
+
+// ===== Dashboard KPI Cards =====
+.dashboard-kpi-card {
+    border-radius: 12px;
+    border: 1px solid #eef0f4;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+
+    &:hover {
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+        transform: translateY(-4px);
+    }
+
+    :global(.ant-card-body) {
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    :global(.ant-statistic-title) {
+        font-size: 11px;
+        font-weight: 700;
+        color: #8c8c8c;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+}
+
+.kpi-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+// ===== Dashboard Chart Cards =====
+.dashboard-chart-card {
+    border-radius: 12px;
+    border: 1px solid #eef0f4;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    height: 100%;
+
+    :global(.ant-card-head) {
+        border-bottom: 1px solid #f0f2f5;
+        padding: 16px 24px;
+
+        :global(.ant-card-head-title) {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1d21;
+        }
+    }
+
+    :global(.ant-card-body) {
+        padding: 20px 24px;
+    }
+
+    // Table inside chart card
+    :global(.ant-table) {
+        :global(.ant-table-thead > tr > th) {
+            background: #fafbfc;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #5f6368;
+            border-bottom: 1px solid #eef0f4;
+        }
+
+        :global(.ant-table-tbody > tr > td) {
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        :global(.ant-table-tbody > tr:hover > td) {
+            background: #f8faff;
+        }
+    }
+}
+

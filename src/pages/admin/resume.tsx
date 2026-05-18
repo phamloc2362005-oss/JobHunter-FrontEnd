@@ -100,8 +100,8 @@ const ResumePage = () => {
                 const score = record.aiScore || 0;
                 let color = score >= 70 ? 'green' : score >= 50 ? 'orange' : 'red';
                 return (
-                    <span style={{ 
-                        color: color, 
+                    <span style={{
+                        color: color,
                         fontWeight: 'bold',
                         padding: '4px 8px',
                         borderRadius: '4px',

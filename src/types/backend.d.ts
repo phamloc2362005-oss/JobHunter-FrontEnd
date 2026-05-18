@@ -260,3 +260,24 @@ export interface IInterviewEvaluation {
     suggestion: string;
     rating: 'Excellent' | 'Good' | 'Fair' | 'Needs Improvement' | 'Failed';
 }
+
+export interface IDashboardStats {
+    totalUsers: number;
+    totalJobs: number;
+    totalActiveJobs: number;
+    totalCompanies: number;
+    totalResumes: number;
+    resumeByStatus: Record<string, number>;
+    topSkills: { name: string; count: number }[];
+    recentJobs: {
+        id: number;
+        name: string;
+        companyName: string;
+        location: string;
+        salary: number;
+        level: string;
+        active: boolean;
+        createdAt: string;
+    }[];
+}
+

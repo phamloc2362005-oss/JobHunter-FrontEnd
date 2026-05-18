@@ -1,19 +1,182 @@
-import { Card, Col, Row, Statistic } from "antd";
+import { useEffect, useState } from "react";
+import { Card, Col, Row, Statistic, Table, Tag, Spin, message } from "antd";
+import {
+    UserOutlined,
+    RocketOutlined,
+    BankOutlined,
+    FileTextOutlined,
+    AppstoreOutlined,
+    FireOutlined,
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    CloseCircleOutlined,
+    EyeOutlined,
+} from "@ant-design/icons";
 import CountUp from 'react-countup';
+import {
+    PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from 'recharts';
+import { callFetchDashboard } from "@/config/api";
+import { IDashboardStats } from "@/types/backend";
 import styles from 'styles/admin.module.scss';
-import { AppstoreOutlined } from "@ant-design/icons";
+
+const RESUME_COLORS: Record<string, string> = {
+    PENDING: '#faad14',
+    REVIEWING: '#1890ff',
+    PPROVED: '#52c41a',
+    REJECTED: '#ff4d4f',
+};
+
+const RESUME_LABELS: Record<string, string> = {
+    PENDING: 'Chờ duyệt',
+    REVIEWING: 'Đang xem',
+    PPROVED: 'Đã duyệt',
+    REJECTED: 'Từ chối',
+};
+
+const SKILL_COLORS = ['#4078ff', '#36cfc9', '#f5794d', '#9254de', '#faad14', '#ff85c0'];
 
 const DashboardPage = () => {
-    const formatter = (value: number | string) => {
+    const [stats, setStats] = useState<IDashboardStats | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await callFetchDashboard();
+                if (res?.data) {
+                    setStats(res.data as any);
+                }
+            } catch (err) {
+                message.error("Không thể tải dữ liệu dashboard");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const formatter = (value: number | string) => (
+        <CountUp end={Number(value)} separator="," duration={1.5} />
+    );
+
+    if (loading) {
         return (
-            <CountUp end={Number(value)} separator="," />
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+                <Spin size="large" tip="Đang tải dữ liệu..." />
+            </div>
         );
-    };
+    }
+
+    if (!stats) {
+        return <div>Không có dữ liệu</div>;
+    }
+
+    // Prepare chart data
+    const resumePieData = stats.resumeByStatus
+        ? Object.entries(stats.resumeByStatus)
+            .filter(([_, v]) => v > 0)
+            .map(([key, value]) => ({
+                name: RESUME_LABELS[key] || key,
+                value,
+                status: key,
+            }))
+        : [];
+
+    const skillBarData = stats.topSkills
+        ? stats.topSkills.map((s, i) => ({
+            name: s.name,
+            count: s.count,
+            fill: SKILL_COLORS[i % SKILL_COLORS.length],
+        }))
+        : [];
+
+    // Table columns for recent jobs
+    const jobColumns = [
+        {
+            title: 'Vị trí',
+            dataIndex: 'name',
+            key: 'name',
+            ellipsis: true,
+            render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span>,
+        },
+        {
+            title: 'Công ty',
+            dataIndex: 'companyName',
+            key: 'companyName',
+            ellipsis: true,
+        },
+        {
+            title: 'Địa điểm',
+            dataIndex: 'location',
+            key: 'location',
+            ellipsis: true,
+        },
+        {
+            title: 'Mức lương',
+            dataIndex: 'salary',
+            key: 'salary',
+            render: (salary: number) => salary ? `${(salary / 1_000_000).toFixed(0)}M` : 'N/A',
+        },
+        {
+            title: 'Level',
+            dataIndex: 'level',
+            key: 'level',
+            render: (level: string) => {
+                const colorMap: Record<string, string> = {
+                    INTERN: 'cyan', JUNIOR: 'blue', MIDDLE: 'geekblue', SENIOR: 'purple',
+                };
+                return <Tag color={colorMap[level] || 'default'}>{level}</Tag>;
+            },
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'active',
+            key: 'active',
+            render: (active: boolean) => active
+                ? <Tag color="success" icon={<CheckCircleOutlined />}>Active</Tag>
+                : <Tag color="default">Inactive</Tag>,
+        },
+    ];
+
+    const kpiCards = [
+        {
+            title: 'TỔNG NGƯỜI DÙNG',
+            value: stats.totalUsers,
+            icon: <UserOutlined />,
+            color: '#4078ff',
+            bgGradient: 'linear-gradient(135deg, #4078ff 0%, #6c9aff 100%)',
+        },
+        {
+            title: 'VIỆC LÀM ĐANG TUYỂN',
+            value: stats.totalActiveJobs,
+            icon: <RocketOutlined />,
+            color: '#52c41a',
+            bgGradient: 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)',
+            suffix: ` / ${stats.totalJobs}`,
+        },
+        {
+            title: 'CÔNG TY',
+            value: stats.totalCompanies,
+            icon: <BankOutlined />,
+            color: '#722ed1',
+            bgGradient: 'linear-gradient(135deg, #722ed1 0%, #9254de 100%)',
+        },
+        {
+            title: 'HỒ SƠ ỨNG TUYỂN',
+            value: stats.totalResumes,
+            icon: <FileTextOutlined />,
+            color: '#fa8c16',
+            bgGradient: 'linear-gradient(135deg, #fa8c16 0%, #ffa940 100%)',
+        },
+    ];
 
     return (
         <div>
+            {/* Title Card */}
             <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
-                <Col xs={24} lg={16}>
+                <Col span={24}>
                     <Card className={styles["admin-title-card"]}>
                         <Row gutter={20} align="middle">
                             <Col xs={24} sm="auto">
@@ -24,44 +187,152 @@ const DashboardPage = () => {
                             <Col xs={24} sm="auto" flex={1}>
                                 <div>
                                     <h2 className={styles["card-title"]}>Admin Dashboard</h2>
-                                    <p className={styles["card-subtitle"]}>Tổng quan hệ thống, theo dõi số liệu và truy cập nhanh các chức năng quản trị.</p>
+                                    <p className={styles["card-subtitle"]}>Tổng quan hệ thống — dữ liệu thời gian thực từ cơ sở dữ liệu.</p>
                                 </div>
                             </Col>
                         </Row>
                     </Card>
                 </Col>
-                <Col xs={24} lg={8}>
-                    <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
-                        <Statistic
-                            title="TỔNG TRUY CẬP"
-                            value={112893}
-                            formatter={formatter}
-                            prefix={<AppstoreOutlined style={{ marginRight: 8 }} />}
-                            valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
-                        />
+            </Row>
+
+            {/* KPI Cards */}
+            <Row gutter={[20, 20]} style={{ marginBottom: 24 }}>
+                {kpiCards.map((kpi, idx) => (
+                    <Col xs={24} sm={12} lg={6} key={idx}>
+                        <Card
+                            className={styles["dashboard-kpi-card"]}
+                            bordered={false}
+                        >
+                            <div className={styles["kpi-icon-wrapper"]} style={{ background: kpi.bgGradient }}>
+                                {kpi.icon}
+                            </div>
+                            <Statistic
+                                title={kpi.title}
+                                value={kpi.value}
+                                formatter={formatter}
+                                valueStyle={{ color: kpi.color, fontSize: 28, fontWeight: 700 }}
+                                suffix={kpi.suffix && <span style={{ fontSize: 16, color: '#8c8c8c', fontWeight: 400 }}>{kpi.suffix}</span>}
+                            />
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
+
+            {/* Charts Row */}
+            <Row gutter={[20, 20]} style={{ marginBottom: 24 }}>
+                {/* Resume Pie Chart */}
+                <Col xs={24} lg={10}>
+                    <Card
+                        title={
+                            <span>
+                                <FileTextOutlined style={{ marginRight: 8, color: '#4078ff' }} />
+                                Hồ sơ theo trạng thái
+                            </span>
+                        }
+                        className={styles["dashboard-chart-card"]}
+                        bordered={false}
+                    >
+                        {resumePieData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height={300}>
+                                <PieChart>
+                                    <Pie
+                                        data={resumePieData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={100}
+                                        paddingAngle={4}
+                                        dataKey="value"
+                                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                    >
+                                        {resumePieData.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={RESUME_COLORS[entry.status] || '#8884d8'}
+                                            />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        formatter={(value: number) => [`${value} hồ sơ`, '']}
+                                    />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: 60, color: '#8c8c8c' }}>
+                                Chưa có hồ sơ nào
+                            </div>
+                        )}
+                    </Card>
+                </Col>
+
+                {/* Top Skills Bar Chart */}
+                <Col xs={24} lg={14}>
+                    <Card
+                        title={
+                            <span>
+                                <FireOutlined style={{ marginRight: 8, color: '#f5794d' }} />
+                                Top kỹ năng được yêu cầu nhiều nhất
+                            </span>
+                        }
+                        className={styles["dashboard-chart-card"]}
+                        bordered={false}
+                    >
+                        {skillBarData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height={300}>
+                                <BarChart data={skillBarData} layout="vertical" margin={{ left: 20, right: 30 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                    <XAxis type="number" allowDecimals={false} />
+                                    <YAxis
+                                        type="category"
+                                        dataKey="name"
+                                        width={120}
+                                        tick={{ fontSize: 13, fontWeight: 500 }}
+                                    />
+                                    <Tooltip
+                                        formatter={(value: number) => [`${value} việc làm`, 'Số lượng']}
+                                    />
+                                    <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={28}>
+                                        {skillBarData.map((entry, index) => (
+                                            <Cell key={`bar-${index}`} fill={entry.fill} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: 60, color: '#8c8c8c' }}>
+                                Chưa có dữ liệu kỹ năng
+                            </div>
+                        )}
                     </Card>
                 </Col>
             </Row>
 
-            <Row gutter={[20, 20]}>
-                <Col span={24} md={8}>
-                    <Card bordered={false}>
-                        <Statistic title="Active Users" value={112893} formatter={formatter} />
-                    </Card>
-                </Col>
-                <Col span={24} md={8}>
-                    <Card bordered={false}>
-                        <Statistic title="Jobs" value={893} formatter={formatter} />
-                    </Card>
-                </Col>
-                <Col span={24} md={8}>
-                    <Card bordered={false}>
-                        <Statistic title="Companies" value={1240} formatter={formatter} />
+            {/* Recent Jobs Table */}
+            <Row>
+                <Col span={24}>
+                    <Card
+                        title={
+                            <span>
+                                <ClockCircleOutlined style={{ marginRight: 8, color: '#1890ff' }} />
+                                Việc làm mới nhất
+                            </span>
+                        }
+                        className={styles["dashboard-chart-card"]}
+                        bordered={false}
+                    >
+                        <Table
+                            columns={jobColumns}
+                            dataSource={stats.recentJobs}
+                            rowKey="id"
+                            pagination={false}
+                            size="middle"
+                        />
                     </Card>
                 </Col>
             </Row>
         </div>
-    )
-}
+    );
+};
 
 export default DashboardPage;
