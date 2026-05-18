@@ -184,6 +184,7 @@ export interface IResume {
     updatedAt?: string;
     aiScore?: number;
     aiFeedback?: string;
+    companyName?: string;
 }
 
 export interface IPermission {

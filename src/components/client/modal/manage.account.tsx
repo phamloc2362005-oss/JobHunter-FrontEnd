@@ -20,6 +20,8 @@ interface IProps {
 const UserResume = (props: any) => {
     const [listCV, setListCV] = useState<IResume[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
+    const [openFeedbackModal, setOpenFeedbackModal] = useState<boolean>(false);
+    const [selectedResume, setSelectedResume] = useState<IResume | null>(null);
 
     useEffect(() => {
         const init = async () => {
@@ -61,6 +63,49 @@ const UserResume = (props: any) => {
             dataIndex: "status",
         },
         {
+            title: 'AI Score',
+            dataIndex: 'aiScore',
+            align: 'center' as const,
+            width: 120,
+            render: (text, record) => {
+                const score = record.aiScore || 0;
+                if (!score) {
+                    return (
+                        <Tag color="default" style={{ margin: 0, padding: '2px 8px', borderRadius: 4 }}>
+                            Analyzing...
+                        </Tag>
+                    );
+                }
+                const color = score >= 70 ? 'success' : score >= 50 ? 'warning' : 'error';
+                return (
+                    <Tag color={color} style={{ margin: 0, padding: '2px 8px', borderRadius: 4, fontWeight: 'bold' }}>
+                        {score}% Match
+                    </Tag>
+                );
+            }
+        },
+        {
+            title: 'AI Advice',
+            key: 'ai-advice',
+            align: 'center' as const,
+            width: 120,
+            render: (text, record) => {
+                return (
+                    <Button 
+                        type="link" 
+                        size="small"
+                        icon={<ThunderboltOutlined />}
+                        onClick={() => {
+                            setSelectedResume(record);
+                            setOpenFeedbackModal(true);
+                        }}
+                    >
+                        Review
+                    </Button>
+                )
+            }
+        },
+        {
             title: 'Date Applied',
             dataIndex: "createdAt",
             render(value, record, index) {
@@ -91,6 +136,78 @@ const UserResume = (props: any) => {
                 loading={isFetching}
                 pagination={false}
             />
+
+            <Modal
+                title={
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <ThunderboltOutlined style={{ color: "#1677ff", fontSize: 20 }} />
+                        <span>AI Resume Assistant & Feedback</span>
+                    </div>
+                }
+                open={openFeedbackModal}
+                onCancel={() => {
+                    setOpenFeedbackModal(false);
+                    setSelectedResume(null);
+                }}
+                footer={[
+                    <Button key="close" type="primary" onClick={() => setOpenFeedbackModal(false)}>
+                        Got it!
+                    </Button>
+                ]}
+                destroyOnClose
+                width={600}
+                centered
+            >
+                {selectedResume && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingTop: 12 }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f0f7ff", padding: "16px 20px", borderRadius: 12, border: "1px solid #bae0ff" }}>
+                            <div>
+                                <div style={{ fontSize: 12, color: "#8c8c8c" }}>Position Applied</div>
+                                <div style={{ fontSize: 16, fontWeight: 600, color: "#262626", marginTop: 4 }}>
+                                    {selectedResume.jobId && typeof selectedResume.jobId === 'object' ? selectedResume.jobId.name : selectedResume.jobId}
+                                </div>
+                                <div style={{ fontSize: 13, color: "#595959", marginTop: 2 }}>{selectedResume.companyName}</div>
+                            </div>
+                            
+                            <div style={{ textAlign: "center" }}>
+                                <div style={{ fontSize: 12, color: "#8c8c8c", marginBottom: 4 }}>Match Score</div>
+                                <div style={{ 
+                                    fontSize: 28, 
+                                    fontWeight: 700, 
+                                    color: (selectedResume.aiScore || 0) >= 70 ? "#52c41a" : (selectedResume.aiScore || 0) >= 50 ? "#faad14" : "#ff4d4f"
+                                }}>
+                                    {selectedResume.aiScore ? `${selectedResume.aiScore}%` : "—"}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style={{ fontSize: 15, fontWeight: 600, color: "#262626", marginBottom: 8 }}>
+                                💡 AI Analysis & Suggestions
+                            </div>
+                            <div style={{ 
+                                whiteSpace: 'pre-wrap', 
+                                backgroundColor: '#f9f9f9', 
+                                padding: '16px', 
+                                borderRadius: '12px', 
+                                border: '1px solid #f0f0f0',
+                                color: '#434343',
+                                fontSize: 14,
+                                lineHeight: '1.6'
+                            }}>
+                                {selectedResume.aiFeedback || "Our AI is currently analyzing your resume for this position. Please check back in a few moments!"}
+                            </div>
+                        </div>
+
+                        <Alert
+                            message="How to use this feedback?"
+                            description="You can use these tailored suggestions to edit your profile and optimize your CV in our CV Builder tab to increase your matching score next time!"
+                            type="info"
+                            showIcon
+                        />
+                    </div>
+                )}
+            </Modal>
         </div>
     )
 }
