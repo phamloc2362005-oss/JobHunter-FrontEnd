@@ -106,8 +106,8 @@ const MockInterviewPage = () => {
             );
 
             // res.data là IBackendRes object { statusCode, data: [...] }
-            // Câu hỏi nằm ở res.data.data, KHÔNG phải res.data!
-            let questions: any = res?.data?.data;
+            // Câu hỏi nằm ở res.data
+            let questions: any = res?.data;
             console.log('DEBUG FE questions:', questions, 'raw res.data:', res?.data);
 
             // Fallback: nếu BE trả về string thay vì array
@@ -147,8 +147,8 @@ const MockInterviewPage = () => {
                 answer,
                 jobContext
             );
-            // res.data là IBackendRes wrapper, đánh giá nằm ở res.data.data
-            const evalData = res?.data?.data as IInterviewEvaluation | null;
+            // res.data là IBackendRes wrapper, đánh giá nằm ở res.data
+            const evalData = res?.data as IInterviewEvaluation | null;
             console.log('DEBUG FE evalData:', evalData, 'raw:', res?.data);
             setCurrentEval(evalData);
 

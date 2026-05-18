@@ -24,14 +24,14 @@ import styles from 'styles/admin.module.scss';
 const RESUME_COLORS: Record<string, string> = {
     PENDING: '#faad14',
     REVIEWING: '#1890ff',
-    PPROVED: '#52c41a',
+    APPROVED: '#52c41a',
     REJECTED: '#ff4d4f',
 };
 
 const RESUME_LABELS: Record<string, string> = {
     PENDING: 'Pending',
     REVIEWING: 'Reviewing',
-    PPROVED: 'Approved',
+    APPROVED: 'Approved',
     REJECTED: 'Rejected',
 };
 
@@ -243,7 +243,7 @@ const DashboardPage = () => {
                                         outerRadius={100}
                                         paddingAngle={4}
                                         dataKey="value"
-                                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                        label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                                     >
                                         {resumePieData.map((entry, index) => (
                                             <Cell
@@ -253,7 +253,7 @@ const DashboardPage = () => {
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        formatter={(value: number) => [`${value} resumes`, '']}
+                                        formatter={(value: any) => [`${value} resumes`, '']}
                                     />
                                     <Legend />
                                 </PieChart>
@@ -290,7 +290,7 @@ const DashboardPage = () => {
                                         tick={{ fontSize: 13, fontWeight: 500 }}
                                     />
                                     <Tooltip
-                                        formatter={(value: number) => [`${value} jobs`, 'Count']}
+                                        formatter={(value: any) => [`${value} jobs`, 'Count']}
                                     />
                                     <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={28}>
                                         {skillBarData.map((entry, index) => (
