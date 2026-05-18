@@ -144,7 +144,7 @@ const Header = (props: any) => {
                                             Top IT Companies
                                         </Link>
                                         <Link className={current === '/cv-builder' ? styles["nav-active"] : styles["nav-link"]} to={'/cv-builder'}>
-                                            ✨ CV Builder
+                                            CV Builder
                                         </Link>
                                     </div>
                                 </div>
