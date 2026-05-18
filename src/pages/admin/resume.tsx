@@ -63,7 +63,7 @@ const ResumePage = () => {
             hideInSearch: true,
         },
         {
-            title: 'Trạng Thái',
+            title: 'Status',
             dataIndex: 'status',
             sorter: true,
             renderFormItem: (item, props, form) => (
@@ -77,7 +77,7 @@ const ResumePage = () => {
                         APPROVED: 'APPROVED',
                         REJECTED: 'REJECTED',
                     }}
-                    placeholder="Chọn level"
+                    placeholder="Select status"
                 />
             ),
         },
@@ -93,7 +93,7 @@ const ResumePage = () => {
             hideInSearch: true,
         },
         {
-            title: 'Điểm AI',
+            title: 'AI Score',
             dataIndex: 'aiScore',
             width: 100,
             render: (text, record, index, action) => {
@@ -237,20 +237,20 @@ const ResumePage = () => {
                                 </Col>
                                 <Col xs={24} sm="auto" flex={1}>
                                     <div>
-                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý CV</h2>
-                                        <p className={styles["card-subtitle"]}>Quản lý hồ sơ ứng viên, xem xét và duyệt CV từ các ứng viên tham gia tuyển dụng trên nền tảng.</p>
+                                        <h2 className={styles["card-title"]}>Resume Management</h2>
+                                        <p className={styles["card-subtitle"]}>Manage applicant resumes, review and approve CVs from candidates participating in recruitment on the platform.</p>
                                     </div>
                                 </Col>
                             </Row>
                         </Card>
                     </Col>
                     <Col xs={24} lg={8}>
-                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #e53935' }}>
                             <Statistic
-                                title="TỔNG CV"
+                                title="TOTAL RESUMES"
                                 value={meta.total || 0}
                                 prefix={<FileOutlined style={{ marginRight: 8 }} />}
-                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                                valueStyle={{ color: '#e53935', fontSize: 32, fontWeight: 700 }}
                             />
                         </Card>
                     </Col>
@@ -258,7 +258,7 @@ const ResumePage = () => {
 
                 <DataTable<IResume>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Resumes"
+                    headerTitle="Resume List"
                     rowKey="id"
                     loading={isFetching}
                     columns={columns}
@@ -274,7 +274,7 @@ const ResumePage = () => {
                             pageSize: meta.pageSize,
                             showSizeChanger: true,
                             total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} of {total} rows</div>) }
                         }
                     }
                     rowSelection={false}

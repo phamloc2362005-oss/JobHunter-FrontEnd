@@ -32,11 +32,11 @@ const UserPage = () => {
         if (id) {
             const res = await callDeleteUser(id);
             if (+res.statusCode === 200) {
-                message.success('Xóa User thành công');
+                message.success('User deleted successfully');
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
+                    message: 'An error occurred',
                     description: res.message
                 });
             }
@@ -49,7 +49,7 @@ const UserPage = () => {
 
     const columns: ProColumns<IUser>[] = [
         {
-            title: 'STT',
+            title: 'No.',
             key: 'index',
             width: 50,
             align: "center",
@@ -140,11 +140,11 @@ const UserPage = () => {
                     >
                         <Popconfirm
                             placement="leftTop"
-                            title={"Xác nhận xóa user"}
-                            description={"Bạn có chắc chắn muốn xóa user này ?"}
+                            title={"Confirm delete user"}
+                            description={"Are you sure you want to delete this user?"}
                             onConfirm={() => handleDeleteUser(entity.id)}
-                            okText="Xác nhận"
-                            cancelText="Hủy"
+                            okText="Confirm"
+                            cancelText="Cancel"
                         >
                             <span style={{ cursor: "pointer", margin: "0 10px" }}>
                                 <DeleteOutlined
@@ -221,20 +221,20 @@ const UserPage = () => {
                                 </Col>
                                 <Col xs={24} sm="auto" flex={1}>
                                     <div>
-                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Người dùng</h2>
-                                        <p className={styles["card-subtitle"]}>Quản lý, phân quyền và giám sát hoạt động của các tài khoản quản trị và người dùng trong hệ thống CareerAdmin.</p>
+                                        <h2 className={styles["card-title"]}>User Management</h2>
+                                        <p className={styles["card-subtitle"]}>Manage, assign roles, and monitor accounts of admins and users in the CareerAdmin system.</p>
                                     </div>
                                 </Col>
                             </Row>
                         </Card>
                     </Col>
                     <Col xs={24} lg={8}>
-                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #e53935' }}>
                             <Statistic
-                                title="TỔNG NGƯỜI DÙNG"
+                                title="TOTAL USERS"
                                 value={meta.total || 0}
                                 prefix={<UserOutlined style={{ marginRight: 8 }} />}
-                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                                valueStyle={{ color: '#e53935', fontSize: 32, fontWeight: 700 }}
                             />
                         </Card>
                     </Col>
@@ -242,7 +242,7 @@ const UserPage = () => {
 
                 <DataTable<IUser>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Users"
+                    headerTitle="User List"
                     rowKey="id"
                     loading={isFetching}
                     columns={columns}
@@ -258,7 +258,7 @@ const UserPage = () => {
                             pageSize: meta.pageSize,
                             showSizeChanger: true,
                             total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} of {total} rows</div>) }
                         }
                     }
                     rowSelection={false}
@@ -269,7 +269,7 @@ const UserPage = () => {
                                 type="primary"
                                 onClick={() => setOpenModal(true)}
                             >
-                                Thêm mới
+                            Add New
                             </Button>
                         );
                     }}

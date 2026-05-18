@@ -51,11 +51,11 @@ const RolePage = () => {
         if (id) {
             const res = await callDeleteRole(id);
             if (res && res.statusCode === 200) {
-                message.success('Xóa Role thành công');
+                message.success('Role deleted successfully');
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
+                    message: 'An error occurred',
                     description: res.message
                 });
             }
@@ -86,7 +86,7 @@ const RolePage = () => {
             sorter: true,
         },
         {
-            title: 'Trạng thái',
+            title: 'Status',
             dataIndex: 'active',
             render(dom, entity, index, action, schema) {
                 return <>
@@ -150,11 +150,11 @@ const RolePage = () => {
                     >
                         <Popconfirm
                             placement="leftTop"
-                            title={"Xác nhận xóa role"}
-                            description={"Bạn có chắc chắn muốn xóa role này ?"}
+                            title={"Confirm delete role"}
+                            description={"Are you sure you want to delete this role?"}
                             onConfirm={() => handleDeleteRole(entity.id)}
-                            okText="Xác nhận"
-                            cancelText="Hủy"
+                            okText="Confirm"
+                            cancelText="Cancel"
                         >
                             <span style={{ cursor: "pointer", margin: "0 10px" }}>
                                 <DeleteOutlined
@@ -224,20 +224,20 @@ const RolePage = () => {
                                 </Col>
                                 <Col xs={24} sm="auto" flex={1}>
                                     <div>
-                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Vai Trò</h2>
-                                        <p className={styles["card-subtitle"]}>Quản lý vai trò người dùng, phân quyền truy cập và cấp độ quyền hạn cho các thành viên trong hệ thống.</p>
+                                        <h2 className={styles["card-title"]}>Role Management</h2>
+                                        <p className={styles["card-subtitle"]}>Manage user roles, assign access levels and permission grades to members in the system.</p>
                                     </div>
                                 </Col>
                             </Row>
                         </Card>
                     </Col>
                     <Col xs={24} lg={8}>
-                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #e53935' }}>
                             <Statistic
-                                title="TỔNG ROLE"
+                                title="TOTAL ROLES"
                                 value={meta.total || 0}
                                 prefix={<SecurityScanOutlined style={{ marginRight: 8 }} />}
-                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                                valueStyle={{ color: '#e53935', fontSize: 32, fontWeight: 700 }}
                             />
                         </Card>
                     </Col>
@@ -245,7 +245,7 @@ const RolePage = () => {
 
                 <DataTable<IRole>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Roles (Vai Trò)"
+                    headerTitle="Role List"
                     rowKey="id"
                     loading={isFetching}
                     columns={columns}
@@ -261,7 +261,7 @@ const RolePage = () => {
                             pageSize: meta.pageSize,
                             showSizeChanger: true,
                             total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} of {total} rows</div>) }
                         }
                     }
                     rowSelection={false}
@@ -272,7 +272,7 @@ const RolePage = () => {
                                 type="primary"
                                 onClick={() => setOpenModal(true)}
                             >
-                                Thêm mới
+                                Add New
                             </Button>
                         );
                     }}

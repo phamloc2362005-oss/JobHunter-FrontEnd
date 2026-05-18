@@ -78,13 +78,13 @@ const ExpertiseCategoryPage = () => {
 
         const res = await callDeleteExpertiseCategory(id);
         if (res && +res.statusCode === 200) {
-            message.success("Xóa danh mục thành công");
+            message.success("Category deleted successfully");
             reloadTable();
             return;
         }
 
         notification.error({
-            message: "Có lỗi xảy ra",
+            message: "An error occurred",
             description: res.message,
         });
     };
@@ -97,14 +97,14 @@ const ExpertiseCategoryPage = () => {
                 : await callCreateExpertiseCategory(values.name.trim());
 
             if (res?.data) {
-                message.success(dataInit?.id ? "Cập nhật danh mục thành công" : "Thêm mới danh mục thành công");
+                message.success(dataInit?.id ? "Category updated successfully" : "Category created successfully");
                 handleReset();
                 reloadTable();
                 return true;
             }
 
             notification.error({
-                message: "Có lỗi xảy ra",
+                message: "An error occurred",
                 description: res.message,
             });
             return false;
@@ -115,7 +115,7 @@ const ExpertiseCategoryPage = () => {
 
     const columns: ProColumns<IExpertiseCategory>[] = [
         {
-            title: "STT",
+            title: "No.",
             key: "index",
             width: 60,
             align: "center",
@@ -128,17 +128,17 @@ const ExpertiseCategoryPage = () => {
             sorter: true,
         },
         {
-            title: "Người tạo",
+            title: "Created By",
             dataIndex: "createdBy",
             hideInSearch: true,
         },
         {
-            title: "Người cập nhật",
+            title: "Updated By",
             dataIndex: "updatedBy",
             hideInSearch: true,
         },
         {
-            title: "Ngày tạo",
+            title: "Created At",
             dataIndex: "createdAt",
             sorter: true,
             hideInSearch: true,
@@ -146,7 +146,7 @@ const ExpertiseCategoryPage = () => {
             render: (_, entity) => entity.createdAt ? dayjs(entity.createdAt).format("DD-MM-YYYY HH:mm:ss") : "",
         },
         {
-            title: "Ngày cập nhật",
+            title: "Updated At",
             dataIndex: "updatedAt",
             sorter: true,
             hideInSearch: true,
@@ -154,7 +154,7 @@ const ExpertiseCategoryPage = () => {
             render: (_, entity) => entity.updatedAt ? dayjs(entity.updatedAt).format("DD-MM-YYYY HH:mm:ss") : "",
         },
         {
-            title: "Thao tác",
+            title: "Actions",
             hideInSearch: true,
             width: 90,
             render: (_value, entity) => (
@@ -169,11 +169,11 @@ const ExpertiseCategoryPage = () => {
                     />
                     <Popconfirm
                         placement="leftTop"
-                        title="Xác nhận xóa danh mục"
-                        description="Bạn có chắc chắn muốn xóa danh mục này?"
+                        title="Confirm delete category"
+                        description="Are you sure you want to delete this category?"
                         onConfirm={() => handleDelete(entity.id)}
-                        okText="Xác nhận"
-                        cancelText="Hủy"
+                        okText="Confirm"
+                        cancelText="Cancel"
                     >
                         <DeleteOutlined style={{ fontSize: 18, color: "#ff4d4f" }} />
                     </Popconfirm>
@@ -195,20 +195,20 @@ const ExpertiseCategoryPage = () => {
                             </Col>
                             <Col xs={24} sm="auto" flex={1}>
                                 <div>
-                                    <h2 className={styles["card-title"]}>Quản lý Nhóm chuyên môn IT</h2>
-                                    <p className={styles["card-subtitle"]}>Thêm, chỉnh sửa và xóa nhóm chuyên môn để cập nhật dữ liệu cho IT Expertise Summary.</p>
+                                    <h2 className={styles["card-title"]}>Expertise Category Management</h2>
+                                    <p className={styles["card-subtitle"]}>Add, edit, and delete expertise categories to update data for the IT Expertise Summary.</p>
                                 </div>
                             </Col>
                         </Row>
                     </Card>
                 </Col>
                 <Col xs={24} lg={8}>
-                    <Card className={styles["stat-card"]} style={{ borderLeft: "4px solid #4078ff" }}>
+                    <Card className={styles["stat-card"]} style={{ borderLeft: "4px solid #e53935" }}>
                         <Statistic
-                            title="TỔNG DANH MỤC"
+                            title="TOTAL CATEGORIES"
                             value={meta.total || 0}
                             prefix={<ClusterOutlined style={{ marginRight: 8 }} />}
-                            valueStyle={{ color: "#4078ff", fontSize: 32, fontWeight: 700 }}
+                            valueStyle={{ color: "#e53935", fontSize: 32, fontWeight: 700 }}
                         />
                     </Card>
                 </Col>
@@ -216,7 +216,7 @@ const ExpertiseCategoryPage = () => {
 
             <DataTable<IExpertiseCategory>
                 actionRef={tableRef}
-                headerTitle="Danh sách Nhóm chuyên môn IT"
+                headerTitle="IT Expertise Category List"
                 rowKey="id"
                 loading={loading}
                 columns={columns}
@@ -231,18 +231,18 @@ const ExpertiseCategoryPage = () => {
                     pageSize: meta.pageSize,
                     showSizeChanger: true,
                     total: meta.total,
-                    showTotal: (total, range) => <div>{range[0]}-{range[1]} trên {total} bản ghi</div>,
+                    showTotal: (total, range) => <div>{range[0]}-{range[1]} of {total} records</div>,
                 }}
                 rowSelection={false}
                 toolBarRender={() => [
                     <Button key="create" icon={<PlusOutlined />} type="primary" onClick={() => setOpenModal(true)}>
-                        Thêm mới
+                        Add New
                     </Button>,
                 ]}
             />
 
             <ModalForm
-                title={dataInit?.id ? "Cập nhật danh mục" : "Tạo mới danh mục"}
+                title={dataInit?.id ? "Update Category" : "Create New Category"}
                 open={openModal}
                 form={form}
                 onFinish={handleSubmit}
@@ -255,18 +255,18 @@ const ExpertiseCategoryPage = () => {
                     width: isMobile ? "100%" : 520,
                     keyboard: false,
                     maskClosable: false,
-                    okText: dataInit?.id ? "Cập nhật" : "Tạo mới",
-                    cancelText: "Hủy",
+                    okText: dataInit?.id ? "Update" : "Create",
+                    cancelText: "Cancel",
                 }}
             >
                 <ProFormText
                     name="name"
-                    label="Tên danh mục"
-                    placeholder="Nhập tên danh mục"
+                    label="Category Name"
+                    placeholder="Enter category name"
                     rules={[
-                        { required: true, message: "Vui lòng nhập tên danh mục" },
-                        { min: 2, message: "Tên danh mục phải có ít nhất 2 ký tự" },
-                        { max: 100, message: "Tên danh mục không được vượt quá 100 ký tự" },
+                        { required: true, message: "Please enter category name" },
+                        { min: 2, message: "Name must be at least 2 characters" },
+                        { max: 100, message: "Name must not exceed 100 characters" },
                     ]}
                 />
             </ModalForm>

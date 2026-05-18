@@ -32,11 +32,11 @@ const PermissionPage = () => {
         if (id) {
             const res = await callDeletePermission(id);
             if (res && res.statusCode === 200) {
-                message.success('Xóa Permission thành công');
+                message.success('Permission deleted successfully');
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
+                    message: 'An error occurred',
                     description: res.error
                 });
             }
@@ -142,11 +142,11 @@ const PermissionPage = () => {
                     >
                         <Popconfirm
                             placement="leftTop"
-                            title={"Xác nhận xóa permission"}
-                            description={"Bạn có chắc chắn muốn xóa permission này ?"}
+                            title={"Confirm delete permission"}
+                            description={"Are you sure you want to delete this permission?"}
                             onConfirm={() => handleDeletePermission(entity.id)}
-                            okText="Xác nhận"
-                            cancelText="Hủy"
+                            okText="Confirm"
+                            cancelText="Cancel"
                         >
                             <span style={{ cursor: "pointer", margin: "0 10px" }}>
                                 <DeleteOutlined
@@ -227,20 +227,20 @@ const PermissionPage = () => {
                                 </Col>
                                 <Col xs={24} sm="auto" flex={1}>
                                     <div>
-                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Quyền Hạn</h2>
-                                        <p className={styles["card-subtitle"]}>Quản lý danh sách quyền truy cập, cấp phép chức năng và kiểm soát truy cập tài nguyên hệ thống.</p>
+                                        <h2 className={styles["card-title"]}>Permission Management</h2>
+                                        <p className={styles["card-subtitle"]}>Manage access rights, grant functionality permissions, and control system resource access.</p>
                                     </div>
                                 </Col>
                             </Row>
                         </Card>
                     </Col>
                     <Col xs={24} lg={8}>
-                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #e53935' }}>
                             <Statistic
-                                title="TỔNG PERMISSION"
+                                title="TOTAL PERMISSIONS"
                                 value={meta.total || 0}
                                 prefix={<LockOutlined style={{ marginRight: 8 }} />}
-                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                                valueStyle={{ color: '#e53935', fontSize: 32, fontWeight: 700 }}
                             />
                         </Card>
                     </Col>
@@ -248,7 +248,7 @@ const PermissionPage = () => {
 
                 <DataTable<IPermission>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Permissions (Quyền Hạn)"
+                    headerTitle="Permission List"
                     rowKey="id"
                     loading={isFetching}
                     columns={columns}
@@ -264,7 +264,7 @@ const PermissionPage = () => {
                             pageSize: meta.pageSize,
                             showSizeChanger: true,
                             total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} of {total} rows</div>) }
                         }
                     }
                     rowSelection={false}
@@ -275,7 +275,7 @@ const PermissionPage = () => {
                                 type="primary"
                                 onClick={() => setOpenModal(true)}
                             >
-                                Thêm mới
+                                Add New
                             </Button>
                         );
                     }}

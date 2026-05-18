@@ -30,11 +30,11 @@ const CompanyPage = () => {
         if (id) {
             const res = await callDeleteCompany(id);
             if (res && +res.statusCode === 200) {
-                message.success('Xóa Company thành công');
+                message.success('Company deleted successfully');
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
+                    message: 'An error occurred',
                     description: res.message
                 });
             }
@@ -123,11 +123,11 @@ const CompanyPage = () => {
                     >
                         <Popconfirm
                             placement="leftTop"
-                            title={"Xác nhận xóa company"}
-                            description={"Bạn có chắc chắn muốn xóa company này ?"}
+                            title={"Confirm delete company"}
+                            description={"Are you sure you want to delete this company?"}
                             onConfirm={() => handleDeleteCompany(entity.id)}
-                            okText="Xác nhận"
-                            cancelText="Hủy"
+                            okText="Confirm"
+                            cancelText="Cancel"
                         >
                             <span style={{ cursor: "pointer", margin: "0 10px" }}>
                                 <DeleteOutlined
@@ -207,20 +207,20 @@ const CompanyPage = () => {
                                 </Col>
                                 <Col xs={24} sm="auto" flex={1}>
                                     <div>
-                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Công ty</h2>
-                                        <p className={styles["card-subtitle"]}>Quản lý thông tin công ty, cập nhật hồ sơ và theo dõi hoạt động tuyển dụng của các doanh nghiệp trên nền tảng CareerAdmin.</p>
+                                        <h2 className={styles["card-title"]}>Company Management</h2>
+                                        <p className={styles["card-subtitle"]}>Manage company information, update profiles, and track recruitment activities of businesses on the CareerAdmin platform.</p>
                                     </div>
                                 </Col>
                             </Row>
                         </Card>
                     </Col>
                     <Col xs={24} lg={8}>
-                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #e53935' }}>
                             <Statistic
-                                title="TỔNG CÔNG TY"
+                                title="TOTAL COMPANIES"
                                 value={meta.total || 0}
                                 prefix={<ShopOutlined style={{ marginRight: 8 }} />}
-                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                                valueStyle={{ color: '#e53935', fontSize: 32, fontWeight: 700 }}
                             />
                         </Card>
                     </Col>
@@ -228,7 +228,7 @@ const CompanyPage = () => {
 
                 <DataTable<ICompany>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Công Ty"
+                    headerTitle="Company List"
                     rowKey="id"
                     loading={isFetching}
                     columns={columns}
@@ -244,7 +244,7 @@ const CompanyPage = () => {
                             pageSize: meta.pageSize,
                             showSizeChanger: true,
                             total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} of {total} rows</div>) }
                         }
                     }
                     rowSelection={false}
@@ -259,7 +259,7 @@ const CompanyPage = () => {
                                     type="primary"
                                     onClick={() => setOpenModal(true)}
                                 >
-                                    Thêm mới
+                                    Add New
                                 </Button>
                             </Access>
                         );

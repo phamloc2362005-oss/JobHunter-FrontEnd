@@ -1,9 +1,9 @@
-// CareerAdmin-style admin shell — colors & surfaces only
-$admin-primary: #0d47a1;
-$admin-page-bg: #f4f6f9;
-$admin-border: #e5e8ef;
+// CareerAdmin-style admin shell — RED theme
+$admin-primary: #b91c1c;
+$admin-page-bg: #f9f5f5;
+$admin-border: #f0e5e5;
 $admin-text: #1a1d21;
-$admin-text-muted: #5f6368;
+$admin-text-muted: #6b5555;
 
 .adminLayout {
     min-height: 100vh;
@@ -11,9 +11,9 @@ $admin-text-muted: #5f6368;
 
     // ----- Sider -----
     :global(.ant-layout-sider) {
-        background: linear-gradient(180deg, #0b1b3a 0%, #081530 100%) !important;
+        background: linear-gradient(180deg, #1a0505 0%, #110303 100%) !important;
         border-right: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 2px 0 18px rgba(2, 6, 23, 0.35);
+        box-shadow: 2px 0 18px rgba(23, 2, 2, 0.35);
     }
 
     :global(.ant-layout-sider-trigger) {
@@ -53,24 +53,24 @@ $admin-text-muted: #5f6368;
     }
 
     :global(.ant-layout-sider .ant-menu-light .ant-menu-item:hover) {
-        color: #4078ff;
+        color: #e53935;
     }
 
     :global(.ant-layout-sider .ant-menu-dark .ant-menu-item:hover) {
-        background: rgba(64, 120, 255, 0.12) !important;
+        background: rgba(229, 57, 53, 0.18) !important;
         color: #fff !important;
     }
 
     :global(.ant-layout-sider .ant-menu-light .ant-menu-item-selected) {
-        background: rgba(64, 120, 255, 0.09) !important;
-        color: #4078ff !important;
+        background: rgba(229, 57, 53, 0.09) !important;
+        color: #e53935 !important;
         font-weight: 600;
-        border-right: 3px solid #4078ff;
+        border-right: 3px solid #e53935;
         border-radius: 8px 0 0 8px;
     }
 
     :global(.ant-layout-sider .ant-menu-dark .ant-menu-item-selected) {
-        background: rgba(64, 120, 255, 0.22) !important;
+        background: rgba(229, 57, 53, 0.28) !important;
         color: #fff !important;
         font-weight: 700;
     }
@@ -92,8 +92,8 @@ $admin-text-muted: #5f6368;
     :global(.ant-pro-table) {
         :global(.ant-pro-card) {
             border-radius: 12px;
-            border: 1px solid #eef0f4;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+            border: 1px solid #f5e5e5;
+            box-shadow: 0 1px 3px rgba(42, 15, 15, 0.06);
             overflow: hidden;
         }
 
@@ -102,7 +102,7 @@ $admin-text-muted: #5f6368;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
-            border: 1px solid #f0f0f0;
+            border: 1px solid #f5e0e0;
 
             // Ensure search actions align with inputs (same row, bottom aligned)
             :global(.ant-pro-query-filter) {
@@ -184,15 +184,15 @@ $admin-text-muted: #5f6368;
 
                 &:hover {
                     background: #fff !important;
-                    border-color: #b3d8ff !important;
+                    border-color: #ffb3b3 !important;
                 }
 
                 &:focus,
                 &.ant-input-focused,
                 &.ant-select-focused .ant-select-selector {
                     background: #fff !important;
-                    border-color: #4078ff !important;
-                    box-shadow: 0 0 0 2px rgba(64, 120, 255, 0.15) !important;
+                    border-color: #e53935 !important;
+                    box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.15) !important;
                 }
             }
 
@@ -208,8 +208,8 @@ $admin-text-muted: #5f6368;
             }
 
             :global(.ant-btn-primary) {
-                background: #4078ff !important;
-                border-color: #4078ff !important;
+                background: #e53935 !important;
+                border-color: #e53935 !important;
                 border-radius: 8px !important;
                 height: 40px !important;
                 padding: 0 32px !important;
@@ -218,13 +218,13 @@ $admin-text-muted: #5f6368;
                 white-space: nowrap;
 
                 &:hover {
-                    background: #2d5ae6 !important;
-                    border-color: #2d5ae6 !important;
+                    background: #c62828 !important;
+                    border-color: #c62828 !important;
                 }
 
                 &:active {
-                    background: #1a3acc !important;
-                    border-color: #1a3acc !important;
+                    background: #b71c1c !important;
+                    border-color: #b71c1c !important;
                 }
             }
 
@@ -239,8 +239,8 @@ $admin-text-muted: #5f6368;
                 background: #fff !important;
 
                 &:hover {
-                    color: #4078ff !important;
-                    border-color: #4078ff !important;
+                    color: #e53935 !important;
+                    border-color: #e53935 !important;
                 }
             }
         }
@@ -260,8 +260,8 @@ $admin-text-muted: #5f6368;
     }
 
     :global(.ant-pagination .ant-pagination-item-active) {
-        border-color: #4078ff !important;
-        background: #4078ff !important;
+        border-color: #e53935 !important;
+        background: #e53935 !important;
 
         a {
             color: #fff;
@@ -285,43 +285,43 @@ $admin-text-muted: #5f6368;
             border-color: #ddd !important;
 
             &:hover {
-                border-color: #b3d8ff !important;
+                border-color: #ffb3b3 !important;
             }
 
             &:focus,
             &.ant-input-focused,
             &.ant-select-focused .ant-select-selector,
             &.ant-picker-focused .ant-picker {
-                border-color: #4078ff !important;
-                box-shadow: 0 0 0 2px rgba(64, 120, 255, 0.2) !important;
+                border-color: #e53935 !important;
+                box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2) !important;
             }
         }
     }
 
     // ----- Primary Button -----
     :global(.ant-btn-primary) {
-        background: #4078ff !important;
-        border-color: #4078ff !important;
+        background: #e53935 !important;
+        border-color: #e53935 !important;
 
         &:hover {
-            background: #2d5ae6 !important;
-            border-color: #2d5ae6 !important;
+            background: #c62828 !important;
+            border-color: #c62828 !important;
         }
 
         &:active {
-            background: #1a3acc !important;
-            border-color: #1a3acc !important;
+            background: #b71c1c !important;
+            border-color: #b71c1c !important;
         }
     }
 }
 
 .user-header-section {
-    background: linear-gradient(180deg, #2b3138 0%, #252a32 100%);
+    background: linear-gradient(180deg, #3b1010 0%, #2d0b0b 100%);
     padding: 40px 30px;
     border-radius: 12px;
     margin-bottom: 30px;
     color: #fff;
-    box-shadow: 0 4px 20px rgba(13, 71, 161, 0.15);
+    box-shadow: 0 4px 20px rgba(161, 13, 13, 0.15);
 
     .header-content {
         max-width: 1200px;
@@ -343,11 +343,11 @@ $admin-text-muted: #5f6368;
 }
 
 .admin-title-card {
-    background: linear-gradient(135deg, #2b3138 0%, #252a32 100%);
+    background: linear-gradient(135deg, #3b1010 0%, #2d0b0b 100%);
     border: none;
     border-radius: 12px;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(43, 49, 56, 0.15);
+    box-shadow: 0 4px 12px rgba(59, 16, 16, 0.2);
 
     :global(.ant-card-body) {
         padding: 24px;
@@ -356,7 +356,7 @@ $admin-text-muted: #5f6368;
     .card-icon {
         width: 60px;
         height: 60px;
-        background: #4078ff;
+        background: #e53935;
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -382,19 +382,19 @@ $admin-text-muted: #5f6368;
 
 .stat-card {
     border-radius: 8px;
-    border: 1px solid #eef0f4;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    border: 1px solid #f5e5e5;
+    box-shadow: 0 2px 8px rgba(42, 15, 15, 0.06);
     transition: all 0.3s ease;
 
     &:hover {
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 4px 16px rgba(42, 15, 15, 0.12);
         transform: translateY(-2px);
     }
 
     :global(.ant-statistic-title) {
         font-size: 14px;
         font-weight: 500;
-        color: #5f6368;
+        color: #6b5555;
     }
 }
 
@@ -433,13 +433,13 @@ $admin-text-muted: #5f6368;
 
 .adminLogoIcon {
     font-size: 22px;
-    color: #69a6ff;
+    color: #ff8a80;
 }
 
 .adminLogoText {
     font-size: 1.05rem;
     font-weight: 800;
-    color: #eaf2ff;
+    color: #ffe5e5;
     letter-spacing: -0.02em;
     white-space: nowrap;
 }
@@ -453,7 +453,7 @@ $admin-text-muted: #5f6368;
     min-height: 64px;
     background: #fff;
     border-bottom: 1px solid $admin-border;
-    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+    box-shadow: 0 1px 0 rgba(42, 15, 15, 0.04);
 }
 
 .adminHeaderLeft {
@@ -468,25 +468,25 @@ $admin-text-muted: #5f6368;
     width: 44px;
     height: 44px;
     border-radius: 10px;
-    color: #5f6368 !important;
+    color: #6b5555 !important;
 }
 
 .adminHeaderCollapseBtn:hover {
-    background: #f3f5f9 !important;
+    background: #fdf0f0 !important;
 }
 
 .adminHeaderUserBox {
     cursor: pointer;
     padding: 8px 10px;
     border-radius: 12px;
-    border: 1px solid #eef0f4;
+    border: 1px solid #f5e5e5;
     background: #fff;
     gap: 12px !important;
     margin-right: 8px;
 }
 
 .adminHeaderUserBox:hover {
-    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 2px 12px rgba(42, 15, 15, 0.08);
 }
 
 .adminHeaderUserText {
@@ -519,7 +519,7 @@ $admin-text-muted: #5f6368;
 }
 
 .adminHeaderAvatar {
-    background: #0d47a1 !important;
+    background: #b91c1c !important;
 }
 
 .adminContent {
@@ -538,8 +538,8 @@ $admin-text-muted: #5f6368;
     border-radius: 12px;
     min-height: auto;
     height: auto;
-    border: 1px solid #eef0f4;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    border: 1px solid #f5e5e5;
+    box-shadow: 0 1px 3px rgba(42, 15, 15, 0.06);
 
     .title {
         padding: 10px 0 20px 0;
@@ -555,14 +555,14 @@ $admin-text-muted: #5f6368;
 // ===== Dashboard KPI Cards =====
 .dashboard-kpi-card {
     border-radius: 12px;
-    border: 1px solid #eef0f4;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    border: 1px solid #f5e5e5;
+    box-shadow: 0 2px 8px rgba(42, 15, 15, 0.06);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
     position: relative;
 
     &:hover {
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 8px 24px rgba(42, 15, 15, 0.12);
         transform: translateY(-4px);
     }
 
@@ -599,12 +599,12 @@ $admin-text-muted: #5f6368;
 // ===== Dashboard Chart Cards =====
 .dashboard-chart-card {
     border-radius: 12px;
-    border: 1px solid #eef0f4;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    border: 1px solid #f5e5e5;
+    box-shadow: 0 2px 8px rgba(42, 15, 15, 0.06);
     height: 100%;
 
     :global(.ant-card-head) {
-        border-bottom: 1px solid #f0f2f5;
+        border-bottom: 1px solid #fce8e8;
         padding: 16px 24px;
 
         :global(.ant-card-head-title) {
@@ -621,22 +621,21 @@ $admin-text-muted: #5f6368;
     // Table inside chart card
     :global(.ant-table) {
         :global(.ant-table-thead > tr > th) {
-            background: #fafbfc;
+            background: #fdf5f5;
             font-weight: 600;
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            color: #5f6368;
-            border-bottom: 1px solid #eef0f4;
+            color: #6b5555;
+            border-bottom: 1px solid #f5e5e5;
         }
 
         :global(.ant-table-tbody > tr > td) {
-            border-bottom: 1px solid #f5f5f5;
+            border-bottom: 1px solid #fdf5f5;
         }
 
         :global(.ant-table-tbody > tr:hover > td) {
-            background: #f8faff;
+            background: #fff8f8;
         }
     }
 }
-

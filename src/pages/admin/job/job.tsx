@@ -28,11 +28,11 @@ const JobPage = () => {
         if (id) {
             const res = await callDeleteJob(id);
             if (res && res.statusCode === 200) {
-                message.success('Xóa Job thành công');
+                message.success('Job deleted successfully');
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
+                    message: 'An error occurred',
                     description: res.message
                 });
             }
@@ -45,7 +45,7 @@ const JobPage = () => {
 
     const columns: ProColumns<IJob>[] = [
         {
-            title: 'STT',
+            title: 'No.',
             key: 'index',
             width: 50,
             align: "center",
@@ -58,18 +58,18 @@ const JobPage = () => {
             hideInSearch: true,
         },
         {
-            title: 'Tên Job',
+            title: 'Job Title',
             dataIndex: 'name',
             sorter: true,
         },
         {
-            title: 'Công ty',
+            title: 'Company',
             dataIndex: ["company", "name"],
             sorter: true,
             hideInSearch: true,
         },
         {
-            title: 'Mức lương',
+            title: 'Salary',
             dataIndex: 'salary',
             sorter: true,
             render(dom, entity, index, action, schema) {
@@ -92,12 +92,12 @@ const JobPage = () => {
                         MIDDLE: 'MIDDLE',
                         SENIOR: 'SENIOR',
                     }}
-                    placeholder="Chọn level"
+                    placeholder="Select level"
                 />
             ),
         },
         {
-            title: 'Trạng thái',
+            title: 'Status',
             dataIndex: 'active',
             render(dom, entity, index, action, schema) {
                 return <>
@@ -161,11 +161,11 @@ const JobPage = () => {
                     >
                         <Popconfirm
                             placement="leftTop"
-                            title={"Xác nhận xóa job"}
-                            description={"Bạn có chắc chắn muốn xóa job này ?"}
+                            title={"Confirm delete job"}
+                            description={"Are you sure you want to delete this job?"}
                             onConfirm={() => handleDeleteJob(entity.id)}
-                            okText="Xác nhận"
-                            cancelText="Hủy"
+                            okText="Confirm"
+                            cancelText="Cancel"
                         >
                             <span style={{ cursor: "pointer", margin: "0 10px" }}>
                                 <DeleteOutlined
@@ -245,20 +245,20 @@ const JobPage = () => {
                                 </Col>
                                 <Col xs={24} sm="auto" flex={1}>
                                     <div>
-                                        <h2 className={styles["card-title"]}>Hệ thống Quản lý Việc Làm</h2>
-                                        <p className={styles["card-subtitle"]}>Quản lý các tin tuyển dụng, cập nhật thông tin công việc và giám sát yêu cầu cho các vị trí đang tuyển trên CareerAdmin.</p>
+                                        <h2 className={styles["card-title"]}>Job Management</h2>
+                                        <p className={styles["card-subtitle"]}>Manage job postings, update job information and monitor requirements for open positions on CareerAdmin.</p>
                                     </div>
                                 </Col>
                             </Row>
                         </Card>
                     </Col>
                     <Col xs={24} lg={8}>
-                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #4078ff' }}>
+                        <Card className={styles["stat-card"]} style={{ borderLeft: '4px solid #e53935' }}>
                             <Statistic
-                                title="TỔNG JOB"
+                                title="TOTAL JOBS"
                                 value={meta.total || 0}
                                 prefix={<FileTextOutlined style={{ marginRight: 8 }} />}
-                                valueStyle={{ color: '#4078ff', fontSize: 32, fontWeight: 700 }}
+                                valueStyle={{ color: '#e53935', fontSize: 32, fontWeight: 700 }}
                             />
                         </Card>
                     </Col>
@@ -266,7 +266,7 @@ const JobPage = () => {
 
                 <DataTable<IJob>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Jobs"
+                    headerTitle="Job List"
                     rowKey="id"
                     loading={isFetching}
                     columns={columns}
@@ -282,7 +282,7 @@ const JobPage = () => {
                             pageSize: meta.pageSize,
                             showSizeChanger: true,
                             total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} of {total} rows</div>) }
                         }
                     }
                     rowSelection={false}
@@ -293,7 +293,7 @@ const JobPage = () => {
                                 type="primary"
                                 onClick={() => navigate('upsert')}
                             >
-                                Thêm mới
+                                Add New
                             </Button>
                         );
                     }}

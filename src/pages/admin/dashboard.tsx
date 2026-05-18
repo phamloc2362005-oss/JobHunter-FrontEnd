@@ -29,10 +29,10 @@ const RESUME_COLORS: Record<string, string> = {
 };
 
 const RESUME_LABELS: Record<string, string> = {
-    PENDING: 'Chờ duyệt',
-    REVIEWING: 'Đang xem',
-    PPROVED: 'Đã duyệt',
-    REJECTED: 'Từ chối',
+    PENDING: 'Pending',
+    REVIEWING: 'Reviewing',
+    PPROVED: 'Approved',
+    REJECTED: 'Rejected',
 };
 
 const SKILL_COLORS = ['#4078ff', '#36cfc9', '#f5794d', '#9254de', '#faad14', '#ff85c0'];
@@ -49,7 +49,7 @@ const DashboardPage = () => {
                     setStats(res.data as any);
                 }
             } catch (err) {
-                message.error("Không thể tải dữ liệu dashboard");
+                message.error('Failed to load dashboard data');
             } finally {
                 setLoading(false);
             }
@@ -64,13 +64,13 @@ const DashboardPage = () => {
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-                <Spin size="large" tip="Đang tải dữ liệu..." />
+                <Spin size="large" tip="Loading data..." />
             </div>
         );
     }
 
     if (!stats) {
-        return <div>Không có dữ liệu</div>;
+        return <div>No data available</div>;
     }
 
     // Prepare chart data
@@ -95,26 +95,26 @@ const DashboardPage = () => {
     // Table columns for recent jobs
     const jobColumns = [
         {
-            title: 'Vị trí',
+            title: 'Position',
             dataIndex: 'name',
             key: 'name',
             ellipsis: true,
             render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span>,
         },
         {
-            title: 'Công ty',
+            title: 'Company',
             dataIndex: 'companyName',
             key: 'companyName',
             ellipsis: true,
         },
         {
-            title: 'Địa điểm',
+            title: 'Location',
             dataIndex: 'location',
             key: 'location',
             ellipsis: true,
         },
         {
-            title: 'Mức lương',
+            title: 'Salary',
             dataIndex: 'salary',
             key: 'salary',
             render: (salary: number) => salary ? `${(salary / 1_000_000).toFixed(0)}M` : 'N/A',
@@ -131,7 +131,7 @@ const DashboardPage = () => {
             },
         },
         {
-            title: 'Trạng thái',
+            title: 'Status',
             dataIndex: 'active',
             key: 'active',
             render: (active: boolean) => active
@@ -142,14 +142,14 @@ const DashboardPage = () => {
 
     const kpiCards = [
         {
-            title: 'TỔNG NGƯỜI DÙNG',
+            title: 'TOTAL USERS',
             value: stats.totalUsers,
             icon: <UserOutlined />,
-            color: '#4078ff',
-            bgGradient: 'linear-gradient(135deg, #4078ff 0%, #6c9aff 100%)',
+            color: '#e53935',
+            bgGradient: 'linear-gradient(135deg, #e53935 0%, #ef9a9a 100%)',
         },
         {
-            title: 'VIỆC LÀM ĐANG TUYỂN',
+            title: 'ACTIVE JOBS',
             value: stats.totalActiveJobs,
             icon: <RocketOutlined />,
             color: '#52c41a',
@@ -157,14 +157,14 @@ const DashboardPage = () => {
             suffix: ` / ${stats.totalJobs}`,
         },
         {
-            title: 'CÔNG TY',
+            title: 'COMPANIES',
             value: stats.totalCompanies,
             icon: <BankOutlined />,
             color: '#722ed1',
             bgGradient: 'linear-gradient(135deg, #722ed1 0%, #9254de 100%)',
         },
         {
-            title: 'HỒ SƠ ỨNG TUYỂN',
+            title: 'APPLICATIONS',
             value: stats.totalResumes,
             icon: <FileTextOutlined />,
             color: '#fa8c16',
@@ -187,7 +187,7 @@ const DashboardPage = () => {
                             <Col xs={24} sm="auto" flex={1}>
                                 <div>
                                     <h2 className={styles["card-title"]}>Admin Dashboard</h2>
-                                    <p className={styles["card-subtitle"]}>Tổng quan hệ thống — dữ liệu thời gian thực từ cơ sở dữ liệu.</p>
+                                    <p className={styles["card-subtitle"]}>System overview — real-time data from the database.</p>
                                 </div>
                             </Col>
                         </Row>
@@ -225,8 +225,8 @@ const DashboardPage = () => {
                     <Card
                         title={
                             <span>
-                                <FileTextOutlined style={{ marginRight: 8, color: '#4078ff' }} />
-                                Hồ sơ theo trạng thái
+                                <FileTextOutlined style={{ marginRight: 8, color: '#e53935' }} />
+                                Resume by Status
                             </span>
                         }
                         className={styles["dashboard-chart-card"]}
@@ -253,14 +253,14 @@ const DashboardPage = () => {
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        formatter={(value: number) => [`${value} hồ sơ`, '']}
+                                        formatter={(value: number) => [`${value} resumes`, '']}
                                     />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
                         ) : (
                             <div style={{ textAlign: 'center', padding: 60, color: '#8c8c8c' }}>
-                                Chưa có hồ sơ nào
+                                No resumes yet
                             </div>
                         )}
                     </Card>
@@ -272,7 +272,7 @@ const DashboardPage = () => {
                         title={
                             <span>
                                 <FireOutlined style={{ marginRight: 8, color: '#f5794d' }} />
-                                Top kỹ năng được yêu cầu nhiều nhất
+                                Top Most Required Skills
                             </span>
                         }
                         className={styles["dashboard-chart-card"]}
@@ -290,7 +290,7 @@ const DashboardPage = () => {
                                         tick={{ fontSize: 13, fontWeight: 500 }}
                                     />
                                     <Tooltip
-                                        formatter={(value: number) => [`${value} việc làm`, 'Số lượng']}
+                                        formatter={(value: number) => [`${value} jobs`, 'Count']}
                                     />
                                     <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={28}>
                                         {skillBarData.map((entry, index) => (
@@ -301,7 +301,7 @@ const DashboardPage = () => {
                             </ResponsiveContainer>
                         ) : (
                             <div style={{ textAlign: 'center', padding: 60, color: '#8c8c8c' }}>
-                                Chưa có dữ liệu kỹ năng
+                                No skill data yet
                             </div>
                         )}
                     </Card>
@@ -314,8 +314,8 @@ const DashboardPage = () => {
                     <Card
                         title={
                             <span>
-                                <ClockCircleOutlined style={{ marginRight: 8, color: '#1890ff' }} />
-                                Việc làm mới nhất
+                                <ClockCircleOutlined style={{ marginRight: 8, color: '#e53935' }} />
+                                Latest Jobs
                             </span>
                         }
                         className={styles["dashboard-chart-card"]}

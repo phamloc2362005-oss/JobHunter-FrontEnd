@@ -61,41 +61,41 @@ const buildBreadcrumb = (pathname: string): BreadcrumbItem[] => {
 
 const adminTheme = {
     token: {
-        colorPrimary: '#0d47a1',
+        colorPrimary: '#b91c1c',
         borderRadius: 8,
-        colorBgLayout: '#f4f6f9',
+        colorBgLayout: '#f9f5f5',
         colorText: '#1a1d21',
         fontFamily: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
     },
     components: {
         Layout: {
-            bodyBg: '#f4f6f9',
+            bodyBg: '#f9f5f5',
             headerBg: '#ffffff',
             siderBg: '#ffffff',
         },
         Menu: {
             itemBg: 'transparent',
-            itemSelectedBg: 'rgba(13, 71, 161, 0.09)',
-            itemSelectedColor: '#0d47a1',
-            itemHoverBg: 'rgba(13, 71, 161, 0.05)',
+            itemSelectedBg: 'rgba(185, 28, 28, 0.09)',
+            itemSelectedColor: '#b91c1c',
+            itemHoverBg: 'rgba(185, 28, 28, 0.05)',
             itemColor: '#5f6368',
-            itemHoverColor: '#0d47a1',
+            itemHoverColor: '#b91c1c',
             iconSize: 18,
             fontSize: 14,
         },
         Button: {
-            primaryShadow: '0 2px 8px rgba(13, 71, 161, 0.2)',
+            primaryShadow: '0 2px 8px rgba(185, 28, 28, 0.2)',
         },
         Table: {
-            headerBg: '#f8f9fb',
+            headerBg: '#fdf5f5',
             headerColor: '#2d333a',
-            borderColor: '#e8eaed',
-            rowHoverBg: 'rgba(13, 71, 161, 0.04)',
+            borderColor: '#f0e5e5',
+            rowHoverBg: 'rgba(185, 28, 28, 0.04)',
         },
         Input: {
             colorBorder: '#dadce0',
-            activeBorderColor: '#0d47a1',
-            hoverBorderColor: '#0d47a1',
+            activeBorderColor: '#b91c1c',
+            hoverBorderColor: '#b91c1c',
         },
         Select: {
             colorBorder: '#dadce0',
@@ -224,7 +224,7 @@ const LayoutAdmin = () => {
         const res = await callLogout();
         if (res && +res.statusCode === 200) {
             dispatch(setLogoutAction({}));
-            message.success('Đăng xuất thành công');
+            message.success('Logged out successfully');
             navigate('/')
         }
     }
@@ -242,14 +242,14 @@ const LayoutAdmin = () => {
 
     const itemsDropdown = [
         {
-            label: <Link to={'/'}>Trang chủ</Link>,
+            label: <Link to={'/'}>Home</Link>,
             key: 'home',
         },
         {
             label: <label
                 style={{ cursor: 'pointer' }}
                 onClick={() => handleLogout()}
-            >Đăng xuất</label>,
+            >Logout</label>,
             key: 'logout',
         },
     ];
