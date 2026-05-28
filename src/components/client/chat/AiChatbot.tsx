@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { callAiChat } from '@/config/api';
 import styles from '@/styles/chatbot.module.scss';
+import { useAppSelector } from '@/redux/hooks';
 
 interface IMessage {
     role: 'user' | 'model';
@@ -29,11 +30,14 @@ const AiChatbot = () => {
     const [loading, setLoading] = useState(false);
     const [hasNew, setHasNew] = useState(false);
 
+    const user = useAppSelector(state => state.account.user);
+    const chatKey = `jobhunter_ai_chat_history_${user?.id ?? 'guest'}`;
+
     const messageEndRef = useRef<HTMLDivElement>(null);
 
-    // Load history from LocalStorage
+    // Load history from LocalStorage (mỗi user có key riêng theo userId)
     useEffect(() => {
-        const localHistory = localStorage.getItem('jobhunter_ai_chat_history');
+        const localHistory = localStorage.getItem(chatKey);
         if (localHistory) {
             setMessages(JSON.parse(localHistory));
         } else {
@@ -45,7 +49,7 @@ const AiChatbot = () => {
             };
             setMessages([greeting]);
         }
-    }, []);
+    }, [chatKey]);
 
     // Auto-scroll to bottom on new message
     useEffect(() => {
@@ -128,7 +132,7 @@ const AiChatbot = () => {
             };
             const finalMessages = [...updatedMessages, aiMsg];
             setMessages(finalMessages);
-            localStorage.setItem('jobhunter_ai_chat_history', JSON.stringify(finalMessages));
+            localStorage.setItem(chatKey, JSON.stringify(finalMessages));
 
             if (!isOpen) {
                 setHasNew(true);
@@ -146,7 +150,7 @@ const AiChatbot = () => {
     };
 
     const handleClearChat = () => {
-        localStorage.removeItem('jobhunter_ai_chat_history');
+        localStorage.removeItem(chatKey);
         const greeting: IMessage = {
             role: 'model',
             content: 'Cuộc hội thoại đã được dọn sạch. Bạn cần tôi hỗ trợ gì tiếp theo?',
