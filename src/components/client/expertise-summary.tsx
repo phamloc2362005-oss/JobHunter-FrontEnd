@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Spin, Empty, Row, Col } from 'antd';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { callFetchExpertiseCategories, callFetchExpertiseByCategory } from '@/config/api';
 import { IExpertise, IExpertiseCategory } from '@/types/backend';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ const ExpertiseSummary = () => {
     const [loadingCategories, setLoadingCategories] = useState<{ [key: string]: boolean }>({});
     const [isLoadingInitial, setIsLoadingInitial] = useState(true);
 
-    // Load categories on mount
+    // Load categories on mount, then pre-fetch expertise counts for all categories
     useEffect(() => {
         const loadCategories = async () => {
             try {
@@ -22,6 +22,25 @@ const ExpertiseSummary = () => {
                 const categoryResult = Array.isArray(res?.data?.result) ? res.data.result : [];
                 if (categoryResult.length) {
                     setCategories(categoryResult);
+
+                    // Pre-fetch expertise for all categories in parallel so counts show immediately
+                    const results = await Promise.allSettled(
+                        categoryResult.map((cat: IExpertiseCategory) =>
+                            callFetchExpertiseByCategory(cat.id ?? '')
+                        )
+                    );
+
+                    const expertiseMap: { [key: string]: IExpertise[] } = {};
+                    categoryResult.forEach((cat: IExpertiseCategory, idx: number) => {
+                        const r = results[idx];
+                        if (r.status === 'fulfilled') {
+                            const data = r.value?.data?.result;
+                            expertiseMap[cat.id ?? ''] = Array.isArray(data) ? data : [];
+                        } else {
+                            expertiseMap[cat.id ?? ''] = [];
+                        }
+                    });
+                    setExpertises(expertiseMap);
                 }
             } catch (error) {
                 console.error('Error loading expertise categories:', error);
@@ -77,7 +96,7 @@ const ExpertiseSummary = () => {
         const isLoading = loadingCategories[categoryId] || false;
 
         return (
-            <div key={categoryId} className={styles.categoryCard}>
+            <div key={categoryId} className={`${styles.categoryCard} ${isExpanded ? styles.categoryCardOpen : ''}`}>
                 <button
                     type="button"
                     className={styles.categoryButton}
@@ -89,13 +108,13 @@ const ExpertiseSummary = () => {
                             {categoryExpertises.length} expertise(s)
                         </div>
                     </div>
-                    <span className={styles.toggleIcon}>
-                        {isExpanded ? <MinusOutlined /> : <PlusOutlined />}
+                    <span className={`${styles.toggleIcon} ${isExpanded ? styles.toggleIconOpen : ''}`}>
+                        <PlusOutlined />
                     </span>
                 </button>
 
-                {isExpanded && (
-                    <div className={styles.expandedPanel}>
+                <div className={`${styles.expandedPanel} ${isExpanded ? styles.expandedPanelOpen : ''}`}>
+                    <div className={styles.expandedPanelInner}>
                         <Spin spinning={isLoading}>
                             {categoryExpertises.length === 0 && !isLoading ? (
                                 <div className={styles.emptyBlock}>
@@ -103,10 +122,11 @@ const ExpertiseSummary = () => {
                                 </div>
                             ) : (
                                 <div className={styles.expertiseGrid}>
-                                    {categoryExpertises.map((expertise: IExpertise) => (
+                                    {categoryExpertises.map((expertise: IExpertise, i: number) => (
                                         <span
                                             key={expertise.id}
                                             className={styles.expertiseChip}
+                                            style={{ animationDelay: `${i * 40}ms` }}
                                             onClick={() => {
                                                 if (expertise.id) {
                                                     navigate(`/job?expertiseId=${encodeURIComponent(expertise.id)}`);
@@ -120,7 +140,7 @@ const ExpertiseSummary = () => {
                             )}
                         </Spin>
                     </div>
-                )}
+                </div>
             </div>
         );
     };
