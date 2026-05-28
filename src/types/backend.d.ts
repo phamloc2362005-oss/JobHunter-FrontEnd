@@ -83,6 +83,22 @@ export interface ISkill {
     updatedAt?: string;
 }
 
+export interface IArticle {
+    id?: string;
+    title: string;
+    description?: string;
+    content?: string;
+    thumbnail?: string;
+    category?: string;
+    author?: string;
+    isFeatured?: boolean;
+    isPublished?: boolean;
+    viewCount?: number;
+    createdBy?: string;
+    updatedBy?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
 
 
 export interface IUser {

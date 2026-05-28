@@ -38,6 +38,9 @@ import CvBuilderPage from './pages/cv-builder';
 import MockInterviewPage from './pages/mock-interview';
 import Footer from 'components/client/footer.client';
 import AiChatbot from 'components/client/chat/AiChatbot';
+import ArticleAdminPage from './pages/admin/article';
+import ArticlesListPage from './pages/articles/index';
+import ArticleDetailPage from './pages/articles/detail';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -92,7 +95,9 @@ export default function App() {
         { path: "company", element: <ClientCompanyPage /> },
         { path: "company/:id", element: <ClientCompanyDetailPage /> },
         { path: "cv-builder", element: <CvBuilderPage /> },
-        { path: "interview/:jobId", element: <MockInterviewPage /> }
+        { path: "interview/:jobId", element: <MockInterviewPage /> },
+        { path: "articles", element: <ArticlesListPage /> },
+        { path: "articles/:id", element: <ArticleDetailPage /> }
       ],
     },
 
@@ -169,6 +174,13 @@ export default function App() {
           element:
             <ProtectedRoute>
               <ExpertisePage />
+            </ProtectedRoute>
+        },
+        {
+          path: "article",
+          element:
+            <ProtectedRoute>
+              <ArticleAdminPage />
             </ProtectedRoute>
         }
       ],

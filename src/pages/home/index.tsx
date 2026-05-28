@@ -1,9 +1,12 @@
 import {
     ArrowRightOutlined,
     BulbOutlined,
+    CalendarOutlined,
     CodeOutlined,
     EnvironmentOutlined,
+    EyeOutlined,
     FireOutlined,
+    ReadOutlined,
     RiseOutlined,
     RocketOutlined,
     SafetyCertificateOutlined,
@@ -14,11 +17,13 @@ import SearchClient from '@/components/client/search.client';
 import JobCard from '@/components/client/card/job.card';
 import CompanyCard from '@/components/client/card/company.card';
 import ExpertiseSummary from '@/components/client/expertise-summary';
-import { Divider } from 'antd';
-import { callFetchPublicJob } from '@/config/api';
+import { Divider, Spin } from 'antd';
+import { callFetchFeaturedArticles, callFetchPublicJob } from '@/config/api';
+import { IArticle } from '@/types/backend';
 import { Link } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
 import s from './index.module.scss';
+import dayjs from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
 
 /* ─── animated counter ─── */
@@ -55,6 +60,8 @@ const TECH_TAGS = ['React', 'Node.js', 'Java', 'Python', 'Go', 'AWS', 'Docker', 
 const HomePage = () => {
     const statsRef = useRef<HTMLDivElement>(null);
     const [statsVisible, setStatsVisible] = useState(false);
+    const [featuredArticles, setFeaturedArticles] = useState<IArticle[]>([]);
+    const [articlesLoading, setArticlesLoading] = useState(true);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -63,6 +70,17 @@ const HomePage = () => {
         );
         if (statsRef.current) observer.observe(statsRef.current);
         return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await callFetchFeaturedArticles();
+                setFeaturedArticles(res?.data ?? []);
+            } finally {
+                setArticlesLoading(false);
+            }
+        })();
     }, []);
 
     return (
@@ -196,6 +214,91 @@ const HomePage = () => {
                 </div>
             </section>
 
+            {/* ══════════════════ FEATURED ARTICLES ══════════════════ */}
+            {(articlesLoading || featuredArticles.length > 0) && (
+                <section className={`${styles['container']} ${s.section}`}>
+                    <div className={s.marketCard}>
+                        <div className={s.marketCardHeader}>
+                            <div className={s.marketCardLeft}>
+                                <span className={s.chipRed}>📰 Articles</span>
+                                <h2 className={s.marketTitle}>Featured Articles</h2>
+                                <p className={s.marketDesc}>Career tips, tech news & salary insights for IT professionals.</p>
+                            </div>
+                            <Link to="/articles" className={s.viewAllBtn}>
+                                View all <ArrowRightOutlined />
+                            </Link>
+                        </div>
+                        <div className={s.marketBody}>
+                            {articlesLoading ? (
+                                <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                                    <Spin size="large" />
+                                </div>
+                            ) : (
+                                <div className={s.articlesGrid}>
+                                    {/* Large featured card — first article */}
+                                    {featuredArticles[0] && (
+                                        <Link
+                                            to={`/articles/${featuredArticles[0].id}`}
+                                            className={`${s.articleCard} ${s.articleCardLarge}`}
+                                        >
+                                            <div className={s.articleCardImg}>
+                                                {featuredArticles[0].thumbnail ? (
+                                                    <img src={featuredArticles[0].thumbnail} alt={featuredArticles[0].title} />
+                                                ) : (
+                                                    <div className={s.articleCardImgPlaceholder}><ReadOutlined /></div>
+                                                )}
+                                                {featuredArticles[0].category && (
+                                                    <span className={s.articleCardCat}>{featuredArticles[0].category}</span>
+                                                )}
+                                            </div>
+                                            <div className={s.articleCardBody}>
+                                                <h3 className={s.articleCardTitle}>{featuredArticles[0].title}</h3>
+                                                <p className={s.articleCardDesc}>{featuredArticles[0].description}</p>
+                                                <div className={s.articleCardMeta}>
+                                                    <span><CalendarOutlined style={{ marginRight: 4 }} />
+                                                        {featuredArticles[0].createdAt ? dayjs(featuredArticles[0].createdAt).format('DD MMM YYYY') : ''}
+                                                    </span>
+                                                    <span><EyeOutlined style={{ marginRight: 4 }} />{featuredArticles[0].viewCount ?? 0} views</span>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    )}
+                                    {/* Small cards — remaining articles */}
+                                    <div className={s.articlesSideGrid}>
+                                        {featuredArticles.slice(1, 5).map(article => (
+                                            <Link
+                                                key={article.id}
+                                                to={`/articles/${article.id}`}
+                                                className={s.articleCard}
+                                            >
+                                                <div className={s.articleCardImg}>
+                                                    {article.thumbnail ? (
+                                                        <img src={article.thumbnail} alt={article.title} />
+                                                    ) : (
+                                                        <div className={s.articleCardImgPlaceholder}><ReadOutlined /></div>
+                                                    )}
+                                                    {article.category && (
+                                                        <span className={s.articleCardCat}>{article.category}</span>
+                                                    )}
+                                                </div>
+                                                <div className={s.articleCardBody}>
+                                                    <h3 className={s.articleCardTitle}>{article.title}</h3>
+                                                    <div className={s.articleCardMeta}>
+                                                        <span><CalendarOutlined style={{ marginRight: 4 }} />
+                                                            {article.createdAt ? dayjs(article.createdAt).format('DD MMM YYYY') : ''}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            )}
+
             {/* ══════════════════ JOBS ══════════════════ */}
             <section className={`${styles['container']} ${s.section}`}>
                 <div className={s.marketCard}>
@@ -221,6 +324,7 @@ const HomePage = () => {
                     <ExpertiseSummary />
                 </div>
             </section>
+
 
             {/* ══════════════════ CTA BANNER ══════════════════ */}
             <section className={`${styles['container']} ${s.section}`}>

@@ -9,6 +9,7 @@ import {
     MenuUnfoldOutlined,
     AliwangwangOutlined,
     BugOutlined,
+    FileTextOutlined,
     ScheduleOutlined,
     HomeOutlined,
     TagsOutlined,
@@ -40,6 +41,7 @@ const titleByPathPrefix: { prefix: string; label: string }[] = [
     { prefix: '/admin/role', label: 'Role' },
     { prefix: '/admin/expertise-category', label: 'Expertise Categories' },
     { prefix: '/admin/expertise', label: 'Expertises' },
+    { prefix: '/admin/article', label: 'Articles' },
 ];
 
 const resolvePageTitle = (pathname: string) => {
@@ -207,6 +209,15 @@ const LayoutAdmin = () => {
                     label: <Link to='/admin/expertise'>Expertises</Link>,
                     key: '/admin/expertise',
                     icon: <TagsOutlined />
+                }] : []),
+
+                ...(permissions?.find(item =>
+                    item.apiPath === ALL_PERMISSIONS.ARTICLES.GET_PAGINATE.apiPath
+                    && item.method === ALL_PERMISSIONS.ARTICLES.GET_PAGINATE.method
+                ) || ACL_ENABLE === 'false' ? [{
+                    label: <Link to='/admin/article'>Articles</Link>,
+                    key: '/admin/article',
+                    icon: <FileTextOutlined />
                 }] : []),
 
 

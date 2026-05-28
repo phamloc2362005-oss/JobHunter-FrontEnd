@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse, IReview, IInterviewQuestion, IInterviewEvaluation, IDashboardStats } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse, IReview, IInterviewQuestion, IInterviewEvaluation, IDashboardStats, IArticle } from '@/types/backend';
 import axios from 'config/axios-customize';
 
 /**
@@ -399,4 +399,29 @@ export const callAiChat = (message: string, history: { role: string; content: st
     return axios.post<IBackendRes<string>>('/api/v1/ai/chat', { message, history });
 }
 
+/**
+ * Module Article
+ */
+export const callFetchFeaturedArticles = () => {
+    return axios.get<IBackendRes<IArticle[]>>('/api/v1/articles/featured');
+}
 
+export const callFetchArticles = (query: string) => {
+    return axios.get<IBackendRes<IModelPaginate<IArticle>>>(`/api/v1/articles?${query}`);
+}
+
+export const callFetchArticleById = (id: string) => {
+    return axios.get<IBackendRes<IArticle>>(`/api/v1/articles/${id}`);
+}
+
+export const callCreateArticle = (article: IArticle) => {
+    return axios.post<IBackendRes<IArticle>>('/api/v1/articles', { ...article });
+}
+
+export const callUpdateArticle = (article: IArticle) => {
+    return axios.put<IBackendRes<IArticle>>('/api/v1/articles', { ...article });
+}
+
+export const callDeleteArticle = (id: string) => {
+    return axios.delete<IBackendRes<IArticle>>(`/api/v1/articles/${id}`);
+}
