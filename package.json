@@ -16,6 +16,7 @@
     "@ant-design/pro-components": "2.6.46",
     "@ant-design/pro-layout": "7.17.19",
     "@reduxjs/toolkit": "1.9.3",
+    "@types/three": "^0.184.1",
     "antd": "5.13.1",
     "async-mutex": "0.4.0",
     "axios": "1.6.5",
@@ -37,6 +38,7 @@
     "react-to-print": "^3.3.0",
     "recharts": "^3.8.1",
     "spring-filter-query-builder": "1.1.0",
+    "three": "^0.184.0",
     "uuid": "9.0.0"
   },
   "devDependencies": {

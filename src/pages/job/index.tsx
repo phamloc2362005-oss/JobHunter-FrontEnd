@@ -10,13 +10,17 @@ import {
     CloseOutlined,
     ThunderboltOutlined,
     ApartmentOutlined,
+    RocketOutlined,
+    FireOutlined,
+    TeamOutlined,
+    TrophyOutlined,
     CodeOutlined,
 } from '@ant-design/icons';
 import { LOCATION_LIST } from '@/config/utils';
 import { callFetchAllSkill } from '@/config/api';
 import layoutStyles from 'styles/client.module.scss';
 import styles from './index.module.scss';
-import homeStyles from '@/pages/home/index.module.scss';
+import ThreeBackground from '@/components/client/ThreeBackground';
 
 const LEVEL_OPTIONS = [
     { label: 'Intern', value: 'INTERN' },
@@ -29,30 +33,31 @@ const LEVEL_OPTIONS = [
 const getLocationLabel = (v: string) =>
     LOCATION_LIST.find(l => l.value === v)?.label ?? v;
 
+const DASHBOARD_CARDS = [
+    { icon: <FireOutlined />, iconClass: 'blue', colorClass: 'color-blue', value: '2,847', label: 'Active Jobs', trend: '+12%', trendClass: 'up' },
+    { icon: <TeamOutlined />, iconClass: 'purple', colorClass: 'color-purple', value: '384', label: 'IT Companies', trend: '+8%', trendClass: 'up' },
+    { icon: <RocketOutlined />, iconClass: 'green', colorClass: 'color-green', value: '91%', label: 'Placement Rate', trend: '+3%', trendClass: 'up' },
+    { icon: <TrophyOutlined />, iconClass: 'pink', colorClass: 'color-pink', value: '₫35M', label: 'Avg Senior Salary', trend: '+15%', trendClass: 'up' },
+];
+
 const ClientJobPage = () => {
     const [selectedJob, setSelectedJob] = useState<IJob | undefined>();
     const [total, setTotal] = useState<number | null>(null);
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    /* ── Skill options from API ── */
     const [skillOptions, setSkillOptions] = useState<{ label: string; value: string }[]>([]);
     useEffect(() => {
         callFetchAllSkill('page=1&size=100&sort=createdAt,desc').then((res: any) => {
             const list: any[] = res?.data?.result ?? [];
-            setSkillOptions(list.map(s => ({
-                label: s.name as string,
-                value: String(s.id),
-            })));
+            setSkillOptions(list.map(s => ({ label: s.name as string, value: String(s.id) })));
         });
     }, []);
 
-    /* ── Local form state (not bound to URL directly) ── */
     const [localLocation, setLocalLocation] = useState<string[]>([]);
     const [localSkills, setLocalSkills] = useState<string[]>([]);
     const [localLevel, setLocalLevel] = useState<string | null>(null);
 
-    /* Initialise from URL on first load */
     useEffect(() => {
         const loc = searchParams.get('location');
         const sk = searchParams.get('skills');
@@ -60,9 +65,8 @@ const ClientJobPage = () => {
         if (loc) setLocalLocation(loc.split(','));
         if (sk) setLocalSkills(sk.split(','));
         if (lv) setLocalLevel(lv);
-    }, []); // run once on mount
+    }, []);
 
-    /* ── Apply = navigate with all collected params ── */
     const applySearch = () => {
         const params = new URLSearchParams();
         if (localLocation.length) params.set('location', localLocation.join(','));
@@ -79,7 +83,6 @@ const ClientJobPage = () => {
         navigate('/job');
     };
 
-    /* Active URL params (for result heading + "Xem tất cả" link) */
     const urlLocation = searchParams.get('location');
     const urlLevel = searchParams.get('level');
     const hasFilters = !!(urlLocation || searchParams.get('skills') || urlLevel || searchParams.get('companyIds'));
@@ -87,82 +90,73 @@ const ClientJobPage = () => {
     const handleTotalChange = useCallback((n: number) => setTotal(n), []);
 
     const buildHeading = () => {
-        if (total === null) return 'Loading...';
-
+        if (total === null) return '';
         const urlSkills = searchParams.get('skills');
-
-        // Map skill IDs → labels (e.g. "1,3" → "Java, Spring Boot")
         const skillLabels = urlSkills
-            ? urlSkills.split(',')
-                .map(id => skillOptions.find(s => s.value === id)?.label ?? id)
-                .join(', ')
+            ? urlSkills.split(',').map(id => skillOptions.find(s => s.value === id)?.label ?? id).join(', ')
             : '';
-
-        // Map location values → labels
         const locLabels = urlLocation
             ? urlLocation.split(',').map(getLocationLabel).join(', ')
             : '';
-
         const lvl = urlLevel ? ` • ${urlLevel}` : '';
 
-        // Build human-readable heading
-        if (skillLabels && locLabels) {
-            return `${total.toLocaleString()} ${skillLabels} jobs in ${locLabels}${lvl}`;
-        }
-        if (skillLabels) {
-            return `${total.toLocaleString()} ${skillLabels} jobs${lvl}`;
-        }
-        if (locLabels) {
-            return `${total.toLocaleString()} jobs in ${locLabels}${lvl}`;
-        }
-        return `${total.toLocaleString()} IT jobs${lvl}`;
+        if (skillLabels && locLabels) return `${skillLabels} jobs in ${locLabels}${lvl}`;
+        if (skillLabels) return `${skillLabels} jobs${lvl}`;
+        if (locLabels) return `jobs in ${locLabels}${lvl}`;
+        return `IT jobs${lvl}`;
     };
-
 
     return (
         <div className={styles.page}>
 
-            {/* ════ Hero Banner ════ */}
+            {/* ═══ Hero với canvas 3D nền ═══ */}
             <div className={styles.hero}>
+                {/* Canvas 3D background */}
+                <ThreeBackground />
+
                 <div className={layoutStyles['container']}>
                     <div className={styles.heroInner}>
 
-                        {/* Left copy */}
+                        {/* Left */}
                         <div className={styles.heroCopy}>
                             <div className={styles.heroKicker}>
-                                <ApartmentOutlined /> IT JOB BOARD
+                                <ApartmentOutlined /> IT JOB DASHBOARD
                             </div>
+
                             <h1 className={styles.heroTitle}>
                                 Find the perfect<br />IT job for you
                             </h1>
+
                             <p className={styles.heroSub}>
-                                Hundreds of opportunities from leading tech companies in Vietnam.
+                                Hàng nghìn cơ hội từ các công ty tech hàng đầu Việt Nam.
+                                Khám phá, lọc và ứng tuyển ngay hôm nay.
                             </p>
+
                             <div className={styles.statsRow}>
-                                <div className={styles.statChip}>
-                                    <span className={styles.statN}>500+</span>
-                                    <span className={styles.statL}>Jobs</span>
+                                <div className={styles.statCard}>
+                                    <div className={styles.statIcon}>🚀</div>
+                                    <div className={styles.statN}>500+</div>
+                                    <div className={styles.statL}>Active Jobs</div>
                                 </div>
-                                <div className={styles.statDot} />
-                                <div className={styles.statChip}>
-                                    <span className={styles.statN}>150+</span>
-                                    <span className={styles.statL}>IT Companies</span>
+                                <div className={styles.statCard}>
+                                    <div className={styles.statIcon}>🏢</div>
+                                    <div className={styles.statN}>150+</div>
+                                    <div className={styles.statL}>IT Companies</div>
                                 </div>
-                                <div className={styles.statDot} />
-                                <div className={styles.statChip}>
-                                    <span className={styles.statN}>Daily</span>
-                                    <span className={styles.statL}>New updates</span>
+                                <div className={styles.statCard}>
+                                    <div className={styles.statIcon}>⚡</div>
+                                    <div className={styles.statN}>Daily</div>
+                                    <div className={styles.statL}>New Updates</div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right search card — collect all, then search */}
+                        {/* Right — search card */}
                         <div className={styles.searchCard}>
                             <div className={styles.searchCardTitle}>
                                 <SearchOutlined /> Search jobs now
                             </div>
 
-                            {/* Location */}
                             <Select
                                 mode="multiple"
                                 allowClear
@@ -172,15 +166,14 @@ const ClientJobPage = () => {
                                 onChange={setLocalLocation}
                                 className={styles.searchSelect}
                                 maxTagCount="responsive"
-                                suffixIcon={<EnvironmentOutlined style={{ color: '#9ca3af' }} />}
+                                suffixIcon={<EnvironmentOutlined style={{ color: '#64748b' }} />}
                             />
 
-                            {/* Skills — multi-select dropdown */}
                             <Select
                                 mode="multiple"
                                 allowClear
                                 showSearch
-                                placeholder={<><SearchOutlined /> Skills (Java, React...)</>}
+                                placeholder={<><CodeOutlined /> Skills (Java, React...)</>}
                                 options={skillOptions}
                                 value={localSkills}
                                 onChange={setLocalSkills}
@@ -192,7 +185,6 @@ const ClientJobPage = () => {
                                 suffixIcon={null}
                             />
 
-                            {/* Level pills */}
                             <div className={styles.levelRow}>
                                 <span className={styles.levelLabel}>
                                     <ThunderboltOutlined /> Level
@@ -212,7 +204,6 @@ const ClientJobPage = () => {
                                 </div>
                             </div>
 
-                            {/* Action buttons */}
                             <div className={styles.actionRow}>
                                 <Button
                                     type="primary"
@@ -234,11 +225,35 @@ const ClientJobPage = () => {
                 </div>
             </div>
 
-            {/* ════ Main Content ════ */}
-            <div className={`${layoutStyles['container']} ${styles.main}`}>
+            {/* ═══ KPI Dashboard Bar ═══ */}
+            <div className={styles.dashboardBar}>
+                <div className={layoutStyles['container']}>
+                    <div className={styles.dashboardGrid}>
+                        {DASHBOARD_CARDS.map((card, i) => (
+                            <div key={i} className={styles.dashCard}>
+                                <div className={`${styles.dashCardIcon} ${styles[card.iconClass]}`}>
+                                    {card.icon}
+                                </div>
+                                <div className={styles.dashCardInfo}>
+                                    <div className={styles.dashCardVal}>{card.value}</div>
+                                    <div className={styles.dashCardLabel}>{card.label}</div>
+                                </div>
+                                <div className={`${styles.dashCardTrend} ${styles[card.trendClass]}`}>
+                                    {card.trend}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
 
+            {/* ═══ Main Content ═══ */}
+            <div className={`${layoutStyles['container']} ${styles.main}`}>
                 <div className={styles.resultRow}>
-                    <h2 className={styles.resultHeading}>{buildHeading()}</h2>
+                    <h2 className={styles.resultHeading}>
+                        {total !== null && <span>{total.toLocaleString()} </span>}
+                        {buildHeading()}
+                    </h2>
                     {hasFilters && (
                         <button className={styles.resetLink} onClick={clearAll} type="button">
                             View all →
