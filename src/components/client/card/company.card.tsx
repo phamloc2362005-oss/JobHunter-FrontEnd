@@ -176,7 +176,9 @@ const CompanyCard = (props: IProps) => {
                                                         <div className={cardStyles.statValue}>
                                                             <ThunderboltOutlined style={{ color: '#059669' }} />
                                                             <span className={cardStyles.recommendPercent}>
-                                                                {item.recommendPercentage?.toFixed(0) || '0'}%
+                                                                {item.recommendPercentage && item.recommendPercentage > 0 
+                                                                    ? item.recommendPercentage.toFixed(0) 
+                                                                    : (item.averageRating ? ((item.averageRating / 5) * 100).toFixed(0) : '0')}%
                                                             </span>
                                                         </div>
                                                     </div>
