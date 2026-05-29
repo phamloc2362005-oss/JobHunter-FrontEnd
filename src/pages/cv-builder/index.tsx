@@ -19,6 +19,7 @@ import { callGenerateCv, callUploadSingleFile } from '@/config/api';
 import styles from './index.module.scss';
 import { useReactToPrint } from 'react-to-print';
 import { CV_TEMPLATES, ICvTemplate } from './cvTemplates';
+import ThreeBackground from '@/components/client/ThreeBackground';
 
 const { TextArea } = Input;
 
@@ -236,6 +237,7 @@ Sở thích: ${formData.interests}
         <div className={styles.pageShell}>
             {/* Hero */}
             <section className={styles.heroSection}>
+                <ThreeBackground />
                 <div className={styles.heroContent}>
                     <div className={styles.heroIcon}>
                         <RobotOutlined />

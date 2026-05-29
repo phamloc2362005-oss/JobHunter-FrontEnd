@@ -554,3 +554,47 @@
     border-radius: 16px;
     border: 1px dashed rgba(15, 23, 42, 0.1);
 }
+
+/* ── Vote buttons ── */
+.voteRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.voteLabel {
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+    margin-right: 4px;
+}
+
+.voteBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.18s ease;
+
+    &:hover {
+        border-color: #1677ff;
+        color: #1677ff;
+        background: #eff6ff;
+    }
+
+    &:first-of-type:hover {
+        border-color: #16a34a;
+        color: #16a34a;
+        background: #f0fdf4;
+    }
+}

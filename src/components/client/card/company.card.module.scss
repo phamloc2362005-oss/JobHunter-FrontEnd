@@ -389,3 +389,37 @@
         justify-content: space-between;
     }
 }
+
+/* ── Rank Score Badge ── */
+.rankScoreBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    width: fit-content;
+}
+
+.rankScoreLabel {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1d4ed8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.rankScoreVal {
+    font-size: 13px;
+    font-weight: 800;
+    color: #1d4ed8;
+    margin-left: 4px;
+}
+
+.rankScoreMax {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}

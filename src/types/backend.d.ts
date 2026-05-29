@@ -55,6 +55,7 @@ export interface ICompany {
     recommendPercentage?: number;
     totalReviews?: number;
     latestReview?: IReview;
+    rankScore?: number;
 }
 
 export interface IReview {
@@ -65,6 +66,8 @@ export interface IReview {
     title?: string;
     pros?: string;
     cons?: string;
+    likeCount?: number;
+    dislikeCount?: number;
     createdAt?: string;
     user?: {
         id: string;

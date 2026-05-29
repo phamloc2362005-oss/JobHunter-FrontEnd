@@ -7,7 +7,7 @@ import parse from 'html-react-parser';
 import { Col, Row, Skeleton, Card, Divider, Rate, Input, Button, message, Form, Tabs, Progress, Modal, Checkbox } from "antd";
 import { EnvironmentOutlined, ThunderboltOutlined, TeamOutlined, GlobalOutlined, RightOutlined, CodeOutlined, UserOutlined, StarFilled, LikeOutlined, DislikeOutlined, FormOutlined } from "@ant-design/icons";
 import { IJob, IReview } from "@/types/backend";
-import { callFetchPublicJob, callFetchCompanyReviews, callCreateReview } from "@/config/api";
+import { callFetchPublicJob, callFetchCompanyReviews, callCreateReview, callLikeReview, callDislikeReview } from "@/config/api";
 import { getLocationName, convertSlug } from '@/config/utils';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -97,6 +97,30 @@ const ClientCompanyDetailPage = (props: any) => {
             message.error(error?.response?.data || 'An error occurred (Please login to review)');
         }
         setIsSubmittingReview(false);
+    };
+
+    const handleLike = async (reviewId: string | undefined, idx: number) => {
+        if (!reviewId) return;
+        try {
+            const res = await callLikeReview(reviewId);
+            if (res?.data) {
+                setReviews(prev => prev.map((rv, i) =>
+                    i === idx ? { ...rv, likeCount: (rv.likeCount || 0) + 1 } : rv
+                ));
+            }
+        } catch { /* silent */ }
+    };
+
+    const handleDislike = async (reviewId: string | undefined, idx: number) => {
+        if (!reviewId) return;
+        try {
+            const res = await callDislikeReview(reviewId);
+            if (res?.data) {
+                setReviews(prev => prev.map((rv, i) =>
+                    i === idx ? { ...rv, dislikeCount: (rv.dislikeCount || 0) + 1 } : rv
+                ));
+            }
+        } catch { /* silent */ }
     };
 
     // Calculate star breakdown
@@ -261,6 +285,23 @@ const ClientCompanyDetailPage = (props: any) => {
                                                                             <p>{rv.cons || "No suggestions."}</p>
                                                                         </div>
                                                                     )}
+                                                                </div>
+
+                                                                {/* Vote buttons */}
+                                                                <div className={s.voteRow}>
+                                                                    <span className={s.voteLabel}>Helpful?</span>
+                                                                    <button
+                                                                        className={s.voteBtn}
+                                                                        onClick={() => handleLike(rv.id, idx)}
+                                                                    >
+                                                                        <LikeOutlined /> {rv.likeCount || 0}
+                                                                    </button>
+                                                                    <button
+                                                                        className={s.voteBtn}
+                                                                        onClick={() => handleDislike(rv.id, idx)}
+                                                                    >
+                                                                        <DislikeOutlined /> {rv.dislikeCount || 0}
+                                                                    </button>
                                                                 </div>
                                                             </div>
                                                         ))

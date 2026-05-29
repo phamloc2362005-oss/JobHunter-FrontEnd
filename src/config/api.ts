@@ -83,6 +83,14 @@ export const callFetchCompanyReviews = (companyId: string, page: number = 1, siz
     return axios.get<IBackendRes<IModelPaginate<IReview>>>(`/api/v1/reviews/by-company?companyId=${companyId}&page=${page}&size=${size}`);
 }
 
+export const callLikeReview = (reviewId: string | number) => {
+    return axios.put<IBackendRes<IReview>>(`/api/v1/reviews/${reviewId}/like`);
+}
+
+export const callDislikeReview = (reviewId: string | number) => {
+    return axios.put<IBackendRes<IReview>>(`/api/v1/reviews/${reviewId}/dislike`);
+}
+
 /**
  * 
 Module Skill
