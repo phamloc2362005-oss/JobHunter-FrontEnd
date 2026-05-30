@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { callFetchPublicJobById, callGenerateInterviewQuestions, callEvaluateInterviewAnswer } from '@/config/api';
 import { IJob, IInterviewQuestion, IInterviewEvaluation } from '@/types/backend';
 import styles from './index.module.scss';
+import ThreeBackground from '@/components/client/ThreeBackground';
 
 // ========================
 // TYPES
@@ -105,12 +106,13 @@ const MockInterviewPage = () => {
                 skillsStr
             );
 
-            // res.data là IBackendRes object { statusCode, data: [...] }
-            // Câu hỏi nằm ở res.data
-            let questions: any = res?.data;
-            console.log('DEBUG FE questions:', questions, 'raw res.data:', res?.data);
+            // Axios interceptor unwrap 1 lần: res = IBackendRes = { statusCode, data, message }
+            // Nhưng thực tế BE double-wrap: res.data = { statusCode, data: [array], message }
+            // Nên phải đọc res?.data?.data để lấy array câu hỏi
+            const rawData: any = res?.data;
+            let questions: any = Array.isArray(rawData) ? rawData : rawData?.data;
 
-            // Fallback: nếu BE trả về string thay vì array
+            // Fallback: nếu vẫn là string thì parse
             if (typeof questions === 'string') {
                 try { questions = JSON.parse(questions); } catch (e) { console.error('parse error', e); }
             }
@@ -123,7 +125,7 @@ const MockInterviewPage = () => {
                 setAnswer('');
                 setPhase('interview');
             } else {
-                console.error('FE: invalid questions data:', questions);
+                console.error('FE: invalid questions data:', questions, 'res:', res);
                 alert('Could not load questions. Please try again.');
                 setPhase('intro');
             }
@@ -133,6 +135,7 @@ const MockInterviewPage = () => {
             setPhase('intro');
         }
     };
+
 
     const handleSubmitAnswer = async () => {
         if (!answer.trim() || phase === 'evaluating') return;
@@ -147,9 +150,9 @@ const MockInterviewPage = () => {
                 answer,
                 jobContext
             );
-            // res.data là IBackendRes wrapper, đánh giá nằm ở res.data
-            const evalData = res?.data as IInterviewEvaluation | null;
-            console.log('DEBUG FE evalData:', evalData, 'raw:', res?.data);
+            // Cùng vấn đề double-wrap: res.data = IBackendRes, data thực nằm ở res.data.data
+            const rawEval: any = res?.data;
+            const evalData = (rawEval?.data ?? rawEval) as IInterviewEvaluation | null;
             setCurrentEval(evalData);
 
             setResults(prev => [...prev, {
@@ -261,8 +264,9 @@ const MockInterviewPage = () => {
     // ========================
     if (phase === 'intro') {
         return (
-            <div className={styles.pageWrapper}>
-                <div className={styles.container}>
+            <div className={styles.pageWrapper} style={{ position: 'relative', overflow: 'hidden' }}>
+                <ThreeBackground />
+                <div className={styles.container} style={{ position: 'relative', zIndex: 1 }}>
                     {/* Header */}
                     <div className={styles.header}>
                         <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
@@ -277,7 +281,6 @@ const MockInterviewPage = () => {
 
                     {/* Intro Card */}
                     <div className={styles.introCard}>
-                        <span className={styles.introIcon}>🎤</span>
                         <h2 className={styles.introTitle}>
                             Ready to <span>practice interviewing</span>?
                         </h2>
@@ -289,7 +292,6 @@ const MockInterviewPage = () => {
                         {/* Job Info */}
                         {job && (
                             <div className={styles.jobInfoBox}>
-                                <span className={styles.jobInfoIcon}>💼</span>
                                 <div className={styles.jobInfoContent}>
                                     <h3>{job.name}</h3>
                                     <p>{job.company?.name} • {job.location}</p>
@@ -327,7 +329,7 @@ const MockInterviewPage = () => {
                             onClick={handleStart}
                             disabled={!job}
                         >
-                            🚀 Start Interview
+                            Start Interview
                         </button>
                     </div>
                 </div>

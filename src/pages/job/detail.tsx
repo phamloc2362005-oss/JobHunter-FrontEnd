@@ -21,6 +21,7 @@ import JobDetailHighlights from "@/components/client/job/job-detail-highlights";
 import { sfIn } from "spring-filter-query-builder";
 import { convertSlug } from "@/config/utils";
 import detailStyles from './detail.module.scss';
+import ThreeBackground from '@/components/client/ThreeBackground';
 
 dayjs.extend(relativeTime);
 
@@ -93,8 +94,9 @@ const ClientJobDetailPage = (props: any) => {
     return (
         <div className={detailStyles.jobDetailPage}>
             {/* ════ HERO SECTION ════ */}
-            <header className={detailStyles.heroSection}>
-                <div className={detailStyles.mainContainer}>
+            <header className={detailStyles.heroSection} style={{ position: 'relative', overflow: 'hidden' }}>
+                <ThreeBackground />
+                <div className={detailStyles.mainContainer} style={{ position: 'relative', zIndex: 1 }}>
                     <div className={detailStyles.heroInner}>
                         <div className={detailStyles.companyLogoWrapper}>
                             <img

@@ -2,7 +2,7 @@ import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IResume } from "@/types/backend";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Space, message, notification, Card, Col, Row, Statistic } from "antd";
+import { Space, message, notification, Card, Col, Row, Statistic, Button, Tooltip } from "antd";
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteResume } from "@/config/api";
@@ -12,7 +12,7 @@ import ViewDetailResume from "@/components/admin/resume/view.resume";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 import Access from "@/components/share/access";
 import { sfIn } from "spring-filter-query-builder";
-import { EditOutlined, FileOutlined } from "@ant-design/icons";
+import { EditOutlined, FileOutlined, FilePdfOutlined, EyeOutlined } from "@ant-design/icons";
 import styles from 'styles/admin.module.scss';
 
 const ResumePage = () => {
@@ -88,11 +88,6 @@ const ResumePage = () => {
             hideInSearch: true,
         },
         {
-            title: 'Company',
-            dataIndex: "companyName",
-            hideInSearch: true,
-        },
-        {
             title: 'AI Score',
             dataIndex: 'aiScore',
             width: 100,
@@ -140,44 +135,31 @@ const ResumePage = () => {
             hideInSearch: true,
         },
         {
-
             title: 'Actions',
             hideInSearch: true,
             width: 100,
+            align: 'center',
             render: (_value, entity, _index, _action) => (
                 <Space>
-                    <EditOutlined
-                        style={{
-                            fontSize: 20,
-                            color: '#ffa500',
-                        }}
-                        type=""
-                        onClick={() => {
-                            setOpenViewDetail(true);
-                            setDataInit(entity);
-                        }}
-                    />
-
-                    {/* <Popconfirm
-                        placement="leftTop"
-                        title={"Xác nhận xóa resume"}
-                        description={"Bạn có chắc chắn muốn xóa resume này ?"}
-                        onConfirm={() => handleDeleteResume(entity.id)}
-                        okText="Xác nhận"
-                        cancelText="Hủy"
-                    >
-                        <span style={{ cursor: "pointer", margin: "0 10px" }}>
-                            <DeleteOutlined
-                                style={{
-                                    fontSize: 20,
-                                    color: '#ff4d4f',
-                                }}
-                            />
-                        </span>
-                    </Popconfirm> */}
+                    <Tooltip title="Update Status">
+                        <Button 
+                            type="text"
+                            icon={<EditOutlined style={{ fontSize: 18, color: '#ffa500' }} />}
+                            onClick={() => {
+                                setOpenViewDetail(true);
+                                setDataInit(entity);
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip title="View CV PDF">
+                        <Button
+                            type="text"
+                            icon={<EyeOutlined style={{ fontSize: 18, color: '#1677ff' }} />}
+                            onClick={() => window.open(`${import.meta.env.VITE_BACKEND_URL}/storage/resume/${entity.url}`, '_blank')}
+                        />
+                    </Tooltip>
                 </Space>
             ),
-
         },
     ];
 

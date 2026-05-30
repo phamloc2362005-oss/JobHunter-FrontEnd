@@ -220,7 +220,8 @@
     margin-top: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Further reduced gap */
+    gap: 8px;
+    /* Further reduced gap */
 }
 
 .reviewHeader {
@@ -230,7 +231,7 @@
     background: #ffffff;
     border-radius: 16px;
     border: 1px solid #e2e8f0;
-    margin-bottom: 0px; 
+    margin-bottom: 0px;
     flex-wrap: wrap;
 }
 

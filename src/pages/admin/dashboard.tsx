@@ -20,6 +20,7 @@ import {
 import { callFetchDashboard } from "@/config/api";
 import { IDashboardStats } from "@/types/backend";
 import styles from 'styles/admin.module.scss';
+import ThreeBackground from '@/components/client/ThreeBackground';
 
 const RESUME_COLORS: Record<string, string> = {
     PENDING: '#faad14',
@@ -177,8 +178,9 @@ const DashboardPage = () => {
             {/* Title Card */}
             <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
                 <Col span={24}>
-                    <Card className={styles["admin-title-card"]}>
-                        <Row gutter={20} align="middle">
+                    <Card className={styles["admin-title-card"]} bodyStyle={{ position: 'relative', overflow: 'hidden' }}>
+                        <ThreeBackground />
+                        <Row gutter={20} align="middle" style={{ position: 'relative', zIndex: 1 }}>
                             <Col xs={24} sm="auto">
                                 <div className={styles["card-icon"]}>
                                     <AppstoreOutlined />

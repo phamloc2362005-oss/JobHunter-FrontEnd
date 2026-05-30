@@ -142,10 +142,10 @@ const ClientCompanyDetailPage = (props: any) => {
     // Tính % khuyên bạn bè: quy đổi điểm trung bình sao sang thang 100
     // Ví dụ: avg 4.67 sao → 93%, avg 5 sao → 100%, avg 3 sao → 60%
     // Sử dụng thông số từ backend nếu có
-    const recommendPercent = companyDetail?.recommendPercentage ?? 
+    const recommendPercent = companyDetail?.recommendPercentage ??
         (reviews.length > 0
-        ? Math.round((reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length / 5) * 100)
-        : 0);
+            ? Math.round((reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length / 5) * 100)
+            : 0);
 
     return (
         <div className={s.page}>
