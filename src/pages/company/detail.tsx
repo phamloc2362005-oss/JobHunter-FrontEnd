@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import s from './detail.module.scss';
 import homeStyles from '@/pages/home/index.module.scss';
+import ThreeBackground from '@/components/client/ThreeBackground';
 
 dayjs.extend(relativeTime);
 
@@ -139,17 +140,17 @@ const ClientCompanyDetailPage = (props: any) => {
         ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1)
         : 0;
 
-    // Tính % khuyên bạn bè: quy đổi điểm trung bình sao sang thang 100
-    // Ví dụ: avg 4.67 sao → 93%, avg 5 sao → 100%, avg 3 sao → 60%
-    // Sử dụng thông số từ backend nếu có
-    const recommendPercent = companyDetail?.recommendPercentage ??
-        (reviews.length > 0
-            ? Math.round((reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length / 5) * 100)
-            : 0);
+    // Tính % recommend theo cùng công thức BE:
+    // Java: boolean isRecommend → getter isRecommend() → Jackson serialize thành JSON key "recommend" (bỏ prefix "is")
+    // Nên phải đọc r.isRecommend || (r as any).recommend để tương thích
+    const recommendPercent = reviews.length > 0
+        ? Math.round(reviews.filter(r => r.isRecommend || (r as any).recommend).length / reviews.length * 100)
+        : 0;
 
     return (
         <div className={s.page}>
             <section className={s.hero}>
+                <ThreeBackground />
                 <div className={`${styles["container"]} ${s.heroInner}`}>
                     {companyDetail?.logo && (
                         <div className={s.logoWrap}>
