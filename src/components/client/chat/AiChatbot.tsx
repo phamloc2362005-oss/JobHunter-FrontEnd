@@ -6,15 +6,10 @@ import {
     DeleteOutlined,
     RobotOutlined,
 } from '@ant-design/icons';
-import { callAiChat } from '@/config/api';
+import { callAiChat, callGetChatHistory, callClearChatHistory } from '@/config/api';
+import type { IChatMessage } from '@/config/api';
 import styles from '@/styles/chatbot.module.scss';
 import { useAppSelector } from '@/redux/hooks';
-
-interface IMessage {
-    role: 'user' | 'model';
-    content: string;
-    time: string;
-}
 
 const SUGGESTIONS = [
     'Tìm việc Java mới nhất 🚀',
@@ -23,33 +18,47 @@ const SUGGESTIONS = [
     'Lương bao nhiêu là ổn? 💸',
 ];
 
+const GREETING: IChatMessage = {
+    role: 'model',
+    content: 'Xin chào! Tôi là Trợ lý AI của JobHunter. Tôi có thể giúp gì cho bạn? Tôi biết tất cả thông tin về các vị trí đang tuyển và các công ty trong hệ thống đấy!',
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+};
+
 const AiChatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState<IMessage[]>([]);
+    const [messages, setMessages] = useState<IChatMessage[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(false);
     const [hasNew, setHasNew] = useState(false);
+    const [historyLoaded, setHistoryLoaded] = useState(false);
 
     const user = useAppSelector(state => state.account.user);
-    const chatKey = `jobhunter_ai_chat_history_${user?.id ?? 'guest'}`;
+    const isLoggedIn = !!user?.id;
 
     const messageEndRef = useRef<HTMLDivElement>(null);
 
-    // Load history from LocalStorage (mỗi user có key riêng theo userId)
+    // Load history from server when user is logged in, otherwise show greeting
     useEffect(() => {
-        const localHistory = localStorage.getItem(chatKey);
-        if (localHistory) {
-            setMessages(JSON.parse(localHistory));
+        setHistoryLoaded(false);
+        if (isLoggedIn) {
+            callGetChatHistory()
+                .then((res) => {
+                    const data = (res as any)?.data?.data ?? (res as any)?.data ?? null;
+                    if (Array.isArray(data) && data.length > 0) {
+                        setMessages(data as IChatMessage[]);
+                    } else {
+                        setMessages([GREETING]);
+                    }
+                })
+                .catch(() => {
+                    setMessages([GREETING]);
+                })
+                .finally(() => setHistoryLoaded(true));
         } else {
-            // First greeting
-            const greeting: IMessage = {
-                role: 'model',
-                content: 'Xin chào! Tôi là Trợ lý AI của JobHunter. Tôi có thể giúp gì cho bạn? Tôi biết tất cả thông tin về các vị trí đang tuyển và các công ty trong hệ thống đấy!',
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            };
-            setMessages([greeting]);
+            setMessages([GREETING]);
+            setHistoryLoaded(true);
         }
-    }, [chatKey]);
+    }, [user?.id]);
 
     // Auto-scroll to bottom on new message
     useEffect(() => {
@@ -61,10 +70,12 @@ const AiChatbot = () => {
     const handleSendMessage = async (textToSend: string) => {
         if (!textToSend.trim() || loading) return;
 
-        const newMsg: IMessage = {
+        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const newMsg: IChatMessage = {
             role: 'user',
             content: textToSend,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            time: now,
         };
 
         const updatedMessages = [...messages, newMsg];
@@ -73,50 +84,44 @@ const AiChatbot = () => {
         setLoading(true);
 
         try {
-            // Prepare history in the format backend expects: [{"role": "user"|"model", "content": "..."}]
+            // Build history for context (exclude the greeting if it's the only message)
             const apiHistory = updatedMessages.map(m => ({
                 role: m.role,
                 content: m.content
             }));
 
-            const response = await callAiChat(textToSend, apiHistory);
+            // Pass current time so BE can store the correct display time
+            const response = await callAiChat(textToSend, apiHistory, now);
             console.log("DEBUG AI Chatbot raw response:", response);
 
             let aiText = "";
-            
-            // 1. Resolve raw AxiosResponse vs Intercepted payload
-            let payload = response;
-            if (response && typeof response === 'object' && 'status' in response && 'headers' in response && 'data' in response) {
+
+            // Resolve raw AxiosResponse vs Intercepted payload
+            let payload: any = response;
+            if (response && typeof response === 'object' && 'status' in response && 'data' in response) {
                 payload = (response as any).data;
             }
 
-            // 2. Extract content from the payload
+            // Extract content
             if (payload) {
                 if (typeof payload === 'string') {
                     aiText = payload;
                 } else if (typeof payload === 'object') {
-                    const backendRes = payload as any;
-                    // Case 1: Double-wrapped payload (e.g. backendRes.data.data)
-                    if (backendRes.data && typeof backendRes.data === 'object' && backendRes.data.data && typeof backendRes.data.data === 'string') {
-                        aiText = backendRes.data.data;
-                    }
-                    // Case 2: Single-wrapped payload (e.g. backendRes.data)
-                    else if (backendRes.data && typeof backendRes.data === 'string') {
-                        aiText = backendRes.data;
-                    } 
-                    // Case 3: Direct nested data property if data is object but has response field
-                    else if (backendRes.data && typeof backendRes.data === 'object' && backendRes.data.response && typeof backendRes.data.response === 'string') {
-                        aiText = backendRes.data.response;
-                    }
-                    // Case 4: Error or message properties
-                    else if (backendRes.error && typeof backendRes.error === 'string') {
-                        aiText = backendRes.error;
-                    } else if (backendRes.message && typeof backendRes.message === 'string') {
-                        aiText = backendRes.message;
-                    } else if (backendRes.data) {
-                        aiText = JSON.stringify(backendRes.data);
+                    const r = payload as any;
+                    if (r.data && typeof r.data === 'object' && typeof r.data.data === 'string') {
+                        aiText = r.data.data;
+                    } else if (r.data && typeof r.data === 'string') {
+                        aiText = r.data;
+                    } else if (r.data && typeof r.data === 'object' && typeof r.data.response === 'string') {
+                        aiText = r.data.response;
+                    } else if (typeof r.error === 'string') {
+                        aiText = r.error;
+                    } else if (typeof r.message === 'string') {
+                        aiText = r.message;
+                    } else if (r.data) {
+                        aiText = JSON.stringify(r.data);
                     } else {
-                        aiText = JSON.stringify(backendRes);
+                        aiText = JSON.stringify(r);
                     }
                 }
             }
@@ -125,20 +130,20 @@ const AiChatbot = () => {
                 aiText = "Không nhận được phản hồi từ trợ lý AI. Vui lòng thử lại sau.";
             }
 
-            const aiMsg: IMessage = {
+            const aiMsg: IChatMessage = {
                 role: 'model',
                 content: aiText,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             };
-            const finalMessages = [...updatedMessages, aiMsg];
-            setMessages(finalMessages);
-            localStorage.setItem(chatKey, JSON.stringify(finalMessages));
+
+            // BE đã lưu cả 2 tin nhắn — FE chỉ cần update UI
+            setMessages([...updatedMessages, aiMsg]);
 
             if (!isOpen) {
                 setHasNew(true);
             }
         } catch (error) {
-            const errorMsg: IMessage = {
+            const errorMsg: IChatMessage = {
                 role: 'model',
                 content: 'Rất tiếc, đã có lỗi kết nối xảy ra. Bạn vui lòng thử lại sau nhé!',
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -149,9 +154,15 @@ const AiChatbot = () => {
         }
     };
 
-    const handleClearChat = () => {
-        localStorage.removeItem(chatKey);
-        const greeting: IMessage = {
+    const handleClearChat = async () => {
+        if (isLoggedIn) {
+            try {
+                await callClearChatHistory();
+            } catch {
+                // Vẫn reset UI dù API lỗi
+            }
+        }
+        const greeting: IChatMessage = {
             role: 'model',
             content: 'Cuộc hội thoại đã được dọn sạch. Bạn cần tôi hỗ trợ gì tiếp theo?',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -195,12 +206,16 @@ const AiChatbot = () => {
 
                 {/* Messages Area */}
                 <div className={styles.chatMessages}>
-                    {messages.map((msg, idx) => (
-                        <div key={idx} className={`${styles.messageBubble} ${styles[msg.role]}`}>
-                            <div className={styles.msgContent}>{msg.content}</div>
-                            <span className={styles.time}>{msg.time}</span>
-                        </div>
-                    ))}
+                    {!historyLoaded ? (
+                        <div className={styles.loadingHistory}>Đang tải lịch sử chat...</div>
+                    ) : (
+                        messages.map((msg, idx) => (
+                            <div key={idx} className={`${styles.messageBubble} ${styles[msg.role]}`}>
+                                <div className={styles.msgContent}>{msg.content}</div>
+                                <span className={styles.time}>{msg.time}</span>
+                            </div>
+                        ))
+                    )}
                     {loading && (
                         <div className={`${styles.messageBubble} ${styles.model}`}>
                             <div className={styles.msgContent}>

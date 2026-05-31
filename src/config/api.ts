@@ -403,8 +403,22 @@ export const callFetchDashboard = () => {
     return axios.get<IBackendRes<IDashboardStats>>('/api/v1/admin/dashboard');
 }
 
-export const callAiChat = (message: string, history: { role: string; content: string }[]) => {
-    return axios.post<IBackendRes<string>>('/api/v1/ai/chat', { message, history });
+export interface IChatMessage {
+    role: 'user' | 'model';
+    content: string;
+    time: string;
+}
+
+export const callAiChat = (message: string, history: { role: string; content: string }[], time?: string) => {
+    return axios.post<IBackendRes<string>>('/api/v1/ai/chat', { message, history, time });
+}
+
+export const callGetChatHistory = () => {
+    return axios.get<IBackendRes<IChatMessage[]>>('/api/v1/ai/chat/history');
+}
+
+export const callClearChatHistory = () => {
+    return axios.delete<IBackendRes<null>>('/api/v1/ai/chat/history');
 }
 
 /**

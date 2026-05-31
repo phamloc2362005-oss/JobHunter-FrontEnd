@@ -176,6 +176,16 @@
   }
 }
 
+// ===== Loading History Placeholder =====
+.loadingHistory {
+  text-align: center;
+  color: #8c8c8c;
+  font-size: 13px;
+  padding: 20px 0;
+  animation: messageFadeIn 0.5s ease;
+}
+
+
 // ===== Message Bubble =====
 .messageBubble {
   max-width: 80%;
