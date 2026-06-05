@@ -257,7 +257,7 @@ const HomePage = () => {
                         <span className={s.heroTitleLine1}>Find IT jobs</span>
                         <span className={s.heroTitleAccent}> with your stack,</span>
                         <br />
-                        <span className={s.heroTitleLine3}>right team, right salary.</span>
+                        <span className={s.heroTitleLine3}>right team, right salary</span>
                     </h1>
 
                     <p className={s.heroSub}>
