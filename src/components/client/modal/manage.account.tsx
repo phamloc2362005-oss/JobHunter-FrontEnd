@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Col, Divider, Form, Modal, Row, Select, Table, Tabs, Tag, Typography, message, notification, Input } from "antd";
+import { Alert, Button, Card, Col, Divider, Form, Modal, Row, Select, Space, Switch, Table, Tabs, Tag, Typography, message, notification, Input } from "antd";
 import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
 import { IExpertise, IJob, IResume, ISubscribers, ISkill } from "@/types/backend";
@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile, callFetchFavoriteJobs, callFetchAccount, callUpdateUserProfile } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { ExclamationCircleOutlined, MonitorOutlined, ThunderboltOutlined } from "@ant-design/icons";
+import { BellOutlined, CheckCircleFilled, ExclamationCircleOutlined, MailOutlined, MonitorOutlined, ThunderboltOutlined } from "@ant-design/icons";
 import { useAppSelector } from "@/redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { convertSlug } from "@/config/utils";
@@ -545,6 +545,8 @@ const JobByEmail = (props: any) => {
     const user = useAppSelector(state => state.account.user);
     const [skills, setSkills] = useState<{ label: string; value: string }[]>([]);
     const [subscriber, setSubscriber] = useState<ISubscribers | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState(false);
 
     const fetchSkillList = async (name: string): Promise<any[]> => {
         const res = await callFetchAllSkill(`page=1&size=100&name ~ '${name}'`);
@@ -559,13 +561,12 @@ const JobByEmail = (props: any) => {
             const res = await callGetSubscriberSkills();
             if (res && res.data) {
                 setSubscriber(res.data);
+                setIsSubscribed(true);
                 const d = res.data.skills;
-                const arr = d.map((item: any) => {
-                    return {
-                        label: item.name as string,
-                        value: item.id + "" as string
-                    }
-                });
+                const arr = d.map((item: any) => ({
+                    label: item.name as string,
+                    value: item.id + "" as string
+                }));
                 setSkills(arr);
                 form.setFieldValue("skills", arr);
             }
@@ -574,85 +575,182 @@ const JobByEmail = (props: any) => {
     }, [])
 
     const onFinish = async (values: any) => {
+        setIsSubmitting(true);
         const { skills } = values;
 
         const arr = skills?.map((item: any) => {
             if (item?.id) return { id: item.id };
-            return { id: item }
+            return { id: item.value ?? item };
         });
 
         if (!subscriber?.id) {
-            //create subscriber
-            const data = {
-                email: user.email,
-                name: user.name,
-                skills: arr
-            }
-
+            const data = { email: user.email, name: user.name, skills: arr };
             const res = await callCreateSubscriber(data);
             if (res.data) {
-                message.success("Settings updated successfully");
+                message.success("✅ Subscribed! You'll receive job alerts matching your skills.");
                 setSubscriber(res.data);
+                setIsSubscribed(true);
             } else {
-                notification.error({
-                    message: 'An error occurred',
-                    description: res.message
-                });
+                notification.error({ message: 'An error occurred', description: res.message });
             }
-
-
         } else {
-            //update subscriber
-            const res = await callUpdateSubscriber({
-                id: subscriber?.id,
-                skills: arr
-            });
+            const res = await callUpdateSubscriber({ id: subscriber?.id, skills: arr });
             if (res.data) {
-                message.success("Settings updated successfully");
+                message.success("✅ Job alert preferences updated!");
                 setSubscriber(res.data);
             } else {
-                notification.error({
-                    message: 'An error occurred',
-                    description: res.message
-                });
+                notification.error({ message: 'An error occurred', description: res.message });
             }
         }
-
-
-    }
+        setIsSubmitting(false);
+    };
 
     return (
-        <>
-            <Form
-                onFinish={onFinish}
-                form={form}
+        <div style={{ display: 'grid', gap: 20 }}>
+            {/* Header Card */}
+            <Card
+                bodyStyle={{ padding: 0, overflow: 'hidden' }}
+                style={{ borderRadius: 18, border: 'none', boxShadow: '0 4px 24px rgba(22,119,255,0.10)' }}
             >
-                <Row gutter={[20, 20]}>
-                    <Col span={24}>
-                        <Form.Item
-                            label={"Skills"}
-                            name={"skills"}
-                            rules={[{ required: true, message: 'Please select at least 1 skill!' }]}
+                {/* Gradient Banner */}
+                <div style={{
+                    background: 'linear-gradient(135deg, #1677ff 0%, #0050b3 100%)',
+                    padding: '28px 32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 20,
+                }}>
+                    <div style={{
+                        width: 56, height: 56,
+                        background: 'rgba(255,255,255,0.18)',
+                        borderRadius: 16,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        backdropFilter: 'blur(8px)',
+                        flexShrink: 0,
+                    }}>
+                        <BellOutlined style={{ fontSize: 28, color: '#fff' }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <Typography.Title level={4} style={{ margin: 0, color: '#fff', fontWeight: 700 }}>
+                            Job Alert by Email
+                        </Typography.Title>
+                        <Typography.Text style={{ color: 'rgba(255,255,255,0.82)', fontSize: 14 }}>
+                            Get notified instantly when a new job matches your skills.
+                        </Typography.Text>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                        <Switch
+                            checked={isSubscribed}
+                            onChange={(checked) => setIsSubscribed(checked)}
+                            style={isSubscribed ? { backgroundColor: '#52c41a' } : {}}
+                        />
+                        <span style={{ fontSize: 12, color: isSubscribed ? '#b7eb8f' : 'rgba(255,255,255,0.6)' }}>
+                            {isSubscribed ? 'Active' : 'Off'}
+                        </span>
+                    </div>
+                </div>
 
-                        >
-                            <DebounceSelect
-                                mode="multiple"
-                                allowClear
-                                showSearch
-                                placeholder="Select your skills"
-                                fetchOptions={fetchSkillList}
-                                value={skills}
-                                onChange={(val: any) => setSkills(val)}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                        <Button onClick={() => form.submit()}>Update</Button>
-                    </Col>
-                </Row>
-            </Form>
-        </>
-    )
+                {/* Status Bar */}
+                {isSubscribed && (
+                    <div style={{
+                        background: '#f6ffed',
+                        borderTop: '1px solid #b7eb8f',
+                        padding: '10px 32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                    }}>
+                        <CheckCircleFilled style={{ color: '#52c41a', fontSize: 15 }} />
+                        <Typography.Text style={{ color: '#389e0d', fontSize: 13, fontWeight: 500 }}>
+                            You are subscribed · Emails will be sent to <strong>{user.email}</strong>
+                        </Typography.Text>
+                    </div>
+                )}
+            </Card>
+
+            {/* Skill Selector Card */}
+            <Card
+                bodyStyle={{ padding: '24px 28px' }}
+                style={{ borderRadius: 18, border: '1px solid rgba(22,119,255,0.12)', background: 'linear-gradient(180deg, #f8fbff 0%, #ffffff 100%)' }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                    <div style={{
+                        width: 36, height: 36,
+                        background: '#e6f4ff',
+                        borderRadius: 10,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                        <MailOutlined style={{ color: '#1677ff', fontSize: 17 }} />
+                    </div>
+                    <div>
+                        <Typography.Title level={5} style={{ margin: 0 }}>Alert Preferences</Typography.Title>
+                        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+                            Choose skills you want to receive job alerts for.
+                        </Typography.Text>
+                    </div>
+                </div>
+
+                <Alert
+                    type="info"
+                    showIcon
+                    icon={<ExclamationCircleOutlined />}
+                    message="How it works"
+                    description="When admin creates a new job matching any of your selected skills, you'll receive an email notification automatically."
+                    style={{ marginBottom: 20, borderRadius: 10 }}
+                />
+
+                <Form onFinish={onFinish} form={form} layout="vertical">
+                    <Form.Item
+                        label={<span style={{ fontWeight: 600 }}>Skills to watch</span>}
+                        name="skills"
+                        rules={[{ required: true, message: 'Please select at least 1 skill!' }]}
+                    >
+                        <DebounceSelect
+                            mode="multiple"
+                            allowClear
+                            showSearch
+                            placeholder="e.g. Java, React, Node.js..."
+                            fetchOptions={fetchSkillList}
+                            value={skills}
+                            onChange={(val: any) => setSkills(val)}
+                        />
+                    </Form.Item>
+
+                    <Divider style={{ margin: '8px 0 16px' }} />
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+                            {subscriber?.id
+                                ? `Last updated: ${subscriber.updatedAt ? new Date(subscriber.updatedAt as any).toLocaleDateString('vi-VN') : 'N/A'}`
+                                : 'Not subscribed yet — save to activate alerts.'}
+                        </Typography.Text>
+                        <Space>
+                            {subscriber?.id && (
+                                <Tag color="success" icon={<CheckCircleFilled />} style={{ padding: '4px 10px', borderRadius: 20 }}>
+                                    Subscribed
+                                </Tag>
+                            )}
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                loading={isSubmitting}
+                                icon={<BellOutlined />}
+                                style={{
+                                    background: 'linear-gradient(135deg, #1677ff, #0050b3)',
+                                    border: 'none',
+                                    borderRadius: 10,
+                                    fontWeight: 600,
+                                    height: 40,
+                                }}
+                            >
+                                {subscriber?.id ? 'Update Alerts' : 'Subscribe to Alerts'}
+                            </Button>
+                        </Space>
+                    </div>
+                </Form>
+            </Card>
+        </div>
+    );
 }
 
 // Cập nhật mật khẩu 
@@ -826,6 +924,11 @@ const ManageAccount = (props: IProps) => {
             key: 'favorite-jobs',
             label: `Favorite Jobs`,
             children: <FavoriteJobsTab onClose={onClose} />,
+        },
+        {
+            key: 'job-by-email',
+            label: `Job Alerts`,
+            children: <JobByEmail />,
         },
         {
             key: 'user-update-info',
