@@ -3,7 +3,7 @@ import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
 import { IExpertise, IJob, IResume, ISubscribers, ISkill } from "@/types/backend";
 import { useState, useEffect } from 'react';
-import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile, callFetchFavoriteJobs, callFetchAccount, callUpdateUser } from "@/config/api";
+import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile, callFetchFavoriteJobs, callFetchAccount, callUpdateUserProfile } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { ExclamationCircleOutlined, MonitorOutlined, ThunderboltOutlined } from "@ant-design/icons";
@@ -50,8 +50,15 @@ const UserResume = (props: any) => {
         },
         {
             title: 'Company',
-            dataIndex: "companyName",
-
+            dataIndex: ["job", "company", "name"],
+            render: (companyName: string, record: any) => {
+                // Backend /by-user trả về raw entity: job.company.name
+                const name = companyName
+                    || record?.job?.company?.name
+                    || (record?.companyId && typeof record.companyId === 'object' ? record.companyId.name : null)
+                    || record?.companyName;
+                return <>{name || '—'}</>;
+            },
         },
         {
             title: 'Job title',
@@ -342,7 +349,7 @@ const UserUpdateInfo = ({ open }: { open: boolean }) => {
         setIsSubmitting(true);
 
         // 1. Update basic info
-        const userUpdateRes = await callUpdateUser({
+        const userUpdateRes = await callUpdateUserProfile({
             id: user.id,
             name: values.name,
             age: values.age,
@@ -819,11 +826,6 @@ const ManageAccount = (props: IProps) => {
             key: 'favorite-jobs',
             label: `Favorite Jobs`,
             children: <FavoriteJobsTab onClose={onClose} />,
-        },
-        {
-            key: 'email-by-skills',
-            label: `Job Alerts`,
-            children: <JobByEmail />,
         },
         {
             key: 'user-update-info',

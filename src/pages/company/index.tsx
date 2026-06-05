@@ -58,7 +58,7 @@ const ClientCompanyPage = (props: any) => {
                 <div className={`${styles['container']}`}>
                     <div className={s.heroInner}>
                         <div className={s.heroKicker}>
-                            🏆 &nbsp;VIETNAM BEST IT COMPANIES 2024
+                            VIETNAM BEST IT COMPANIES 2024
                         </div>
 
                         <h1 className={s.heroTitle}>

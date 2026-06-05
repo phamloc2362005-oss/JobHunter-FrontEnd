@@ -15,6 +15,8 @@ export function DebounceSelect<
     const [fetching, setFetching] = useState(false);
     const [options, setOptions] = useState<ValueType[]>([]);
     const fetchRef = useRef(0);
+    // Flag riêng: đã fetch toàn bộ danh sách chưa (khác với options chỉ chứa selected items)
+    const hasFetchedAll = useRef(false);
 
     // Initialize and sync options from value
     useEffect(() => {
@@ -63,10 +65,10 @@ export function DebounceSelect<
     }, [fetchOptions, debounceTimeout]);
 
     const handleOnFocus = () => {
-        if (options && options.length > 0) {
-            return;
-        }
+        // Chỉ skip nếu đã fetch toàn bộ list rồi, không dùng options.length
+        if (hasFetchedAll.current) return;
         fetchOptions("").then((newOptions) => {
+            hasFetchedAll.current = true;
             setOptions(prev => {
                 const existingMap = new Map(prev.map(p => [String(p.value), p]));
                 for (const option of newOptions) {

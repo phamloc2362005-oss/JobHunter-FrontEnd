@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-    MessageOutlined,
     CloseOutlined,
     SendOutlined,
     DeleteOutlined,
@@ -177,9 +176,56 @@ const AiChatbot = () => {
 
     return (
         <div className={styles.chatbotContainer}>
-            {/* Floating Toggle Button */}
+            {/* Floating Toggle Button — Robot Face */}
             <div className={styles.chatbotToggleBtn} onClick={toggleOpen}>
-                {isOpen ? <CloseOutlined /> : <MessageOutlined />}
+                {isOpen ? (
+                    <CloseOutlined />
+                ) : (
+                    <svg
+                        className={styles.robotFaceIcon}
+                        viewBox="0 0 64 64"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-label="AI Chatbot"
+                    >
+                        <defs>
+                            <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stopColor="#7ee8ff" />
+                                <stop offset="100%" stopColor="#38bdf8" />
+                            </radialGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="1.5" result="blur" />
+                                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                            </filter>
+                        </defs>
+
+                        {/* Antenna stem */}
+                        <line x1="32" y1="4" x2="32" y2="13" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round"/>
+                        {/* Antenna ball */}
+                        <circle cx="32" cy="4" r="3" fill="white" filter="url(#glow)"/>
+
+                        {/* Head body */}
+                        <rect x="10" y="13" width="44" height="36" rx="10" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.85)" strokeWidth="2"/>
+
+                        {/* Left eye */}
+                        <circle cx="23" cy="29" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5"/>
+                        <circle cx="23" cy="29" r="3.5" fill="url(#eyeGlow)" filter="url(#glow)"/>
+                        <circle cx="24.2" cy="27.8" r="1" fill="white" opacity="0.8"/>
+
+                        {/* Right eye */}
+                        <circle cx="41" cy="29" r="6" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5"/>
+                        <circle cx="41" cy="29" r="3.5" fill="url(#eyeGlow)" filter="url(#glow)"/>
+                        <circle cx="42.2" cy="27.8" r="1" fill="white" opacity="0.8"/>
+
+                        {/* Smile mouth */}
+                        <path d="M22 40 Q32 47 42 40" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+
+                        {/* Ear left */}
+                        <rect x="5" y="24" width="5" height="10" rx="2.5" fill="rgba(255,255,255,0.6)" stroke="rgba(255,255,255,0.8)" strokeWidth="1.2"/>
+                        {/* Ear right */}
+                        <rect x="54" y="24" width="5" height="10" rx="2.5" fill="rgba(255,255,255,0.6)" stroke="rgba(255,255,255,0.8)" strokeWidth="1.2"/>
+                    </svg>
+                )}
                 {hasNew && !isOpen && <span className={styles.badge}>New</span>}
             </div>
 

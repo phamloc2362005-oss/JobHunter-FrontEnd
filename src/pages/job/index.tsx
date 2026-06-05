@@ -134,17 +134,14 @@ const ClientJobPage = () => {
 
                             <div className={styles.statsRow}>
                                 <div className={styles.statCard}>
-                                    <div className={styles.statIcon}>🚀</div>
                                     <div className={styles.statN}>500+</div>
                                     <div className={styles.statL}>Active Jobs</div>
                                 </div>
                                 <div className={styles.statCard}>
-                                    <div className={styles.statIcon}>🏢</div>
                                     <div className={styles.statN}>150+</div>
                                     <div className={styles.statL}>IT Companies</div>
                                 </div>
                                 <div className={styles.statCard}>
-                                    <div className={styles.statIcon}>⚡</div>
                                     <div className={styles.statN}>Daily</div>
                                     <div className={styles.statL}>New Updates</div>
                                 </div>
@@ -231,9 +228,6 @@ const ClientJobPage = () => {
                     <div className={styles.dashboardGrid}>
                         {DASHBOARD_CARDS.map((card, i) => (
                             <div key={i} className={styles.dashCard}>
-                                <div className={`${styles.dashCardIcon} ${styles[card.iconClass]}`}>
-                                    {card.icon}
-                                </div>
                                 <div className={styles.dashCardInfo}>
                                     <div className={styles.dashCardVal}>{card.value}</div>
                                     <div className={styles.dashCardLabel}>{card.label}</div>

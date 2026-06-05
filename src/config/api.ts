@@ -127,6 +127,10 @@ export const callUpdateUser = (user: IUser) => {
     return axios.put<IBackendRes<IUser>>(`/api/v1/users`, { ...user })
 }
 
+export const callUpdateUserProfile = (user: IUser) => {
+    return axios.put<IBackendRes<IUser>>(`/api/v1/users/profile`, { ...user })
+}
+
 export const callUpdateUserRecommendationProfile = (payload: IRecommendationProfilePayload) => {
     return axios.put<IBackendRes<IUser>>('/api/v1/users/profile/recommendation', {
         ...payload,
