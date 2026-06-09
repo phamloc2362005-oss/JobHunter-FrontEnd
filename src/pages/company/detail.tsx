@@ -100,25 +100,44 @@ const ClientCompanyDetailPage = (props: any) => {
         setIsSubmittingReview(false);
     };
 
+    /**
+     * Toggle like — backend xử lý toàn bộ logic:
+     * chưa vote → like | đang like → bỏ like | đang dislike → chuyển sang like
+     */
     const handleLike = async (reviewId: string | undefined, idx: number) => {
         if (!reviewId) return;
         try {
             const res = await callLikeReview(reviewId);
             if (res?.data) {
+                // Cập nhật review tại vị trí idx với data mới từ server
                 setReviews(prev => prev.map((rv, i) =>
-                    i === idx ? { ...rv, likeCount: (rv.likeCount || 0) + 1 } : rv
+                    i === idx ? {
+                        ...rv,
+                        likeCount: res.data!.likeCount,
+                        dislikeCount: res.data!.dislikeCount,
+                        userVote: res.data!.userVote,
+                    } : rv
                 ));
             }
         } catch { /* silent */ }
     };
 
+    /**
+     * Toggle dislike — backend xử lý toàn bộ logic:
+     * chưa vote → dislike | đang dislike → bỏ dislike | đang like → chuyển sang dislike
+     */
     const handleDislike = async (reviewId: string | undefined, idx: number) => {
         if (!reviewId) return;
         try {
             const res = await callDislikeReview(reviewId);
             if (res?.data) {
                 setReviews(prev => prev.map((rv, i) =>
-                    i === idx ? { ...rv, dislikeCount: (rv.dislikeCount || 0) + 1 } : rv
+                    i === idx ? {
+                        ...rv,
+                        likeCount: res.data!.likeCount,
+                        dislikeCount: res.data!.dislikeCount,
+                        userVote: res.data!.userVote,
+                    } : rv
                 ));
             }
         } catch { /* silent */ }
@@ -292,14 +311,16 @@ const ClientCompanyDetailPage = (props: any) => {
                                                                 <div className={s.voteRow}>
                                                                     <span className={s.voteLabel}>Helpful?</span>
                                                                     <button
-                                                                        className={s.voteBtn}
+                                                                        className={`${s.voteBtn} ${rv.userVote === 'LIKE' ? s.voteBtnActive : ''}`}
                                                                         onClick={() => handleLike(rv.id, idx)}
+                                                                        title={rv.userVote === 'LIKE' ? 'Remove like' : 'Like'}
                                                                     >
                                                                         <LikeOutlined /> {rv.likeCount || 0}
                                                                     </button>
                                                                     <button
-                                                                        className={s.voteBtn}
+                                                                        className={`${s.voteBtn} ${rv.userVote === 'DISLIKE' ? s.voteBtnDislikeActive : ''}`}
                                                                         onClick={() => handleDislike(rv.id, idx)}
+                                                                        title={rv.userVote === 'DISLIKE' ? 'Remove dislike' : 'Dislike'}
                                                                     >
                                                                         <DislikeOutlined /> {rv.dislikeCount || 0}
                                                                     </button>

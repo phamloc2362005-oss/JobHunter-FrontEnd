@@ -68,6 +68,7 @@ export interface IReview {
     cons?: string;
     likeCount?: number;
     dislikeCount?: number;
+    userVote?: 'LIKE' | 'DISLIKE' | null;
     createdAt?: string;
     user?: {
         id: string;
