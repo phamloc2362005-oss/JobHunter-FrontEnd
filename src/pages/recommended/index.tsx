@@ -11,6 +11,7 @@ import { convertSlug, getLocationName } from '@/config/utils';
 import JobDetailPanel from '@/components/client/card/job-detail-panel';
 import styles from './index.module.scss';
 import compactStyles from '@/components/client/card/job-list-compact.module.scss';
+import ThreeBackground from '@/components/client/ThreeBackground';
 
 dayjs.extend(relativeTime);
 
@@ -117,10 +118,11 @@ const RecommendedPage = () => {
         <div className={styles.pageWrapper}>
             {/* Dashboard Header (Dark) */}
             <header className={styles.dashboardHeader}>
+                <ThreeBackground />
                 <div className={styles.container}>
                     <div className={styles.hero}>
                         <div className={styles.heroBadge}>
-                            <ThunderboltOutlined /> AI-Powered Intelligence
+                            AI-Powered Intelligence
                         </div>
                         <h1 className={styles.heroTitle}>
                             Smart Career Matching
@@ -183,7 +185,7 @@ const RecommendedPage = () => {
                             <Row gutter={[20, 20]} style={{ marginTop: 20 }}>
                                 <Col span={24} lg={10}>
                                     <div className={styles.compactListHeader}>
-                                        <FireOutlined /> <strong>{jobs.length}</strong> AI Recommendations
+                                        <strong>{jobs.length}</strong> AI Recommendations
                                     </div>
                                     <div className={styles.compactListWrapper}>
                                         {jobs.map((item) => (

@@ -41,16 +41,16 @@ const ExpertisePage = () => {
                     <div className={styles.heroCopy}>
                         <span className={styles.kicker}>EXPERTISE LIBRARY</span>
                         <Typography.Title level={2} className={styles.title}>
-                            Tìm việc làm IT theo chuyên môn
+                            Find IT jobs by expertise
                         </Typography.Title>
                         <p className={styles.description}>
-                            Khám phá toàn bộ chuyên môn đang có trên hệ thống và đi thẳng tới các job phù hợp chỉ bằng một cú click.
+                            Explore all available expertises on the platform and jump straight to relevant jobs with a single click.
                         </p>
                     </div>
 
                     <div className={styles.heroStat}>
                         <span className={styles.statNumber}>{expertises.length}</span>
-                        <span className={styles.statLabel}>chuyên môn</span>
+                        <span className={styles.statLabel}>expertises</span>
                     </div>
                 </section>
 
@@ -58,17 +58,17 @@ const ExpertisePage = () => {
                     <div className={styles.contentHeader}>
                         <div>
                             <Typography.Title level={4} className={styles.sectionTitle}>
-                                Danh sách chuyên môn
+                                Expertise List
                             </Typography.Title>
                             <p className={styles.sectionNote}>
-                                Chọn một chuyên môn để xem ngay các job liên quan.
+                                Select an expertise to instantly view related jobs.
                             </p>
                         </div>
                     </div>
 
                     {!isLoading && expertises.length === 0 ? (
                         <div className={styles.emptyState}>
-                            <Empty description="Chưa có dữ liệu expertise" />
+                            <Empty description="No expertise data available" />
                         </div>
                     ) : (
                         <Row gutter={[18, 18]}>

@@ -473,7 +473,6 @@ Sở thích: ${formData.interests}
                             <Button
                                 type="primary"
                                 size="large"
-                                icon={<RobotOutlined />}
                                 loading={loading}
                                 onClick={validateAndGenerate}
                                 className={styles.generateBtn}
