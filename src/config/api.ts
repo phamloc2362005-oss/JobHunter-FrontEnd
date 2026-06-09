@@ -29,6 +29,18 @@ export const callChangePassword = (oldPassword: string, newPassword: string) => 
     return axios.put<IBackendRes<any>>('/api/v1/password/change', { oldPassword, newPassword })
 }
 
+export const callForgotPassword = (email: string) => {
+    return axios.post<IBackendRes<void>>('/api/v1/password/forgot', { email });
+}
+
+export const callVerifyOtp = (email: string, otp: string) => {
+    return axios.post<IBackendRes<void>>('/api/v1/password/otp', { email, otp });
+}
+
+export const callResetPassword = (email: string, newPassword: string) => {
+    return axios.post<IBackendRes<void>>('/api/v1/password/reset', { email, newPassword });
+}
+
 /**
  * Upload single file
  */

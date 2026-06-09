@@ -41,6 +41,7 @@ import AiChatbot from 'components/client/chat/AiChatbot';
 import ArticleAdminPage from './pages/admin/article';
 import ArticlesListPage from './pages/articles/index';
 import ArticleDetailPage from './pages/articles/detail';
+import ForgotPasswordPage from './pages/auth/forgot-password';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -195,6 +196,11 @@ export default function App() {
     {
       path: "/register",
       element: <RegisterPage />,
+    },
+
+    {
+      path: "/forgot-password",
+      element: <ForgotPasswordPage />,
     },
   ]);
 
