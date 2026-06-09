@@ -3,6 +3,7 @@ import { Button, Form, Input, message, notification, Steps } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { callForgotPassword, callVerifyOtp, callResetPassword } from 'config/api';
 import styles from 'styles/auth.module.scss';
+import Footer from '@/components/client/footer.client';
 import fpStyles from './forgot-password.module.scss';
 import {
     MailOutlined,
@@ -326,6 +327,7 @@ const ForgotPasswordPage = () => {
                     </section>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 };

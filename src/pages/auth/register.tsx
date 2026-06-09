@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { callRegister } from 'config/api';
 import styles from 'styles/auth.module.scss';
 import { IUser } from '@/types/backend';
+import Footer from '@/components/client/footer.client';
 const { Option } = Select;
 
 
@@ -111,15 +112,13 @@ const RegisterPage = () => {
                                 <Input />
                             </Form.Item>
 
-                            < Form.Item
-                            // wrapperCol={{ offset: 6, span: 16 }}
-                            >
+                            <Form.Item style={{ display: 'flex', justifyContent: 'center' }}>
                                 <Button type="primary" htmlType="submit" loading={isSubmit} >
                                     Register
                                 </Button>
                             </Form.Item>
                             <Divider> Or </Divider>
-                            <p className="text text-normal" > Already have an account?
+                            <p className="text text-normal" style={{ textAlign: 'center' }}> Already have an account?
                                 <span>
                                     <Link to='/login' > Login </Link>
                                 </span>
@@ -128,6 +127,7 @@ const RegisterPage = () => {
                     </section>
                 </div>
             </main>
+            <Footer />
         </div>
     )
 }

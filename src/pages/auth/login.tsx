@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setUserLoginInfo } from '@/redux/slice/accountSlide';
 import styles from 'styles/auth.module.scss';
 import { useAppSelector } from '@/redux/hooks';
+import Footer from '@/components/client/footer.client';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -124,6 +125,7 @@ const LoginPage = () => {
                     </section>
                 </div>
             </main>
+            <Footer />
         </div>
     )
 }
