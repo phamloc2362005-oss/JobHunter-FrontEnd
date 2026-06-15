@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse, IReview, IInterviewQuestion, IInterviewEvaluation, IDashboardStats, IArticle } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IExpertise, IExpertiseCategory, IJobRecommendation, IRecommendationProfilePayload, IRecommendationProfileResponse, IReview, IInterviewQuestion, IInterviewEvaluation, IDashboardStats, IArticle, ICvDraft } from '@/types/backend';
 import axios from 'config/axios-customize';
 
 /**
@@ -462,4 +462,25 @@ export const callUpdateArticle = (article: IArticle) => {
 
 export const callDeleteArticle = (id: string) => {
     return axios.delete<IBackendRes<IArticle>>(`/api/v1/articles/${id}`);
+}
+
+/**
+ * Module CV Draft
+ */
+export const callSaveCvDraft = (title: string, cvJsonData: string, templateId: string, avatarUrl?: string) => {
+    return axios.post<IBackendRes<{ id: string; title: string; createdAt: string }>>('/api/v1/cv-drafts', {
+        title, cvJsonData, templateId, avatarUrl
+    });
+}
+
+export const callFetchMyCvDrafts = (page: number = 1, size: number = 10) => {
+    return axios.get<IBackendRes<IModelPaginate<ICvDraft>>>(`/api/v1/cv-drafts?page=${page}&size=${size}&sort=createdAt,desc`);
+}
+
+export const callFetchCvDraftById = (id: string | number) => {
+    return axios.get<IBackendRes<ICvDraft>>(`/api/v1/cv-drafts/${id}`);
+}
+
+export const callDeleteCvDraft = (id: string | number) => {
+    return axios.delete<IBackendRes<void>>(`/api/v1/cv-drafts/${id}`);
 }

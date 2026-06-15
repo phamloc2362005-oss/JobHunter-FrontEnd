@@ -1,5 +1,6 @@
 import { useState, useRef, useMemo } from 'react';
-import { Button, Input, Tag, Spin, message, Tooltip, Form, Steps, Card, Pagination, Upload } from 'antd';
+import { Button, Input, Tag, Spin, message, Tooltip, Form, Steps, Card, Pagination, Upload, Modal } from 'antd';
+import { useAppSelector } from '@/redux/hooks';
 import {
     RobotOutlined,
     CopyOutlined,
@@ -14,8 +15,10 @@ import {
     ArrowLeftOutlined,
     ArrowRightOutlined,
     CameraOutlined,
+    SaveOutlined,
+    FileTextOutlined,
 } from '@ant-design/icons';
-import { callGenerateCv, callUploadSingleFile } from '@/config/api';
+import { callGenerateCv, callUploadSingleFile, callSaveCvDraft } from '@/config/api';
 import styles from './index.module.scss';
 import { useReactToPrint } from 'react-to-print';
 import { CV_TEMPLATES, ICvTemplate } from './cvTemplates';
@@ -99,6 +102,10 @@ const CvBuilderPage = () => {
     const [result, setResult] = useState<ICvResult | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string>('');
     const cvRef = useRef<HTMLDivElement>(null);
+    const [saveModalOpen, setSaveModalOpen] = useState(false);
+    const [saveTitleInput, setSaveTitleInput] = useState('');
+    const [saving, setSaving] = useState(false);
+    const currentUser = useAppSelector(state => state.account.user);
 
     // ===== Avatar Upload =====
     const handleAvatarUpload = async (file: any) => {
@@ -129,6 +136,36 @@ const CvBuilderPage = () => {
         contentRef: cvRef,
         documentTitle: `CV_${result?.name || 'TopCV'}`,
     });
+
+    // ===== Save CV to DB =====
+    const handleOpenSaveModal = () => {
+        if (!currentUser?.id) {
+            message.warning('Vui lòng đăng nhập để lưu CV!');
+            return;
+        }
+        setSaveTitleInput(result?.name ? `CV ${result.name} — ${result.jobTitle}` : 'CV của tôi');
+        setSaveModalOpen(true);
+    };
+
+    const handleSaveCv = async () => {
+        if (!saveTitleInput.trim()) {
+            message.error('Vui lòng đặt tên cho CV!');
+            return;
+        }
+        if (!result) return;
+        setSaving(true);
+        try {
+            const cvJsonData = JSON.stringify(result);
+            const templateId = selectedTemplate?.id || '';
+            await callSaveCvDraft(saveTitleInput.trim(), cvJsonData, templateId, avatarUrl || undefined);
+            message.success('Đã lưu CV thành công! Xem lại tại trang "CV của tôi".');
+            setSaveModalOpen(false);
+        } catch (err) {
+            message.error('Lưu CV thất bại, vui lòng thử lại!');
+        } finally {
+            setSaving(false);
+        }
+    };
 
     // ===== STEP 1: Chọn Template =====
     const handleSelectTemplate = (template: ICvTemplate) => {
@@ -488,8 +525,31 @@ Sở thích: ${formData.interests}
                     <div className={styles.previewSection}>
                         <div className={styles.previewActions}>
                             <Button size="large" icon={<ArrowLeftOutlined />} onClick={() => setCurrentStep(1)}>Edit Again</Button>
+                            <Button size="large" icon={<SaveOutlined />} onClick={handleOpenSaveModal} className={styles.saveBtn}>Lưu CV</Button>
                             <Button size="large" icon={<PrinterOutlined />} onClick={handlePrint} type="primary" className={styles.generateBtn}>Download PDF</Button>
                         </div>
+
+                        {/* Modal nhập tên CV */}
+                        <Modal
+                            title={<><SaveOutlined style={{ marginRight: 8, color: '#6c63ff' }} />Đặt tên cho CV</>}
+                            open={saveModalOpen}
+                            onOk={handleSaveCv}
+                            onCancel={() => setSaveModalOpen(false)}
+                            okText="Lưu CV"
+                            cancelText="Hủy"
+                            confirmLoading={saving}
+                            okButtonProps={{ icon: <SaveOutlined /> }}
+                        >
+                            <p style={{ marginBottom: 12, color: '#888' }}>Đặt tên để dễ nhận biết CV này sau này.</p>
+                            <Input
+                                value={saveTitleInput}
+                                onChange={e => setSaveTitleInput(e.target.value)}
+                                placeholder="VD: CV Backend Developer 2026"
+                                maxLength={100}
+                                onPressEnter={handleSaveCv}
+                                prefix={<FileTextOutlined style={{ color: '#aaa' }} />}
+                            />
+                        </Modal>
 
                         <div
                             className={`${styles.cvResult} ${selectedTemplate?.layout === 'right-sidebar' ? styles.layoutRight : ''} ${selectedTemplate?.layout === 'top-header' ? styles.layoutTop : ''} ${selectedTemplate?.layout === 'split-header' ? styles.layoutSplit : ''} ${selectedTemplate?.layout === 'no-sidebar' ? styles.layoutClean : ''}`}

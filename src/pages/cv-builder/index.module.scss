@@ -212,6 +212,15 @@
     &:active { transform: translateY(0); }
 }
 
+.saveBtn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    border: none !important; border-radius: 8px !important;
+    font-weight: 600 !important; color: white !important;
+    transition: all 0.3s ease !important;
+    &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4) !important; color: white !important; }
+    &:active { transform: translateY(0); }
+}
+
 /* ===== STEP 3: PREVIEW ===== */
 .previewSection {
     display: flex; flex-direction: column; align-items: center;

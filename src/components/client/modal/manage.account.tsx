@@ -1,16 +1,19 @@
-import { Alert, Button, Card, Col, Divider, Form, Modal, Row, Select, Space, Switch, Table, Tabs, Tag, Typography, message, notification, Input } from "antd";
+import { Alert, Button, Card, Col, Divider, Form, Modal, Popconfirm, Row, Select, Space, Spin, Switch, Table, Tabs, Tag, Tooltip, Typography, message, notification, Input } from "antd";
 import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
-import { IExpertise, IJob, IResume, ISubscribers, ISkill } from "@/types/backend";
-import { useState, useEffect } from 'react';
-import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile, callFetchFavoriteJobs, callFetchAccount, callUpdateUserProfile } from "@/config/api";
+import { IExpertise, IJob, IResume, ISubscribers, ISkill, ICvDraft } from "@/types/backend";
+import { useState, useEffect, useRef } from 'react';
+import { callCreateSubscriber, callFetchAllSkill, callFetchExpertise, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callChangePassword, callUpdateUserRecommendationProfile, callGetUserRecommendationProfile, callFetchFavoriteJobs, callFetchAccount, callUpdateUserProfile, callFetchMyCvDrafts, callDeleteCvDraft } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { BellOutlined, CheckCircleFilled, ExclamationCircleOutlined, MailOutlined, MonitorOutlined, ThunderboltOutlined } from "@ant-design/icons";
+import { BellOutlined, CheckCircleFilled, ExclamationCircleOutlined, MailOutlined, MonitorOutlined, ThunderboltOutlined, SaveOutlined, DeleteOutlined, EyeOutlined, CalendarOutlined, FileTextOutlined, PlusOutlined, PrinterOutlined } from "@ant-design/icons";
 import { useAppSelector } from "@/redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { convertSlug } from "@/config/utils";
 import { DebounceSelect } from "../../admin/user/debouce.select";
+import { useReactToPrint } from 'react-to-print';
+import { CV_TEMPLATES } from '@/pages/cv-builder/cvTemplates';
+import styles from '@/pages/my-cvs/index.module.scss';
 
 interface IProps {
     open: boolean;
@@ -907,6 +910,296 @@ const FavoriteJobsTab = ({ onClose }: { onClose: (v: boolean) => void }) => {
     );
 };
 
+// Re-use the same CV interfaces from builder
+interface IPersonalInfo { dob: string; gender: string; phone: string; email: string; address: string; }
+interface ICvSkill { name: string; level: number; }
+interface IEducation { timeRange: string; major: string; school: string; desc: string; }
+interface IExperience { timeRange: string; title: string; company: string; bullets: string[]; }
+interface ICvResult {
+    name: string; jobTitle: string; personalInfo: IPersonalInfo;
+    careerObjective: string; skills: ICvSkill[]; interests: string[];
+    education: IEducation[]; experiences: IExperience[];
+}
+
+// ===== Tab CV của tôi =====
+const MyCvsTab = ({ onClose }: { onClose: (v: boolean) => void }) => {
+    const navigate = useNavigate();
+    const [drafts, setDrafts] = useState<ICvDraft[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    // Preview modal state
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewDraft, setPreviewDraft] = useState<ICvDraft | null>(null);
+    const [previewResult, setPreviewResult] = useState<ICvResult | null>(null);
+    const cvRef = useRef<HTMLDivElement>(null);
+
+    const handlePrint = useReactToPrint({
+        contentRef: cvRef,
+        documentTitle: `CV_${previewResult?.name || 'MyCV'}`,
+    });
+
+    const formatDate = (dateStr?: string) => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
+
+    useEffect(() => {
+        const init = async () => {
+            setLoading(true);
+            try {
+                // Lấy tối đa 20 CV
+                const res: any = await callFetchMyCvDrafts(1, 20);
+                if (res?.data) {
+                    setDrafts(res.data.result || []);
+                }
+            } catch { /* empty */ }
+            setLoading(false);
+        };
+        init();
+    }, []);
+
+    const handleDelete = async (id: string | number) => {
+        try {
+            await callDeleteCvDraft(id);
+            message.success('Đã xóa CV!');
+            setDrafts(prev => prev.filter(d => String(d.id) !== String(id)));
+        } catch { message.error('Xóa thất bại!'); }
+    };
+
+    const handlePreview = (draft: ICvDraft) => {
+        try {
+            const parsed = JSON.parse(draft.cvJsonData) as ICvResult;
+            setPreviewResult(parsed);
+            setPreviewDraft(draft);
+            setPreviewOpen(true);
+        } catch {
+            message.error('Không thể đọc dữ liệu CV!');
+        }
+    };
+
+    const getTemplate = (templateId: string) => {
+        return CV_TEMPLATES.find(t => t.id === templateId) || null;
+    };
+
+    const getTemplateVars = (templateId: string): React.CSSProperties => {
+        const tpl = getTemplate(templateId);
+        if (!tpl) return {};
+        return {
+            '--sidebar-bg': tpl.colorScheme.sidebar,
+            '--accent-color': tpl.colorScheme.accent,
+            '--accent-light': tpl.colorScheme.accentLight,
+        } as React.CSSProperties;
+    };
+
+    if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spin size="large" /></div>;
+
+    if (drafts.length === 0) return (
+        <div style={{ textAlign: 'center', padding: '48px 0' }}>
+            <SaveOutlined style={{ fontSize: 48, color: '#c7d2fe', marginBottom: 16 }} />
+            <p style={{ fontSize: 15, fontWeight: 600, color: '#475569', margin: 0 }}>Bạn chưa lưu CV nào</p>
+            <p style={{ color: '#94a3b8', marginBottom: 16 }}>Tạo CV với AI và nhấn "Lưu CV" để xem lại tại đây</p>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => { onClose(false); navigate('/cv-builder'); }}>
+                Tạo CV ngay
+            </Button>
+        </div>
+    );
+
+    return (
+        <div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, padding: '4px 0 16px' }}>
+                {drafts.map(draft => (
+                    <Card
+                        key={draft.id}
+                        hoverable
+                        bodyStyle={{ padding: 0 }}
+                        style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0' }}
+                    >
+                        {/* Thumbnail */}
+                        <div style={{
+                            height: 90,
+                            background: getTemplate(draft.templateId) ? `linear-gradient(135deg, ${getTemplate(draft.templateId)?.colorScheme.sidebar}, ${getTemplate(draft.templateId)?.colorScheme.accent})` : 'linear-gradient(135deg, #2c3e50, #1abc9c)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative'
+                        }}>
+                            <FileTextOutlined style={{ fontSize: 36, color: 'rgba(255,255,255,0.85)' }} />
+                            {getTemplate(draft.templateId) && (
+                                <div style={{ position: 'absolute', bottom: 6, right: 8, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: 10, padding: '2px 6px', borderRadius: 4 }}>
+                                    {getTemplate(draft.templateId)?.name}
+                                </div>
+                            )}
+                        </div>
+                        {/* Info */}
+                        <div style={{ padding: '10px 12px 6px' }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', marginBottom: 4,
+                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                                title={draft.title}
+                            >
+                                {draft.title}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#94a3b8' }}>
+                                <CalendarOutlined />
+                                <span>{formatDate(draft.createdAt)}</span>
+                            </div>
+                        </div>
+                        {/* Actions */}
+                        <div style={{ display: 'flex', gap: 6, padding: '6px 12px 10px' }}>
+                            <Button
+                                size="small" type="primary" icon={<EyeOutlined />}
+                                style={{ flex: 1, fontSize: 12, background: 'linear-gradient(135deg,#6c63ff,#0ea5e9)', border: 'none' }}
+                                onClick={() => handlePreview(draft)}
+                            >
+                                Xem lại
+                            </Button>
+                            <Popconfirm
+                                title="Xóa CV này?"
+                                onConfirm={() => handleDelete(draft.id!)}
+                                okText="Xóa" cancelText="Hủy" okButtonProps={{ danger: true }}
+                            >
+                                <Button size="small" danger icon={<DeleteOutlined />} />
+                            </Popconfirm>
+                        </div>
+                    </Card>
+                ))}
+            </div>
+
+            {/* Preview Modal */}
+            <Modal
+                open={previewOpen}
+                onCancel={() => setPreviewOpen(false)}
+                width={900}
+                footer={[
+                    <Button key="close" onClick={() => setPreviewOpen(false)}>Đóng</Button>,
+                    <Button
+                        key="print"
+                        type="primary"
+                        icon={<PrinterOutlined />}
+                        onClick={() => handlePrint()}
+                        style={{ background: 'linear-gradient(135deg, #1677ff, #0050b3)', border: 'none' }}
+                    >
+                        Tải PDF
+                    </Button>,
+                ]}
+                title={
+                    <span style={{ fontWeight: 700 }}>
+                        <FileTextOutlined style={{ marginRight: 8, color: '#6c63ff' }} />
+                        {previewDraft?.title}
+                    </span>
+                }
+                style={{ top: 20 }}
+            >
+                {previewResult && previewDraft && (
+                    <div style={{ maxHeight: '75vh', overflowY: 'auto', padding: '16px 0' }}>
+                        <div
+                            className={`${styles.cvResult} ${
+                                getTemplate(previewDraft.templateId)?.layout === 'right-sidebar' ? styles.layoutRight :
+                                getTemplate(previewDraft.templateId)?.layout === 'top-header' ? styles.layoutTop :
+                                getTemplate(previewDraft.templateId)?.layout === 'split-header' ? styles.layoutSplit :
+                                getTemplate(previewDraft.templateId)?.layout === 'no-sidebar' ? styles.layoutClean : ''
+                            }`}
+                            ref={cvRef}
+                            style={getTemplateVars(previewDraft.templateId)}
+                        >
+                            {/* Sidebar */}
+                            <aside className={styles.cvSidebar}>
+                                <div className={styles.avatarBox}>
+                                    {previewDraft.avatarUrl ? (
+                                        <img src={previewDraft.avatarUrl} alt="avatar" className={styles.avatarImg} />
+                                    ) : (
+                                        <div className={styles.avatarPlaceholder}>
+                                            <span style={{ fontSize: 36, opacity: 0.5 }}>👤</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className={styles.sidebarSection}>
+                                    <div className={styles.sidebarTitle}>Thông tin</div>
+                                    <div className={styles.contactList}>
+                                        {previewResult.personalInfo?.dob && <div className={styles.contactItem}><span>Ngày sinh:</span>{previewResult.personalInfo.dob}</div>}
+                                        {previewResult.personalInfo?.phone && <div className={styles.contactItem}><span>SĐT:</span>{previewResult.personalInfo.phone}</div>}
+                                        {previewResult.personalInfo?.email && <div className={styles.contactItem}><span>Email:</span>{previewResult.personalInfo.email}</div>}
+                                        {previewResult.personalInfo?.address && <div className={styles.contactItem}><span>Địa chỉ:</span>{previewResult.personalInfo.address}</div>}
+                                    </div>
+                                </div>
+
+                                <div className={styles.sidebarSection}>
+                                    <div className={styles.sidebarTitle}>Kỹ năng</div>
+                                    <div className={styles.skillList}>
+                                        {previewResult.skills?.map((skill, idx) => (
+                                            <div key={idx} className={styles.skillItem}>
+                                                <div className={styles.skillName}>{skill.name}</div>
+                                                <div className={styles.skillBarWrapper}>
+                                                    <div className={styles.skillBarFill} style={{ width: `${skill.level}%` }} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {previewResult.interests?.length > 0 && (
+                                    <div className={styles.sidebarSection}>
+                                        <div className={styles.sidebarTitle}>Sở thích</div>
+                                        <div className={styles.skillTags}>
+                                            {previewResult.interests.map((interest, idx) => (
+                                                <span key={idx} className={styles.skillTag}>{interest}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </aside>
+
+                            {/* Main */}
+                            <main className={styles.cvMain}>
+                                <header className={styles.cvHeader}>
+                                    <h1 className={styles.cvName}>{previewResult.name}</h1>
+                                    <p className={styles.cvJobTitle}>{previewResult.jobTitle}</p>
+                                </header>
+
+                                <div className={styles.cvSection}>
+                                    <div className={styles.cvSectionTitle}>Mục tiêu nghề nghiệp</div>
+                                    <p className={styles.summaryText}>{previewResult.careerObjective}</p>
+                                </div>
+
+                                {previewResult.education?.length > 0 && (
+                                    <div className={styles.cvSection}>
+                                        <div className={styles.cvSectionTitle}>Học vấn</div>
+                                        {previewResult.education.map((edu, idx) => (
+                                            <div key={idx} className={styles.entryBlock}>
+                                                <div className={styles.entryHeader}>
+                                                    <span className={styles.entryTitle}>{edu.major}</span>
+                                                    <span className={styles.entryTime}>{edu.timeRange}</span>
+                                                </div>
+                                                <div className={styles.entrySub}>{edu.school}</div>
+                                                <div className={styles.entryDesc}>{edu.desc}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {previewResult.experiences?.length > 0 && (
+                                    <div className={styles.cvSection}>
+                                        <div className={styles.cvSectionTitle}>Kinh nghiệm làm việc</div>
+                                        {previewResult.experiences.map((exp, idx) => (
+                                            <div key={idx} className={styles.entryBlock}>
+                                                <div className={styles.entryHeader}>
+                                                    <span className={styles.entryTitle}>{exp.title}</span>
+                                                    <span className={styles.entryTime}>{exp.timeRange}</span>
+                                                </div>
+                                                <div className={styles.entrySub}>{exp.company}</div>
+                                                <ul className={styles.expBullets}>
+                                                    {exp.bullets.map((b, bi) => <li key={bi}>{b}</li>)}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </main>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+        </div>
+    );
+};
+
 const ManageAccount = (props: IProps) => {
     const { open, onClose } = props;
 
@@ -924,6 +1217,11 @@ const ManageAccount = (props: IProps) => {
             key: 'favorite-jobs',
             label: `Favorite Jobs`,
             children: <FavoriteJobsTab onClose={onClose} />,
+        },
+        {
+            key: 'my-cvs',
+            label: `My CV`,
+            children: <MyCvsTab onClose={onClose} />,
         },
         {
             key: 'job-by-email',

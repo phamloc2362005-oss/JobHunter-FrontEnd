@@ -302,3 +302,13 @@ export interface IDashboardStats {
     }[];
 }
 
+export interface ICvDraft {
+    id?: string;
+    title: string;
+    cvJsonData: string;
+    templateId: string;
+    avatarUrl?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: string;
+}

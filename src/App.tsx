@@ -42,7 +42,6 @@ import ArticleAdminPage from './pages/admin/article';
 import ArticlesListPage from './pages/articles/index';
 import ArticleDetailPage from './pages/articles/detail';
 import ForgotPasswordPage from './pages/auth/forgot-password';
-
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const location = useLocation();
@@ -98,7 +97,7 @@ export default function App() {
         { path: "cv-builder", element: <CvBuilderPage /> },
         { path: "interview/:jobId", element: <MockInterviewPage /> },
         { path: "articles", element: <ArticlesListPage /> },
-        { path: "articles/:id", element: <ArticleDetailPage /> }
+        { path: "articles/:id", element: <ArticleDetailPage /> },
       ],
     },
 
